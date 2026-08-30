@@ -24,6 +24,7 @@ export default function Marchandise({ settings, showToast }) {
   const [produits, setProduits] = useState([emptyProduit()]);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState('');
+  const [validationErrors, setValidationErrors] = useState([]);
 
   useEffect(() => { loadData(); }, []);
 
@@ -107,6 +108,13 @@ export default function Marchandise({ settings, showToast }) {
   async function exportPdf() {
     const validProduits = produits.filter(p => p.designation.trim());
     if (!validProduits.length) { showToast(T('add_article_error'), 'error'); return; }
+    // Validate each product has a name
+    const errs = [];
+    validProduits.forEach((p, i) => {
+      if (!p.designation.trim()) errs.push(`${T('validation_article_designation_required')} (${i + 1})`);
+    });
+    if (errs.length) { setValidationErrors(errs); showToast(errs[0], 'error'); return; }
+    setValidationErrors([]);
     const filePath = await window.api.saveDialog({
       defaultName: `Marchandise-${num}.pdf`,
       filters: [{ name: 'PDF', extensions: ['pdf'] }],
@@ -201,6 +209,11 @@ export default function Marchandise({ settings, showToast }) {
           </div>
         </div>
         <div className="flex gap-2">
+          {validationErrors.length > 0 && (
+            <ul className="validation-errors list-disc list-inside">
+              {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
+            </ul>
+          )}
           <button onClick={() => setView('list')} className="btn-secondary">
             <Clock size={16} /> {T('btn_historique')}
           </button>

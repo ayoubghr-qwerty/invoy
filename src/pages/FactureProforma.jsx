@@ -9,6 +9,7 @@ import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
 import { saveToHistory } from '../utils/history';
 import { todayIso, saveClientIfNew } from '../utils/helpers';
+import { validateDoc } from '../utils/validation';
 
 export default function FactureProforma({ settings, showToast, pendingLoad, onLoadConsumed }) {
   const { lang } = useLang();
@@ -26,6 +27,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
   const [showArrete, setShowArrete] = useState(true);
   const [showModeReglement, setShowModeReglement] = useState(true);
   const [loading, setLoading] = useState('');
+  const [validationErrors, setValidationErrors] = useState([]);
   const autoNumRef = useRef('');
 
   useEffect(() => { loadData(); }, []);
@@ -77,7 +79,13 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
   const totaux = { ht, tva, tvaEnabled, tvaTaux, timbre, timbreEnabled: modeReglement === 'espece', ttc };
 
   async function exportDoc(format) {
-    if (!articles.length) { showToast(T('add_article_error'), 'error'); return; }
+    const { valid, errors } = validateDoc({ client, articles, lang });
+    if (!valid) {
+      setValidationErrors(errors);
+      showToast(errors[0], 'error');
+      return;
+    }
+    setValidationErrors([]);
     const counters = await window.api.storeGet('counters', {});
     const newNum = (counters.facture || 0) + 1;
     const isManual = num.trim() !== autoNumRef.current;
@@ -125,6 +133,11 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
           <p className="text-slate-500 text-sm mt-1">{T('sub_facture')}</p>
         </div>
         <div className="flex gap-2">
+          {validationErrors.length > 0 && (
+            <ul className="validation-errors list-disc list-inside">
+              {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
+            </ul>
+          )}
           <ExportButton onExport={exportDoc} loading={loading} color={docColor} />
         </div>
       </div>

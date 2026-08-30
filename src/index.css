@@ -296,6 +296,31 @@ html.dark .bg-blue-50.border-blue-100 { background-color: #1a2540 !important; bo
 html.dark .text-blue-800 { color: #93c5fd !important; }
 html.dark .text-blue-600 { color: #60a5fa !important; }
 
+/* ─── Validation errors ────────────────────────────────────── */
+.field-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+.validation-errors {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+html.dark .validation-errors {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.validation-errors li {
+  color: #dc2626;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+html.dark .validation-errors li {
+  color: #f87171;
+}
+
 /* ─── Page transitions ─────────────────────────────────────── */
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(8px); }

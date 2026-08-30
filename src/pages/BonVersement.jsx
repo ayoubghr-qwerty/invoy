@@ -9,6 +9,7 @@ import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
 import { saveToHistory } from '../utils/history';
 import { todayIso, saveClientIfNew } from '../utils/helpers';
+import { validateDoc } from '../utils/validation';
 
 export default function BonVersement({ settings, showToast, pendingLoad, onLoadConsumed }) {
   const { lang } = useLang();
@@ -23,6 +24,7 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
   const [notes, setNotes] = useState('');
   const [pageSize, setPageSize] = useState('A4');
   const [loading, setLoading] = useState('');
+  const [validationErrors, setValidationErrors] = useState([]);
   const autoNumRef = useRef('');
 
   useEffect(() => { loadData(); }, []);
@@ -53,7 +55,13 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
   const total = articles.reduce((s, a) => s + (parseFloat(a.montant) || 0), 0);
 
   async function exportDoc(format) {
-    if (!articles.length) { showToast(T('add_article_error'), 'error'); return; }
+    const { valid, errors } = validateDoc({ client, articles, lang });
+    if (!valid) {
+      setValidationErrors(errors);
+      showToast(errors[0], 'error');
+      return;
+    }
+    setValidationErrors([]);
     const counters = await window.api.storeGet('counters', {});
     const newNum = (counters.bonVersement || 0) + 1;
     const isManual = num.trim() !== autoNumRef.current;
@@ -97,6 +105,11 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
           <p className="text-slate-500 text-sm mt-1">{T('sub_versement')}</p>
         </div>
         <div className="flex gap-2">
+          {validationErrors.length > 0 && (
+            <ul className="validation-errors list-disc list-inside">
+              {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
+            </ul>
+          )}
           <ExportButton onExport={exportDoc} loading={loading} color={docColor} />
         </div>
       </div>

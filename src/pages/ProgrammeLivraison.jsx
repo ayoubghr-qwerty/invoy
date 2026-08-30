@@ -8,6 +8,7 @@ import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
 import { todayIso } from '../utils/helpers';
+import { validateDoc } from '../utils/validation';
 
 const EMPTY_CLIENT = () => ({
   id: Date.now() + Math.random(),
@@ -25,6 +26,7 @@ export default function ProgrammeLivraison({ settings, showToast }) {
   const [savedClients, setSavedClients] = useState([]);
   const [pageSize, setPageSize] = useState('A4');
   const [loading, setLoading] = useState('');
+  const [validationErrors, setValidationErrors] = useState([]);
 
   useEffect(() => { loadSavedClients(); }, []);
 
@@ -43,7 +45,18 @@ export default function ProgrammeLivraison({ settings, showToast }) {
   const grandTotal = clients.reduce((s, c) => s + (c.articles || []).reduce((ss, a) => ss + (parseFloat(a.montant) || 0), 0), 0);
 
   async function exportDoc(format) {
-    if (!clients.some(c => c.articles.length > 0)) { showToast(T('add_article_client_error'), 'error'); return; }
+    const activeClients = clients.filter(c => c.articles.length > 0);
+    if (!activeClients.length) { showToast(T('add_article_client_error'), 'error'); return; }
+    // Validate articles across all active clients
+    const allArticles = activeClients.flatMap(c => c.articles);
+    const firstClient = activeClients[0];
+    const { valid, errors } = validateDoc({ client: { nom: firstClient.nom || 'Programme' }, articles: allArticles, lang });
+    if (!valid) {
+      setValidationErrors(errors);
+      showToast(errors[0], 'error');
+      return;
+    }
+    setValidationErrors([]);
     const counters = await window.api.storeGet('counters', {});
     const newNum = (counters.programme || 0) + 1;
     const docData = { date, clients: clients.filter(c => c.nom || c.articles.length), settings, pageSize };
@@ -81,6 +94,11 @@ export default function ProgrammeLivraison({ settings, showToast }) {
           <p className="text-slate-500 text-sm mt-1">{T('sub_programme')}</p>
         </div>
         <div className="flex gap-2">
+          {validationErrors.length > 0 && (
+            <ul className="validation-errors list-disc list-inside">
+              {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
+            </ul>
+          )}
           <ExportButton onExport={exportDoc} loading={loading} color={docColor} />
         </div>
       </div>

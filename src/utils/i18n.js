@@ -288,6 +288,13 @@ export const translations = {
     save_all: 'Enregistrer tous les paramètres',
     reset_all: 'Supprimer tout',
 
+    // Validation
+    validation_client_nom_required: 'Le nom du client est requis',
+    validation_articles_required: 'Ajoutez au moins un article',
+    validation_article_designation_required: 'Chaque article doit avoir une désignation',
+    validation_article_qty_positive: 'La quantité doit être supérieure à 0',
+    validation_article_pu_positive: 'Le prix unitaire doit être supérieur à 0',
+
     // Backup filter
     backup_json_filter: 'Sauvegarde JSON',
 
@@ -669,6 +676,13 @@ export const translations = {
     counter_title: 'عدادات المستندات',
     save_all: 'حفظ جميع الإعدادات',
     reset_all: 'حذف الكل',
+
+    // Validation
+    validation_client_nom_required: 'اسم العميل مطلوب',
+    validation_articles_required: 'أضف منتجاً واحداً على الأقل',
+    validation_article_designation_required: 'كل منتج يجب أن يكون له تسمية',
+    validation_article_qty_positive: 'الكمية يجب أن تكون أكبر من 0',
+    validation_article_pu_positive: 'سعر الوحدة يجب أن يكون أكبر من 0',
 
     // Danger zone
     confirm_delete_all: 'نعم، حذف الكل',
