@@ -13,12 +13,11 @@
     "windows": [
       {
         "title": "Invoy",
-        "width": 1380,
-        "height": 860,
-        "minWidth": 1100,
-        "minHeight": 680,
-        "resizable": true,
-        "fullscreen": false,
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "center": true,
         "maximized": true,
         "backgroundColor": "#f5f7fb",
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll"

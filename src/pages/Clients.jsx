@@ -102,7 +102,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
     setXlsModal(true);
     try {
       const result = await window.api.readExcel();
-      if (!result) { setXlsModal(false); return; }
+      if (!result || !result.headers || !result.headers.length) { setXlsModal(false); return; }
       if (result.error) {         showToast(T('xls_read_error') + result.error, 'error'); setXlsModal(false); return; }
       setXlsData(result);
       result.headers.forEach(h => {

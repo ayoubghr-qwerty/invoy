@@ -168,13 +168,13 @@ function makeApi() {
       });
       if (!path || Array.isArray(path)) return null;
       try {
-        const { read } = await import('xlsx');
+        const { read, utils } = await import('xlsx');
         const buf = await p.fs.readFile(path);
         const wb = read(buf, { type: 'array' });
         const sheetName = wb.SheetNames[0];
         const ws = wb.Sheets[sheetName];
-        const rows = read.utils.sheet_to_json(ws, { header: 1, defval: '' });
-        if (!rows || rows.length === 0) return { columns: [], rows: [] };
+        const rows = utils.sheet_to_json(ws, { header: 1, defval: '' });
+        if (!rows || rows.length === 0) return { headers: [], preview: [], data: [] };
         const firstRow = rows[0];
         const headers = firstRow.map((h, i) =>
           String(h).trim() || `Colonne ${String.fromCharCode(65 + i)}`
@@ -223,7 +223,41 @@ export function installTauriApi() {
     exportPdf: () => Promise.resolve({ success: false, error: 'not in Tauri' }),
     exportDocx: () => Promise.resolve({ success: false, error: 'not in Tauri' }),
     showInFolder: () => Promise.resolve(),
-    readExcel: () => Promise.resolve({ columns: [], rows: [] }),
+    readExcel: () => new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.xlsx,.xls,.csv';
+      input.style.display = 'none';
+      document.body.appendChild(input);
+      input.addEventListener('change', async () => {
+        const file = input.files[0];
+        document.body.removeChild(input);
+        if (!file) { resolve(null); return; }
+        try {
+          const { read, utils } = await import('xlsx');
+          const buf = await file.arrayBuffer();
+          const wb = read(buf, { type: 'array' });
+          const sheetName = wb.SheetNames[0];
+          const ws = wb.Sheets[sheetName];
+          const rows = utils.sheet_to_json(ws, { header: 1, defval: '' });
+          if (!rows || rows.length === 0) { resolve({ headers: [], preview: [], data: [] }); return; }
+          const firstRow = rows[0];
+          const headers = firstRow.map((h, i) =>
+            String(h).trim() || `Colonne ${String.fromCharCode(65 + i)}`
+          );
+          const preview = rows.slice(1, 6).map((r) =>
+            headers.map((_, i) => String(r[i] ?? '').trim())
+          );
+          const data = rows.slice(1).map((r) =>
+            headers.map((_, i) => String(r[i] ?? '').trim())
+          );
+          resolve({ headers, preview, data });
+        } catch (err) {
+          resolve({ error: String(err) });
+        }
+      });
+      input.click();
+    }),
   };
   return window.api;
 }
