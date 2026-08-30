@@ -1,0 +1,403 @@
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, Save, Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
+import { useLang } from '../App';
+import { t } from '../utils/i18n';
+
+const APP_THEMES = [
+  { label: 'Bleu Marine', labelAr: 'أزرق داكن',    color: '#0f2044' },
+  { label: 'Vert Foncé',  labelAr: 'أخضر داكن',    color: '#1a4d2e' },
+  { label: 'Bordeaux',    labelAr: 'أحمر داكن',     color: '#7c1c1c' },
+  { label: 'Ardoise',     labelAr: 'رمادي داكن',    color: '#1e293b' },
+  { label: 'Violet',      labelAr: 'بنفسجي',        color: '#3b1f5e' },
+  { label: 'Anthracite',  labelAr: 'أنثراسيت',      color: '#1f1f2e' },
+];
+
+export default function Parametres({ settings, onSave, showToast }) {
+  const { lang } = useLang();
+  const T = (k) => t(lang, k);
+
+  const [form, setForm] = useState({
+    organisation: '', proprietaire: '', email: '', adresse: '',
+    telephones: [''], rc: '', artImp: '', nif: '', nis: '',
+    couleur: '#0f2044', couleurApp: '#0f2044', logo: '', fontDoc: 'Arial',
+  });
+
+  const [counters, setCounters] = useState({});
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  useEffect(() => { loadCounters(); }, []);
+
+  async function loadCounters() {
+    const c = await window.api.storeGet('counters', {});
+    setCounters(c || {});
+  }
+
+  const COUNTER_DOCS = [
+    { key: 'facture',    label: 'Facture Proforma' },
+    { key: 'livraison',  label: 'Bon de Livraison' },
+    { key: 'versement',  label: 'Bon de Versement' },
+    { key: 'programme',  label: 'Programme de Livraison' },
+    { key: 'marchandise',label: 'Marchandise' },
+  ];
+
+  async function resetOneCounter(key) {
+    if (!confirm(`Réinitialiser le compteur "${COUNTER_DOCS.find(d=>d.key===key)?.label}" à zéro ?`)) return;
+    const updated = { ...counters, [key]: 0 };
+    await window.api.storeSet('counters', updated);
+    setCounters(updated);
+    showToast(`Compteur remis à zéro — prochain N° 0001`);
+  }
+
+  async function resetAllCounters() {
+    if (!confirm('Remettre TOUS les compteurs à zéro ?')) return;
+    await window.api.storeSet('counters', {});
+    setCounters({});
+    showToast(T('reset_counters_ok'));
+  }
+
+  async function clearAllData() {
+    setShowClearConfirm(false);
+    const KEYS = ['settings', 'clients', 'counters', 'produits', 'marchandise', 'historique'];
+    await Promise.all(KEYS.map(k => window.api.storeSet(k, k === 'counters' ? {} : k === 'settings' ? {} : [])));
+    setCounters({});
+    showToast(T('clear_all_ok'));
+  }
+
+  useEffect(() => {
+    if (settings) {
+      setForm({
+        organisation: settings.organisation || '',
+        proprietaire: settings.proprietaire || '',
+        email: settings.email || '',
+        adresse: settings.adresse || '',
+        telephones: settings.telephones?.length ? settings.telephones : [''],
+        rc: settings.rc || '',
+        artImp: settings.artImp || '',
+        nif: settings.nif || '',
+        nis: settings.nis || '',
+        couleur: settings.couleur || '#0f2044',
+        couleurApp: settings.couleurApp || '#0f2044',
+        logo: settings.logo || '',
+        fontDoc: settings.fontDoc || 'Arial',
+      });
+    }
+  }, [settings]);
+
+  function set(field, value) { setForm(f => ({ ...f, [field]: value })); }
+  function setPhone(i, val) { const p = [...form.telephones]; p[i] = val; set('telephones', p); }
+  function addPhone() { set('telephones', [...form.telephones, '']); }
+  function removePhone(i) { set('telephones', form.telephones.filter((_, idx) => idx !== i)); }
+
+  async function pickLogo() {
+    const dataUrl = await window.api.pickImage();
+    if (dataUrl) set('logo', dataUrl);
+  }
+
+  async function save() {
+    const clean = { ...form, telephones: form.telephones.filter(p => p.trim()) };
+    await window.api.storeSet('settings', clean);
+    await onSave();
+    showToast(T('settings_saved'));
+  }
+
+  async function exportBackup() {
+    const [s, clients, counters, produits, marchandise, historique] = await Promise.all([
+      window.api.storeGet('settings', {}),
+      window.api.storeGet('clients', []),
+      window.api.storeGet('counters', {}),
+      window.api.storeGet('produits', []),
+      window.api.storeGet('marchandise', []),
+      window.api.storeGet('historique', []),
+    ]);
+    const backup = { version: 2, exportedAt: new Date().toISOString(), settings: s, clients, counters, produits, marchandise, historique };
+    const json = JSON.stringify(backup, null, 2);
+    const date = new Date().toISOString().slice(0, 10);
+    const filePath = await window.api.saveDialog({
+            defaultName: `Invoy-sauvegarde-${date}.json`,
+      filters: [{ name: 'Sauvegarde JSON', extensions: ['json'] }],
+    });
+    if (!filePath) return;
+    const result = await window.api.exportBackupFile({ filePath, json });
+    showToast(result?.success ? T('backup_exported') : T('export_error'), result?.success ? 'success' : 'error');
+  }
+
+  async function importBackup() {
+    const raw = await window.api.pickJson();
+    if (!raw) return;
+    let backup;
+    try { backup = JSON.parse(raw); } catch { showToast(T('backup_json_error'), 'error'); return; }
+    if (!backup.version || !backup.settings) { showToast(T('backup_invalid'), 'error'); return; }
+    if (!confirm(T('backup_confirm'))) return;
+    await Promise.all([
+      window.api.storeSet('settings', backup.settings || {}),
+      window.api.storeSet('clients', backup.clients || []),
+      window.api.storeSet('counters', backup.counters || {}),
+      window.api.storeSet('produits', backup.produits || []),
+      window.api.storeSet('marchandise', backup.marchandise || []),
+      window.api.storeSet('historique', backup.historique || []),
+    ]);
+    await onSave();
+    showToast(T('backup_imported'));
+  }
+
+  const appColor = form.couleurApp || '#0f2044';
+  const docColor = form.couleur || '#0f2044';
+
+  return (
+    <div className="p-8 max-w-3xl">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold" style={{color:"var(--text-primary)"}}>{T('title_parametres')}</h1>
+          <p className="text-slate-500 text-sm mt-1">{T('sub_parametres')}</p>
+        </div>
+        <button onClick={save} className="btn-primary"><Save size={16} /> {T('btn_save')}</button>
+      </div>
+
+      {/* Language */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('sec_language')}</h2>
+        <div className="flex gap-3">
+          {[{ code: 'fr', label: 'Français' }, { code: 'ar', label: 'العربية' }].map(({ code, label }) => (
+            <button key={code} disabled className="flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition-all"
+              style={{ borderColor: settings?.langue === code ? appColor : '#e2e8f0', color: settings?.langue === code ? appColor : '#94a3b8', background: settings?.langue === code ? appColor + '10' : 'white' }}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-slate-400 mt-2">
+          {lang === 'fr' ? 'Changez la langue via le sélecteur en bas de la barre latérale.' : 'غيّر اللغة عبر المحدد في أسفل الشريط الجانبي.'}
+        </p>
+      </div>
+
+      {/* App Theme */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('sec_app_theme')}</h2>
+        <p className="text-xs mb-4" style={{color:"var(--text-muted)"}}>{T('color_used_app')}</p>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {APP_THEMES.map(th => (
+            <button key={th.color} onClick={() => set('couleurApp', th.color)}
+              title={lang === 'ar' ? th.labelAr : th.label}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 text-xs font-medium transition-all"
+              style={{
+                borderColor: form.couleurApp === th.color ? th.color : '#e2e8f0',
+                background: form.couleurApp === th.color ? th.color + '22' : 'var(--bg-input)',
+                color: form.couleurApp === th.color ? th.color : 'var(--text-secondary)',
+              }}>
+              <span className="w-4 h-4 rounded-full flex-shrink-0" style={{ background: th.color }} />
+              {lang === 'ar' ? th.labelAr : th.label}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-3">
+          <input type="color" value={form.couleurApp} onChange={e => set('couleurApp', e.target.value)}
+            className="w-10 h-10 rounded cursor-pointer border border-slate-200" />
+          <span className="text-sm text-slate-500 font-mono">{form.couleurApp}</span>
+        </div>
+      </div>
+
+      {/* Logo + Doc color */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('sec_logo_color')}</h2>
+        <div className="flex items-start gap-6">
+          <div>
+            <label className="form-label">{T('field_logo')}</label>
+            <div className="flex items-center gap-3 mt-1">
+              {form.logo ? (
+                <img src={form.logo} alt="logo" className="w-20 h-20 object-contain border border-slate-200 rounded-lg p-1" />
+              ) : (
+                <div className="w-20 h-20 border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center text-slate-400 text-xs text-center p-2">
+                  {T('logo_none')}
+                </div>
+              )}
+              <div className="flex flex-col gap-2">
+                <button onClick={pickLogo} className="btn-secondary text-sm">{T('btn_choose_image')}</button>
+                {form.logo && <button onClick={() => set('logo', '')} className="btn-danger text-xs"><Trash2 size={12} /> {T('logo_delete')}</button>}
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className="form-label">{T('field_couleur_doc')}</label>
+            <p className="text-xs text-slate-400 mb-2">{T('color_used_docs')}</p>
+            <div className="flex items-center gap-3">
+              <input type="color" value={form.couleur} onChange={e => set('couleur', e.target.value)}
+                className="w-10 h-10 rounded cursor-pointer border border-slate-200" />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium font-mono" style={{ color: docColor }}>{form.couleur}</span>
+                <div className="mt-1 flex gap-1">
+                  {['#0f2044','#1a4d2e','#7c1c1c','#2d4a6e','#4a1942','#1a3a2f'].map(c => (
+                    <button key={c} onClick={() => set('couleur', c)}
+                      className="w-5 h-5 rounded border border-white shadow-sm" style={{ background: c }} title={c} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Font for documents */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('field_font_doc')}</h2>
+        <p className="text-xs mb-4" style={{color:"var(--text-muted)"}}>{T('font_hint')}</p>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { name: 'Arial',           label: 'Arial',             sub: 'Standard' },
+            { name: 'Times New Roman', label: 'Times New Roman',   sub: 'Classique' },
+            { name: 'Calibri',         label: 'Calibri',           sub: 'Moderne' },
+            { name: 'Tahoma',          label: 'Tahoma',            sub: 'Lisible' },
+            { name: 'Verdana',         label: 'Verdana',           sub: 'Net' },
+            { name: 'Courier New',     label: 'Courier New',       sub: 'Monospace' },
+          ].map(f => (
+            <button key={f.name} onClick={() => set('fontDoc', f.name)}
+              className="p-3 rounded-lg border-2 text-left transition-all"
+              style={{
+                borderColor: form.fontDoc === f.name ? appColor : '#e2e8f0',
+                background: form.fontDoc === f.name ? appColor + '22' : 'var(--bg-input)',
+              }}>
+              <div className="font-semibold text-sm" style={{ fontFamily: f.name, color: form.fontDoc === f.name ? appColor : '#334155' }}>{f.label}</div>
+              <div className="text-xs text-slate-400 mt-0.5">{f.sub}</div>
+              <div className="text-xs mt-1" style={{ fontFamily: f.name, color: '#64748b' }}>Abc 123</div>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="card mb-6">
+        <h2 className="section-title">{T('sec_org')}</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="form-label">{T('field_organisation')} *</label>
+            <input className="form-input" value={form.organisation} onChange={e => set('organisation', e.target.value)} placeholder={T('org_placeholder')} />
+          </div>
+          <div>
+            <label className="form-label">{T('field_proprietaire')}</label>
+            <input className="form-input" value={form.proprietaire} onChange={e => set('proprietaire', e.target.value)} placeholder={T('owner_placeholder')} />
+          </div>
+          <div className="col-span-2">
+            <label className="form-label">{T('field_adresse')}</label>
+            <input className="form-input" value={form.adresse} onChange={e => set('adresse', e.target.value)} placeholder={T('address_placeholder')} />
+          </div>
+          <div>
+            <label className="form-label">{T('field_email')}</label>
+            <input type="email" className="form-input" value={form.email} onChange={e => set('email', e.target.value)} placeholder={T('email_placeholder')} />
+          </div>
+        </div>
+        <div className="mt-4">
+          <label className="form-label">{T('field_telephones')}</label>
+          <div className="space-y-2">
+            {form.telephones.map((p, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input className="form-input flex-1" value={p} onChange={e => setPhone(i, e.target.value)} placeholder={`${T('field_telephone')} ${i + 1}`} />
+                {form.telephones.length > 1 && (
+                  <button onClick={() => removePhone(i)} className="btn-danger p-2"><Trash2 size={14} /></button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button onClick={addPhone} className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800">
+            <Plus size={14} /> {T('btn_add_phone')}
+          </button>
+        </div>
+      </div>
+
+      {/* Fiscal */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('sec_fiscal_org')}</h2>
+        <p className="text-xs mb-4" style={{color:"var(--text-muted)"}}>{T('fiscal_hint')}</p>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="form-label">{T('field_rc')}</label>
+            <input className="form-input" value={form.rc} onChange={e => set('rc', e.target.value)} /></div>
+          <div><label className="form-label">{T('field_art_imp')}</label>
+            <input className="form-input" value={form.artImp} onChange={e => set('artImp', e.target.value)} /></div>
+          <div><label className="form-label">{T('field_nif')}</label>
+            <input className="form-input" value={form.nif} onChange={e => set('nif', e.target.value)} /></div>
+          <div><label className="form-label">{T('field_nis')}</label>
+            <input className="form-input" value={form.nis} onChange={e => set('nis', e.target.value)} /></div>
+        </div>
+      </div>
+
+      {/* Backup */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('sec_backup')}</h2>
+        <p className="text-sm text-slate-500 mb-5">{T('backup_hint')}</p>
+        <div className="flex gap-3">
+          <button onClick={exportBackup} className="btn-secondary flex-1 justify-center py-3">
+            <Download size={16} /> {T('btn_export_backup')}
+          </button>
+          <button onClick={importBackup} className="btn-secondary flex-1 justify-center py-3" style={{ borderColor: '#c9a327', color: '#b08c1e' }}>
+            <Upload size={16} /> {T('btn_import_backup')}
+          </button>
+        </div>
+        <p className="text-xs text-slate-400 mt-3">{T('backup_format_hint')}</p>
+      </div>
+
+      {/* Counters */}
+      <div className="card mb-6">
+        <h2 className="section-title flex items-center gap-2">
+          <RotateCcw size={16} /> Compteurs des documents
+        </h2>
+        <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
+          Le prochain document exporté utilisera le numéro suivant le compteur actuel.
+        </p>
+        <div className="space-y-2 mb-4">
+          {COUNTER_DOCS.map(({ key, label }) => (
+            <div key={key} className="flex items-center justify-between px-4 py-2.5 rounded-lg"
+              style={{ background: 'var(--bg-alt)', border: '1px solid var(--border-color)' }}>
+              <div>
+                <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                <span className="ml-3 text-xs font-mono px-2 py-0.5 rounded" style={{ background: 'var(--bg-input)', color: 'var(--text-secondary)' }}>
+                  N° {String((counters[key] || 0) + 1).padStart(4, '0')} (prochain)
+                </span>
+              </div>
+              <button
+                onClick={() => resetOneCounter(key)}
+                className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-colors hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300"
+                style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
+                <RotateCcw size={12} /> Réinitialiser
+              </button>
+            </div>
+          ))}
+        </div>
+        <button onClick={resetAllCounters}
+          className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border transition-colors hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300"
+          style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
+          <RotateCcw size={14} /> {T('btn_reset_counters')}
+        </button>
+      </div>
+
+      {/* Danger zone */}
+      <div className="card mb-6" style={{ borderColor: '#ef4444', border: '1.5px solid #ef4444' }}>
+        <h2 className="section-title flex items-center gap-2" style={{ color: '#ef4444' }}>
+          <AlertTriangle size={16} /> {T('sec_danger')}
+        </h2>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{T('clear_all_hint')}</p>
+
+        {!showClearConfirm ? (
+          <button onClick={() => setShowClearConfirm(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+            style={{ background: '#dc2626', color: 'white' }}>
+            <Trash2 size={14} /> {T('btn_clear_all')}
+          </button>
+        ) : (
+          <div className="p-4 rounded-lg" style={{ border: '1px solid #ef4444', background: 'var(--bg-alt)' }}>
+            <p className="text-sm font-semibold mb-3" style={{ color: '#ef4444' }}>{T('clear_all_confirm')}</p>
+            <div className="flex gap-3">
+              <button onClick={clearAllData}
+                className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">
+                Oui, supprimer tout
+              </button>
+              <button onClick={() => setShowClearConfirm(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+                style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
+                Annuler
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <button onClick={save} className="btn-primary w-full justify-center py-3 text-base">
+        <Save size={18} /> {T('btn_save_all')}
+      </button>
+    </div>
+  );
+}

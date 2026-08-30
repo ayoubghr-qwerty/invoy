@@ -1,0 +1,353 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables ─────────────────────────── */
+:root {
+  --bg-app:        #f5f7fb;
+  --bg-card:       #ffffff;
+  --bg-input:      #ffffff;
+  --bg-alt:        #f9fafc;
+  --bg-hover:      #f0f3f9;
+  --border-color:  #e2e8f0;
+  --border-input:  #cbd5e1;
+  --text-primary:  #1a1a2e;
+  --text-secondary:#475569;
+  --text-muted:    #94a3b8;
+  --text-label:    #64748b;
+  --shadow-card:   0 1px 3px rgba(0,0,0,0.08);
+  --scrollbar-bg:  #f0f2f8;
+  --scrollbar-th:  #c0c8e0;
+  --table-border:  #e8ecf4;
+}
+
+html.dark {
+  --bg-app:        #0f1117;
+  --bg-card:       #1c1f2a;
+  --bg-input:      #252836;
+  --bg-alt:        #232536;
+  --bg-hover:      #2d3148;
+  --border-color:  #2e3349;
+  --border-input:  #3a3f5c;
+  --text-primary:  #e8eaf6;
+  --text-secondary:#a9b4d4;
+  --text-muted:    #6b7aa1;
+  --text-label:    #8895b8;
+  --shadow-card:   0 1px 6px rgba(0,0,0,0.4);
+  --scrollbar-bg:  #1c1f2a;
+  --scrollbar-th:  #3a3f5c;
+  --table-border:  #2e3349;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-app);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-th); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9aaac8; }
+
+/* ── Sidebar ───────────────────────────────── */
+.sidebar-item {
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-150 cursor-pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  color: rgba(255,255,255,0.65);
+}
+.sidebar-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.08);
+  color: white;
+}
+.sidebar-item.active {
+  background: rgba(255,255,255,0.18);
+  color: white;
+  font-weight: 700;
+}
+
+/* ── Forms ─────────────────────────────────── */
+.form-label {
+  @apply block text-xs font-semibold mb-1 uppercase tracking-wide;
+  color: var(--text-label);
+}
+.form-input {
+  @apply w-full rounded-lg px-3 py-2 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-400/30;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+}
+.form-input:focus { border-color: #60a5fa; }
+.form-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.form-select { @apply form-input; }
+
+/* ── Buttons ───────────────────────────────── */
+.btn-primary {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-150 shadow-sm;
+  background: #0f2044;
+}
+.btn-primary:hover { background: #1a3360; }
+.btn-primary:disabled { background: #9aaac8; cursor: not-allowed; }
+
+.btn-secondary {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+}
+.btn-secondary:hover { background: var(--bg-hover); }
+
+.btn-danger {
+  @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all;
+  color: #f87171;
+  border: 1px solid rgba(248,113,113,0.3);
+  background: rgba(248,113,113,0.08);
+}
+.btn-danger:hover { background: rgba(248,113,113,0.15); }
+
+.btn-gold {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all;
+  background: #c9a327;
+}
+.btn-gold:hover { background: #b08c1e; }
+
+/* ── Cards ─────────────────────────────────── */
+.card {
+  @apply rounded-xl p-6;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+/* ── Section title ─────────────────────────── */
+.section-title {
+  @apply text-base font-bold mb-4 pb-2;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ── Tables ────────────────────────────────── */
+.table-header {
+  @apply text-xs font-bold text-white uppercase tracking-wide px-3 py-3;
+}
+.table-cell {
+  @apply px-3 py-2 text-sm;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--table-border);
+}
+.table-row-alt { background: var(--bg-alt); }
+
+/* ── Toast ─────────────────────────────────── */
+.toast {
+  @apply fixed bottom-6 right-6 flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-sm font-medium z-50;
+  animation: slideUp 0.25s ease;
+}
+.toast-success { background: #0f2044; color: white; }
+.toast-error { @apply bg-red-600 text-white; }
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Dark mode overrides ───────────────────── */
+html.dark .card { background: var(--bg-card); }
+html.dark .form-input { background: var(--bg-input); color: var(--text-primary); }
+html.dark .btn-secondary { background: var(--bg-card); color: var(--text-secondary); border-color: var(--border-color); }
+html.dark .table-row-alt { background: var(--bg-alt); }
+html.dark input[type="checkbox"], html.dark input[type="radio"] { accent-color: #60a5fa; }
+
+/* ── RTL / Arabic ──────────────────────────── */
+.rtl .sidebar-item { flex-direction: row-reverse; }
+.rtl .form-label { text-align: right; }
+.rtl .form-input { text-align: right; direction: rtl; }
+.rtl table th, .rtl table td { text-align: right; }
+.rtl .toast { left: 1.5rem; right: auto; }
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+.font-arabic, .rtl, .rtl * { font-family: 'Cairo', 'Segoe UI', sans-serif; }
+.rtl input, .rtl textarea { font-family: 'Cairo', 'Segoe UI', sans-serif; }
+
+/* ── Dark mode Tailwind overrides ──────────────────────────── */
+html.dark .bg-white   { background-color: var(--bg-card) !important; }
+html.dark .bg-slate-50 { background-color: var(--bg-alt) !important; }
+html.dark .bg-slate-100 { background-color: var(--bg-hover) !important; }
+html.dark .text-slate-800, html.dark .text-slate-900 { color: var(--text-primary) !important; }
+html.dark .text-slate-700 { color: var(--text-secondary) !important; }
+html.dark .text-slate-600, html.dark .text-slate-500 { color: var(--text-muted) !important; }
+html.dark .text-slate-400 { color: var(--text-muted) !important; }
+html.dark .border-slate-100 { border-color: var(--border-color) !important; }
+html.dark .border-slate-200 { border-color: var(--border-input) !important; }
+html.dark .divide-slate-100 > * { border-color: var(--border-color) !important; }
+
+/* Inputs, textareas, selects */
+html.dark input[type="text"],
+html.dark input[type="number"],
+html.dark input[type="time"],
+html.dark input[type="date"],
+html.dark input[type="email"],
+html.dark input[type="color"],
+html.dark textarea,
+html.dark select {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-input) !important;
+}
+
+/* date picker calendar icon color */
+html.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+}
+
+/* Modal/overlay backgrounds */
+html.dark .fixed.inset-0 { background-color: rgba(0,0,0,0.6) !important; }
+
+/* Dropdown results */
+html.dark .bg-white.border.border-slate-200.rounded-lg.shadow-xl {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-input) !important;
+}
+html.dark button:hover.hover\:bg-slate-50 { background-color: var(--bg-hover) !important; }
+
+/* Faint info blocks */
+html.dark .bg-slate-50.rounded-lg,
+html.dark .bg-slate-50.rounded-xl,
+html.dark [class*="bg-slate-50"] { background-color: var(--bg-alt) !important; }
+
+/* Toggle switch track */
+html.dark .bg-slate-300 { background-color: #3a3f5c !important; }
+
+/* Green success text */
+html.dark .text-green-600 { color: #4ade80 !important; }
+html.dark .text-blue-600 { color: #60a5fa !important; }
+html.dark .text-orange-600 { color: #fb923c !important; }
+
+/* Table inside pages */
+html.dark table td, html.dark table th {
+  border-color: var(--border-color) !important;
+}
+html.dark .table-cell { color: var(--text-secondary) !important; }
+html.dark tr:nth-child(even) td { background-color: var(--bg-alt) !important; }
+
+/* Page headings h1/h2/h3 that use hardcoded colors */
+html.dark h1, html.dark h2, html.dark h3 { color: var(--text-primary) !important; }
+
+/* Section titles (section-title class) */
+html.dark .section-title { color: var(--text-primary) !important; }
+
+/* form-label texts */
+html.dark .form-label { color: var(--text-label) !important; }
+
+/* paragraph subtitles / description texts */
+html.dark p.text-sm, html.dark .text-sm.text-slate-500 { color: var(--text-muted) !important; }
+
+/* Info/hint boxes with border */
+html.dark .border.rounded-lg, html.dark .border.rounded-xl {
+  border-color: var(--border-color) !important;
+}
+
+/* Inline solde/total info panel */
+html.dark .text-sm.p-3.rounded-lg.border {
+  background-color: var(--bg-alt) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+html.dark .text-sm.p-3.rounded-lg.border .text-slate-600 { color: var(--text-muted) !important; }
+
+/* Buttons with hover states */
+html.dark .hover\:bg-slate-50:hover { background-color: var(--bg-hover) !important; }
+html.dark .hover\:bg-slate-100:hover { background-color: var(--bg-hover) !important; }
+
+/* Client select dropdown items */
+html.dark .hover\:bg-blue-50:hover { background-color: var(--bg-hover) !important; }
+
+/* Articles count badge */
+html.dark .bg-blue-50 { background-color: #1e2d4a !important; }
+html.dark .text-blue-700 { color: #93c5fd !important; }
+
+/* Total TTC row - keep readable in dark mode */
+html.dark .ttc-label { color: var(--text-primary) !important; }
+
+/* Disabled / empty state */
+html.dark .text-slate-300 { color: #4a526e !important; }
+
+/* Parametres page - specific panels */
+html.dark .bg-blue-50.border-blue-100 { background-color: #1a2540 !important; border-color: #253563 !important; }
+html.dark .text-blue-800 { color: #93c5fd !important; }
+html.dark .text-blue-600 { color: #60a5fa !important; }
+
+/* ─── Page transitions ─────────────────────────────────────── */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: pageEnter 0.18s ease-out forwards;
+}
+
+/* ─── Input focus ring ─────────────────────────────────────── */
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent, #3b82f6) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+/* ─── Export dropdown button ───────────────────────────────── */
+.export-dropdown { position: relative; display: inline-flex; }
+.export-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 160px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  z-index: 100;
+  overflow: hidden;
+  animation: pageEnter 0.12s ease-out forwards;
+}
+.export-dropdown-menu button {
+  width: 100%;
+  text-align: left;
+  padding: 9px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.export-dropdown-menu button:hover { background: var(--bg-alt); }
+
+/* ─── Improved card hover ──────────────────────────────────── */
+.card { transition: box-shadow 0.15s; }
+
+/* ─── Smooth sidebar ───────────────────────────────────────── */
+aside button { transition: background 0.12s, color 0.12s !important; }
+
+/* ─── Table row hover ──────────────────────────────────────── */
+tbody tr { transition: background 0.1s; }
+
+/* ─── Tooltip ──────────────────────────────────────────────── */
+[title] { cursor: default; }
+button[title] { cursor: pointer; }
