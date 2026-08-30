@@ -1,10 +1,8 @@
-//! HTML → PDF export through a hidden WebView2 window using the silent
-//! direct-to-file `ICoreWebView2_7::PrintToPdf` API (no printer / save dialog).
+//! HTML → PDF export through a hidden WebView2 window using the DevTools
+//! Protocol `Page.printToPDF` command via `ICoreWebView2::CallDevToolsProtocolMethod`.
 //!
-//! Windows-only: WebView2 COM objects are not `Send` and must be touched on the
-//! UI thread. We therefore set up everything and fire off the export inside a
-//! `with_webview` closure on the UI thread, and only move channel senders
-//! between threads.
+//! Navigates to a `data:` URL (gives a proper origin for CDP) then calls
+//! `Page.enable` + `Page.printToPDF` to produce the PDF file.
 
 #[cfg(not(target_os = "windows"))]
 #[tauri::command]
@@ -25,14 +23,10 @@ pub async fn export_pdf(
     file_path: String,
     page_size: String,
 ) -> Result<bool, String> {
-    use base64::Engine;
     use std::sync::mpsc;
     use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-    let (page_w, page_h) = page_size_dips(&page_size);
-
-    let b64 = base64::engine::general_purpose::STANDARD.encode(html_content.as_bytes());
-    let url = format!("data:text/html;base64,{b64}");
+    let (paper_w, paper_h) = page_size_inches(&page_size);
 
     let label = format!(
         "pdf-export-{}",
@@ -55,101 +49,69 @@ pub async fn export_pdf(
     .visible(false)
     .decorations(false)
     .skip_taskbar(true)
-    .inner_size(1.0, 1.0)
+    .inner_size(794.0, 1123.0)
     .build()
     .map_err(|e| format!("failed to create hidden WebView2 window: {e}"))?;
 
-    let (nav_tx, nav_rx) = mpsc::channel::<Result<(), String>>();
-    let (print_tx, print_rx) = mpsc::channel::<Result<bool, String>>();
+    let (done_tx, done_rx) = mpsc::channel::<Result<String, String>>();
 
+    let html_for_setup = html_content.clone();
     let file_path_for_setup = file_path.clone();
     window
         .with_webview(move |pw| {
-            setup_and_print(
-                pw,
-                &url,
-                &file_path_for_setup,
-                (page_w, page_h),
-                nav_tx,
-                print_tx,
-            );
+            setup_and_print(pw, &html_for_setup, &file_path_for_setup, paper_w, paper_h, done_tx);
         })
         .map_err(|e| format!("failed to access the WebView2 controller: {e}"))?;
 
-    let nav = tauri::async_runtime::spawn_blocking(move || {
-        nav_rx.recv_timeout(Duration::from_secs(30))
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        done_rx.recv_timeout(Duration::from_secs(30))
     })
     .await
-        .map_err(|e| format!("internal error joining the navigation task: {e}"))?
-        .map_err(|_| "PDF export timed out while the hidden window loaded the document")?;
-
-    if let Err(e) = nav {
-        let _ = window.close();
-        return Err(format!("PDF export failed while loading the document: {e}"));
-    }
-
-    let print =
-        tauri::async_runtime::spawn_blocking(move || print_rx.recv_timeout(Duration::from_secs(30)))
-            .await
-            .map_err(|e| format!("internal error joining the print task: {e}"))?
-            .map_err(|_| "PDF export timed out while waiting for PrintToPdf")?;
+    .map_err(|e| format!("internal error: {e}"))?
+    .map_err(|_| "PDF export timed out".to_string())?;
 
     let _ = window.close();
 
-    match print {
-        Ok(ok) => Ok(ok),
+    match result {
+        Ok(_path) => Ok(true),
         Err(e) => Err(e),
     }
 }
 
 #[cfg(target_os = "windows")]
-fn page_size_dips(page_size: &str) -> (f64, f64) {
+fn page_size_inches(page_size: &str) -> (f64, f64) {
     match page_size.trim().to_uppercase().as_str() {
-        // WebView2 print margins/sizes are in DIPs at 96 DIP/inch.
-        "A5" => (559.0, 794.0),
-        _ => (794.0, 1123.0), // A4 (default)
+        "A5" => (5.83, 8.27),
+        _ => (8.27, 11.69), // A4 (default)
     }
 }
 
 #[cfg(target_os = "windows")]
 fn setup_and_print(
     pw: tauri::webview::PlatformWebview,
-    url: &str,
+    html_content: &str,
     file_path: &str,
-    (page_w, page_h): (f64, f64),
-    nav_tx: std::sync::mpsc::Sender<Result<(), String>>,
-    print_tx: std::sync::mpsc::Sender<Result<bool, String>>,
+    paper_w: f64,
+    paper_h: f64,
+    done_tx: std::sync::mpsc::Sender<Result<String, String>>,
 ) {
     use webview2_com::Microsoft::Web::WebView2::Win32::{
-        ICoreWebView2, ICoreWebView2Environment6, ICoreWebView2NavigationCompletedEventArgs,
-        ICoreWebView2_7,
+        ICoreWebView2, ICoreWebView2NavigationCompletedEventArgs,
     };
-    use webview2_com::{NavigationCompletedEventHandler, PrintToPdfCompletedHandler};
-    use windows_core::{Interface, PCWSTR};
+    use webview2_com::NavigationCompletedEventHandler;
+    use windows_core::PCWSTR;
+
+    let html_owned = html_content.to_string();
+    let file_path_owned = file_path.to_string();
+    let done_tx_for_nav_err = done_tx.clone();
 
     let result = (|| -> windows_core::Result<()> {
         let controller = pw.controller();
         let core = unsafe { controller.CoreWebView2()? };
-        let webview = core.cast::<ICoreWebView2_7>()?;
-        let environment = pw.environment().cast::<ICoreWebView2Environment6>()?;
-        let settings = unsafe { environment.CreatePrintSettings()? };
-        unsafe {
-            settings.SetPageWidth(page_w)?;
-            settings.SetPageHeight(page_h)?;
-            // Full-bleed, matching Electron's `marginsType: 2`.
-            settings.SetMarginTop(0.0)?;
-            settings.SetMarginBottom(0.0)?;
-            settings.SetMarginLeft(0.0)?;
-            settings.SetMarginRight(0.0)?;
-            // Colors matter; the document relies on print backgrounds.
-            settings.SetShouldPrintBackgrounds(true)?;
-        }
 
-        let nav_tx = nav_tx.clone();
-        let print_tx = print_tx.clone();
-        let file_path = file_path.to_string();
-        let webview = webview.clone();
-        let settings = settings.clone();
+        let core_for_nav = core.clone();
+        let file_for_cdp = file_path_owned.clone();
+        let done_tx_for_cdp = done_tx.clone();
 
         let nav_handler = NavigationCompletedEventHandler::create(Box::new(
             move |_sender: Option<ICoreWebView2>,
@@ -162,57 +124,105 @@ fn setup_and_print(
                     }
                     None => false,
                 };
-                if is_ok {
-                    let path_wide: Vec<u16> =
-                        file_path.encode_utf16().chain(std::iter::once(0)).collect();
-                    let print_tx = print_tx.clone();
-                    let print_handler = PrintToPdfCompletedHandler::create(Box::new(
-                        move |errorcode, result| {
-                            // `errorcode` is `Result<()>`, `result` is already a `bool`
-                            // (converted from BOOL by webview2-com's handler shim).
-                            let message = if errorcode.is_ok() && result {
-                                Ok(true)
-                            } else {
-                                Err(format!(
-                                    "PrintToPdf failed (hresult {errorcode:#?}, success {result})"
-                                ))
-                            };
-                            let _ = print_tx.send(message);
-                            Ok(())
-                        },
-                    ));
-                    unsafe {
-                        let _ = webview.PrintToPdf(
-                            PCWSTR(path_wide.as_ptr()),
-                            &settings,
-                            &print_handler,
-                        );
-                    }
-                    let _ = nav_tx.send(Ok(()));
-                } else {
-                    let msg =
-                        "the webview navigation to the document failed or was cancelled".to_string();
-                    let _ = nav_tx.send(Err(msg.clone()));
-                    let _ = print_tx.send(Err(msg));
+                if !is_ok {
+                    let _ = done_tx_for_cdp.send(Err("webview navigation failed".to_string()));
+                    return Ok(());
+                }
+
+                // Wait for render to complete
+                std::thread::sleep(std::time::Duration::from_secs(2));
+
+                // Enable the Page domain
+                let enable_method: Vec<u16> = "Page.enable".encode_utf16().chain(std::iter::once(0)).collect();
+                let enable_params: Vec<u16> = "{}".encode_utf16().chain(std::iter::once(0)).collect();
+                let enable_handler = webview2_com::CallDevToolsProtocolMethodCompletedHandler::create(Box::new(
+                    move |_result: Result<(), windows_core::Error>, _result_json: String| Ok(()),
+                ));
+                unsafe {
+                    let _ = core_for_nav.CallDevToolsProtocolMethod(
+                        PCWSTR(enable_method.as_ptr()),
+                        PCWSTR(enable_params.as_ptr()),
+                        &enable_handler,
+                    );
+                }
+                std::thread::sleep(std::time::Duration::from_millis(500));
+
+                // Call Page.printToPDF
+                let params_json = format!(
+                    "{{\"landscape\":false,\"displayHeaderFooter\":false,\"printBackground\":true,\"paperWidth\":{w},\"paperHeight\":{h},\"marginTop\":0,\"marginBottom\":0,\"marginLeft\":0,\"marginRight\":0,\"preferCSSPageSize\":false}}",
+                    w = paper_w,
+                    h = paper_h,
+                );
+
+                let method_wide: Vec<u16> = "Page.printToPDF".encode_utf16().chain(std::iter::once(0)).collect();
+                let params_wide: Vec<u16> = params_json.encode_utf16().chain(std::iter::once(0)).collect();
+
+                let file_for_cdp_inner = file_for_cdp.clone();
+                let done_tx_for_cdp_inner = done_tx_for_cdp.clone();
+                let cdp_handler = webview2_com::CallDevToolsProtocolMethodCompletedHandler::create(Box::new(
+                    move |_result: Result<(), windows_core::Error>, result_json: String| {
+                        match serde_json::from_str::<serde_json::Value>(&result_json) {
+                            Ok(val) => {
+                                if let Some(data_b64) = val.get("data").and_then(|v| v.as_str()) {
+                                    match base64::Engine::decode(
+                                        &base64::engine::general_purpose::STANDARD,
+                                        data_b64,
+                                    ) {
+                                        Ok(pdf_bytes) => {
+                                            if let Err(e) = std::fs::write(&file_for_cdp_inner, &pdf_bytes) {
+                                                let _ = done_tx_for_cdp_inner.send(Err(format!("failed to write PDF: {e}")));
+                                            } else {
+                                                let _ = done_tx_for_cdp_inner.send(Ok(file_for_cdp_inner));
+                                            }
+                                        }
+                                        Err(e) => {
+                                            let _ = done_tx_for_cdp_inner.send(Err(format!("base64 decode error: {e}")));
+                                        }
+                                    }
+                                } else {
+                                    let _ = done_tx_for_cdp_inner.send(Err(format!("unexpected CDP response: {result_json}")));
+                                }
+                            }
+                            Err(e) => {
+                                let _ = done_tx_for_cdp_inner.send(Err(format!("JSON parse error: {e}")));
+                            }
+                        }
+                        Ok(())
+                    },
+                ));
+
+                unsafe {
+                    let _ = core_for_nav.CallDevToolsProtocolMethod(
+                        PCWSTR(method_wide.as_ptr()),
+                        PCWSTR(params_wide.as_ptr()),
+                        &cdp_handler,
+                    );
                 }
                 Ok(())
             },
         ));
 
-        let mut token = 0;
+        let mut nav_token = 0;
         unsafe {
-            core.add_NavigationCompleted(&nav_handler, &mut token)?;
+            core.add_NavigationCompleted(&nav_handler, &mut nav_token)?;
         }
-        let url_wide: Vec<u16> = url.encode_utf16().chain(std::iter::once(0)).collect();
+
+        // Navigate to a data: URL with the HTML content
+        let encoded: String = html_owned.bytes().map(|b| match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' | b'!' | b'*' | b'\'' | b'(' | b')' => (b as char).to_string(),
+            b' ' => "%20".to_string(),
+            _ => format!("%{:02X}", b),
+        }).collect();
+        let data_url = format!("data:text/html;charset=utf-8,{}", encoded);
+        let data_url_wide: Vec<u16> = data_url.encode_utf16().chain(std::iter::once(0)).collect();
         unsafe {
-            core.Navigate(PCWSTR(url_wide.as_ptr()))?;
+            core.Navigate(PCWSTR(data_url_wide.as_ptr()))?;
         }
         Ok(())
     })();
 
     if let Err(e) = result {
         let msg = format!("failed to set up WebView2 PDF export: {e}");
-        let _ = nav_tx.send(Err(msg.clone()));
-        let _ = print_tx.send(Err(msg));
+        let _ = done_tx_for_nav_err.send(Err(msg));
     }
 }
