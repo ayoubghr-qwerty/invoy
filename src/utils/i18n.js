@@ -183,6 +183,12 @@ export const translations = {
     clear_all_hint: 'Supprime définitivement tous les clients, compteurs, produits, marchandises et paramètres. L\'application sera vierge.',
     clear_all_confirm: 'ATTENTION : cette action est irréversible. Toutes vos données seront supprimées (clients, compteurs, produits, marchandises, paramètres). Confirmer ?',
     clear_all_ok: 'Toutes les données ont été supprimées',
+    // Error boundary
+    error_title: 'Une erreur est survenue',
+    error_subtitle: 'L\'application a rencontré un problème inattendu.',
+    error_reload: 'Recharger la page',
+    error_details: 'Détails de l\'erreur',
+
     // Back / navigation
     btn_back: 'Retour à la liste',
     btn_saving: 'Enregistrement...',
@@ -559,6 +565,12 @@ export const translations = {
     clear_all_hint: 'يحذف نهائيًا جميع العملاء والعدادات والمنتجات والبضائع والإعدادات. سيكون التطبيق نظيفاً.',
     clear_all_confirm: 'تحذير: هذا الإجراء لا يمكن التراجع عنه. ستُحذف جميع بياناتك. تأكيد؟',
     clear_all_ok: 'تم حذف جميع البيانات',
+    // Error boundary
+    error_title: 'حدث خطأ',
+    error_subtitle: 'واجه التطبيق مشكلة غير متوقعة.',
+    error_reload: 'إعادة تحميل الصفحة',
+    error_details: 'تفاصيل الخطأ',
+
     // Back / navigation
     btn_back: 'العودة إلى القائمة',
     btn_saving: 'جارٍ الحفظ...',

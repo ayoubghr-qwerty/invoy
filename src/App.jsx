@@ -10,6 +10,7 @@ import BonVersement from './pages/BonVersement';
 import Parametres from './pages/Parametres';
 import Marchandise from './pages/Marchandise';
 import Produits from './pages/Produits';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function InvoiceIcon({ size = 28, color = 'white' }) {
   return (
@@ -71,6 +72,11 @@ export default function App() {
     setLangState(l);
     const current = await window.api.storeGet('settings', {});
     await window.api.storeSet('settings', { ...current, langue: l });
+  }
+
+  function ErrorBoundaryWrapper({ children }) {
+    const { lang } = useLang();
+    return <ErrorBoundary lang={lang}>{children}</ErrorBoundary>;
   }
 
   function showToast(msg, type = 'success') {
@@ -181,16 +187,18 @@ export default function App() {
               <div className="animate-pulse text-slate-400 text-sm">{T('loading')}</div>
             </div>
           ) : (
-            <div key={page} className="page-enter">
-              {page === 'facture'    && <FactureProforma settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='facture' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
-              {page === 'clients'    && <Clients         settings={settings} showToast={showToast} onLoadFromHistory={loadFromHistory} />}
-              {page === 'programme'  && <ProgrammeLivraison settings={settings} showToast={showToast} />}
-              {page === 'livraison'  && <BonLivraison    settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='livraison' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
-              {page === 'versement'  && <BonVersement    settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='versement' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
-              {page === 'marchandise'&& <Marchandise settings={settings} showToast={showToast} />}
-              {page === 'produits'   && <Produits showToast={showToast} />}
-              {page === 'parametres' && <Parametres      settings={settings} onSave={loadSettings} showToast={showToast} />}
-            </div>
+            <ErrorBoundaryWrapper>
+              <div key={page} className="page-enter">
+                {page === 'facture'    && <FactureProforma settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='facture' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
+                {page === 'clients'    && <Clients         settings={settings} showToast={showToast} onLoadFromHistory={loadFromHistory} />}
+                {page === 'programme'  && <ProgrammeLivraison settings={settings} showToast={showToast} />}
+                {page === 'livraison'  && <BonLivraison    settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='livraison' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
+                {page === 'versement'  && <BonVersement    settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='versement' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
+                {page === 'marchandise'&& <Marchandise settings={settings} showToast={showToast} />}
+                {page === 'produits'   && <Produits showToast={showToast} />}
+                {page === 'parametres' && <Parametres      settings={settings} onSave={loadSettings} showToast={showToast} />}
+              </div>
+            </ErrorBoundaryWrapper>
           )}
         </main>
 
