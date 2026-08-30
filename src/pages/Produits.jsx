@@ -33,7 +33,7 @@ export default function Produits({ showToast }) {
     const current = await window.api.storeGet('produits', []);
     const list = Array.isArray(current) ? current : [];
     if (list.some(p => p.toLowerCase() === val.toLowerCase())) {
-      showToast('Désignation déjà dans la liste', 'error');
+      showToast(T('produit_dup'), 'error');
       return;
     }
     const updated = [...list, val].sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
@@ -62,7 +62,7 @@ export default function Produits({ showToast }) {
     if (!val || val === originalValue) return;
     // Check duplicate
     if (produits.some(p => p !== originalValue && p.toLowerCase() === val.toLowerCase())) {
-      showToast('Désignation déjà dans la liste', 'error');
+      showToast(T('produit_dup'), 'error');
       return;
     }
     const updated = produits
@@ -70,7 +70,7 @@ export default function Produits({ showToast }) {
       .sort((a, b) => a.localeCompare(b, 'fr', { sensitivity: 'base' }));
     await window.api.storeSet('produits', updated);
     setProduits(updated);
-    showToast('Désignation mise à jour');
+    showToast(T('produit_updated'));
   }
 
   function cancelEdit() {
@@ -123,7 +123,7 @@ export default function Produits({ showToast }) {
             className="form-input w-full"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher un produit..."
+            placeholder={T('search_produit')}
           />
         </div>
       )}
@@ -150,7 +150,7 @@ export default function Produits({ showToast }) {
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="text-center py-8 text-slate-400 italic">
-                    Aucun résultat pour «&nbsp;{search}&nbsp;»
+                    {T('no_results')} «&nbsp;{search}&nbsp;»
                   </td>
                 </tr>
               ) : filtered.map((p, i) => (
@@ -176,7 +176,7 @@ export default function Produits({ showToast }) {
                         className="cursor-pointer hover:underline"
                         style={{ color: 'var(--text-primary)' }}
                         onClick={() => startEdit(p)}
-                        title="Cliquer pour modifier"
+                        title={T('click_to_edit')}
                       >
                         {p}
                       </span>

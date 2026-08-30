@@ -102,7 +102,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
     try {
       const result = await window.api.readExcel();
       if (!result) { setXlsModal(false); return; }
-      if (result.error) { showToast('Erreur: ' + result.error, 'error'); setXlsModal(false); return; }
+      if (result.error) {         showToast(T('xls_read_error') + result.error, 'error'); setXlsModal(false); return; }
       setXlsData(result);
       result.headers.forEach(h => {
         const hl = h.toLowerCase();
@@ -128,11 +128,11 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
         telephones: telIdx >= 0 && row[telIdx] ? [row[telIdx]] : [''],
         agrement: '', nif: '', articlesImp: '', nis: '',
       })).filter(c => c.nom.trim());
-      if (!newC.length) { showToast('Aucun client valide', 'error'); return; }
+      if (!newC.length) { showToast(T('xls_no_valid'), 'error'); return; }
       await saveClients([...clients, ...newC]);
       setXlsModal(false);
       showToast(`${newC.length} client(s) importé(s)`);
-    } catch (e) { showToast('Erreur import: ' + e.message, 'error');
+    } catch (e) {       showToast(T('xls_read_error') + e.message, 'error');
     } finally { setXlsImporting(false); }
   }
 
@@ -153,7 +153,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
       <label className="form-label">{label}{required && <span className="text-red-500 ml-1">*</span>}</label>
       <div className="relative">
         <select className="form-input w-full appearance-none pr-8" value={value} onChange={e => onChange(e.target.value)}>
-          <option value="">— Ignorer —</option>
+          <option value="">{T('col_select_ignore')}</option>
           {xlsData?.headers.map(h => <option key={h} value={h}>{h}</option>)}
         </select>
         <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
@@ -167,42 +167,42 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
       <div className="p-8 max-w-5xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <button onClick={goBack}
-              className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border transition-colors hover:bg-slate-50"
-              style={{color:'var(--text-secondary)',borderColor:'var(--border-color)'}}>
-              <ArrowLeft size={16}/> Retour à la liste
-            </button>
+              <button onClick={goBack}
+                className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border transition-colors hover:bg-slate-50"
+                style={{color:'var(--text-secondary)',borderColor:'var(--border-color)'}}>
+                <ArrowLeft size={16}/> {T('btn_back')}
+              </button>
             <div>
               <h1 className="text-2xl font-bold" style={{color:'var(--text-primary)'}}>
                 {editIdx === null ? T('new_client') : form.nom || T('edit_client')}
               </h1>
               {editIdx !== null && (
                 <p className="text-sm mt-0.5" style={{color:'var(--text-muted)'}}>
-                  {clientHistory.length} document{clientHistory.length !== 1 ? 's' : ''} dans l'historique
+                  {clientHistory.length} {T('history_count')}
                 </p>
               )}
             </div>
           </div>
           <div className="flex gap-2">
-            {editIdx !== null && (
-              <button onClick={() => deleteClient(editIdx)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors hover:bg-red-50 hover:text-red-600 hover:border-red-300"
-                style={{color:'var(--text-secondary)',borderColor:'var(--border-color)'}}>
-                <Trash2 size={15}/> Supprimer
-              </button>
-            )}
-            {activeTab === 'info' && (
-              <button onClick={saveClient} disabled={saving} className="btn-primary">
-                <Save size={15}/> {saving ? 'Enregistrement...' : T('btn_save')}
-              </button>
-            )}
+                {editIdx !== null && (
+                  <button onClick={() => deleteClient(editIdx)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                    style={{color:'var(--text-secondary)',borderColor:'var(--border-color)'}}>
+                    <Trash2 size={15}/> {T('delete')}
+                  </button>
+                )}
+                {activeTab === 'info' && (
+                  <button onClick={saveClient} disabled={saving} className="btn-primary">
+                    <Save size={15}/> {saving ? T('btn_saving') : T('btn_save')}
+                  </button>
+                )}
           </div>
         </div>
 
         <div className="flex border-b mb-6" style={{borderColor:'var(--border-color)'}}>
           {[
-            { id: 'info', label: 'Informations', icon: <Save size={14}/> },
-            ...(editIdx !== null ? [{ id: 'historique', label: `Historique (${clientHistory.length})`, icon: <Clock size={14}/> }] : []),
+            { id: 'info', label: T('tab_info'), icon: <Save size={14}/> },
+            ...(editIdx !== null ? [{ id: 'historique', label: `${T('tab_history')} (${clientHistory.length})`, icon: <Clock size={14}/> }] : []),
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               className="flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors"
@@ -261,8 +261,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
             {clientHistory.length === 0 ? (
               <div className="card text-center py-16">
                 <Receipt size={36} className="mx-auto mb-3 text-slate-300"/>
-                <p className="font-medium text-slate-500">Aucun document enregistré</p>
-                <p className="text-sm text-slate-400 mt-1">Les factures et bons apparaîtront ici après export.</p>
+                <p className="font-medium text-slate-500">{T('no_doc_history')}</p>
+                <p className="text-sm text-slate-400 mt-1">{T('no_doc_history_sub')}</p>
               </div>
             ) : (
               <div className="card p-0 overflow-hidden">
@@ -293,7 +293,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                           </td>
                           <td className="px-4 py-2.5 font-mono font-semibold" style={{color:'var(--text-primary)'}}>N° {h.numero}</td>
                           <td className="px-4 py-2.5 whitespace-nowrap" style={{color:'var(--text-secondary)'}}>{new Date(h.date).toLocaleDateString('fr-DZ')}</td>
-                          <td className="px-4 py-2.5 text-xs" style={{color:'var(--text-muted)'}}>{articleCount} article{articleCount>1?'s':''}</td>
+                          <td className="px-4 py-2.5 text-xs" style={{color:'var(--text-muted)'}}>{articleCount} {T('field_articles')} {articleCount>1?'s':''}</td>
                           <td className="px-4 py-2.5 text-right text-xs" style={{color:'var(--text-secondary)'}}>{ht.toLocaleString('fr-DZ',{minimumFractionDigits:2})}</td>
                           <td className="px-4 py-2.5 text-right text-xs" style={{color:tva>0?'#f59e0b':'var(--text-muted)'}}>{tva>0?tva.toLocaleString('fr-DZ',{minimumFractionDigits:2}):'—'}</td>
                           <td className="px-4 py-2.5 text-right font-bold" style={{color:primary}}>{(h.montant||0).toLocaleString('fr-DZ',{minimumFractionDigits:2})}</td>
@@ -301,7 +301,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                             <button onClick={() => setHistDetail(h)}
                               className="text-xs px-2 py-1 rounded-lg border transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
                               style={{color:'var(--text-secondary)',borderColor:'var(--border-color)'}}>
-                              Détail
+                              {T('detail_label')}
                             </button>
                           </td>
                         </tr>
@@ -329,7 +329,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 space-y-5">
                   <div className="rounded-xl p-4" style={{background:'var(--bg-alt)',border:'1px solid var(--border-color)'}}>
-                    <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{color:'var(--text-muted)'}}>Client</p>
+                    <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{color:'var(--text-muted)'}}>{T('sec_client_info')}</p>
                     <p className="font-semibold" style={{color:'var(--text-primary)'}}>{histDetail.clientNom}</p>
                     {histDetail.client?.adresse && <p className="text-sm" style={{color:'var(--text-secondary)'}}>{histDetail.client.adresse}</p>}
                     {(histDetail.client?.telephones||[]).filter(Boolean).length > 0 && (
@@ -337,13 +337,13 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                     )}
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{color:'var(--text-muted)'}}>Articles</p>
+                    <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{color:'var(--text-muted)'}}>{T('sec_articles')}</p>
                     <div className="rounded-xl overflow-hidden border" style={{borderColor:'var(--border-color)'}}>
                       <table className="w-full text-sm">
                         <thead>
                           <tr style={{background:'var(--bg-alt)'}}>
-                            <th className="px-3 py-2 text-left font-semibold" style={{color:'var(--text-secondary)'}}>Désignation</th>
-                            <th className="px-3 py-2 text-center font-semibold w-20" style={{color:'var(--text-secondary)'}}>Qté</th>
+                            <th className="px-3 py-2 text-left font-semibold" style={{color:'var(--text-secondary)'}}>{T('col_designation')}</th>
+                            <th className="px-3 py-2 text-center font-semibold w-20" style={{color:'var(--text-secondary)'}}>{T('col_quantite')}</th>
                             <th className="px-3 py-2 text-right font-semibold w-28" style={{color:'var(--text-secondary)'}}>Prix Unit.</th>
                             <th className="px-3 py-2 text-right font-semibold w-28" style={{color:'var(--text-secondary)'}}>Montant</th>
                           </tr>
@@ -363,7 +363,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                   </div>
                   <div className="flex gap-4 items-start flex-wrap">
                     <div className="flex-1 rounded-xl overflow-hidden border min-w-[240px]" style={{borderColor:'var(--border-color)'}}>
-                      <div className="px-3 py-2 text-xs font-bold uppercase tracking-wide" style={{background:'var(--bg-alt)',color:'var(--text-muted)',borderBottom:'1px solid var(--border-color)'}}>Récapitulatif</div>
+                          <div className="px-3 py-2 text-xs font-bold uppercase tracking-wide" style={{background:'var(--bg-alt)',color:'var(--text-muted)',borderBottom:'1px solid var(--border-color)'}}>{T('recap_label')}</div>
                       <div className="flex justify-between px-4 py-2 border-b" style={{borderColor:'var(--border-color)'}}>
                         <span className="text-sm" style={{color:'var(--text-secondary)'}}>Total HT</span>
                         <span className="font-medium" style={{color:'var(--text-primary)'}}>
@@ -388,7 +388,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                       </div>
                       {histDetail.montantVerse!=null && (
                         <div className="flex justify-between px-4 py-2 border-t" style={{borderColor:'var(--border-color)'}}>
-                          <span className="text-sm" style={{color:'var(--text-secondary)'}}>Montant versé</span>
+                          <span className="text-sm" style={{color:'var(--text-secondary)'}}>{T('montant_verse')}</span>
                           <span className="font-semibold" style={{color:'var(--text-primary)'}}>{(histDetail.montantVerse||0).toLocaleString('fr-DZ',{minimumFractionDigits:2})} DA</span>
                         </div>
                       )}
@@ -397,7 +397,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                       <div className="flex flex-col gap-2 min-w-[180px]">
                         {histDetail.modeReglement && (
                           <div className="rounded-lg px-3 py-2 text-sm" style={{background:'var(--bg-alt)',border:'1px solid var(--border-color)'}}>
-                            <span style={{color:'var(--text-muted)'}}>Règlement : </span>
+                            <span style={{color:'var(--text-muted)'}}>{T('mode_reglement')} : </span>
                             <span className="font-medium" style={{color:'var(--text-primary)'}}>{histDetail.modeReglement==='cheque'?'Chèque':'Espèce'}</span>
                           </div>
                         )}
@@ -419,12 +419,12 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                 </div>
                 <div className="flex justify-between items-center gap-3 px-6 py-4 border-t flex-shrink-0" style={{background:'var(--bg-alt)',borderColor:'var(--border-color)'}}>
                   <p className="text-xs" style={{color:'var(--text-muted)'}}>
-                    Exporté le {new Date(histDetail.createdAt).toLocaleDateString('fr-DZ')} à {new Date(histDetail.createdAt).toLocaleTimeString('fr-DZ',{hour:'2-digit',minute:'2-digit'})}
+                    {T('export_info')} {new Date(histDetail.createdAt).toLocaleDateString('fr-DZ')} {T('export_at')} {new Date(histDetail.createdAt).toLocaleTimeString('fr-DZ',{hour:'2-digit',minute:'2-digit'})}
                   </p>
                   <div className="flex gap-2">
-                    <button onClick={() => setHistDetail(null)} className="btn-secondary">Fermer</button>
+                    <button onClick={() => setHistDetail(null)} className="btn-secondary">{T('close')}</button>
                     <button onClick={() => { setHistDetail(null); onLoadFromHistory?.(histDetail); }} className="btn-primary" style={{background:typeColor}}>
-                      <Receipt size={14}/> Recharger dans la page
+                      <Receipt size={14}/> {T('reload_history')}
                     </button>
                   </div>
                 </div>
@@ -445,14 +445,14 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
           <p className="text-slate-500 text-sm mt-1">{clients.length} {clients.length!==1?T('sub_clients_plural'):T('sub_clients')}</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={openXlsModal} className="btn-secondary"><FileSpreadsheet size={16}/> Importer Excel</button>
+          <button onClick={openXlsModal} className="btn-secondary"><FileSpreadsheet size={16}/> {T('btn_import_excel')}</button>
           <button onClick={openNew} className="btn-primary"><Plus size={16}/> {T('btn_new_client')}</button>
         </div>
       </div>
 
       {clients.length > 10 && (
         <div className="mb-4">
-          <input className="form-input w-full max-w-sm" value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher un client..."/>
+          <input className="form-input w-full max-w-sm" value={search} onChange={e => setSearch(e.target.value)} placeholder={T('search_client')}/>
         </div>
       )}
 
@@ -462,7 +462,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
           <p className="text-slate-500 font-medium">{T('no_clients')}</p>
           <p className="text-slate-400 text-sm mt-1">{T('no_clients_sub')}</p>
           <div className="flex gap-3 justify-center mt-4">
-            <button onClick={openXlsModal} className="btn-secondary"><FileSpreadsheet size={16}/> Importer Excel</button>
+            <button onClick={openXlsModal} className="btn-secondary"><FileSpreadsheet size={16}/> {T('btn_import_excel')}</button>
             <button onClick={openNew} className="btn-primary"><Plus size={16}/> {T('add_first_client')}</button>
           </div>
         </div>
@@ -481,7 +481,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-8 text-slate-400 italic">Aucun résultat pour «&nbsp;{search}&nbsp;»</td></tr>
+                <tr><td colSpan={6} className="text-center py-8 text-slate-400 italic">{T('client_history_empty')} «&nbsp;{search}&nbsp;»</td></tr>
               )}
               {filtered.map((c, i) => (
                 <tr key={c.id||i} className={`hover:bg-slate-50 cursor-pointer${i%2===1?' table-row-alt':''}`}
@@ -514,24 +514,24 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
         <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",zIndex:50,display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",background:"rgba(0,0,0,0.45)",backdropFilter:"blur(3px)"}}>
           <div className="rounded-2xl shadow-2xl w-full max-w-2xl mx-auto overflow-hidden flex flex-col" style={{maxHeight:'88vh',background:'var(--bg-card)',border:'1px solid var(--border-color)'}}>
             <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0" style={{background:primary}}>
-              <h2 className="text-white font-bold text-lg flex items-center gap-2"><FileSpreadsheet size={18}/> Importer depuis Excel</h2>
+              <h2 className="text-white font-bold text-lg flex items-center gap-2"><FileSpreadsheet size={18}/> {T('xls_import_title')}</h2>
               <button onClick={() => setXlsModal(false)} className="text-white/70 hover:text-white"><X size={20}/></button>
             </div>
             <div className="p-6 overflow-y-auto space-y-5">
-              {xlsLoading && <div className="text-center py-8 text-slate-500">Lecture du fichier en cours...</div>}
-              {!xlsLoading && !xlsData && <div className="text-center py-4 text-slate-400">Aucun fichier sélectionné.</div>}
+              {xlsLoading && <div className="text-center py-8 text-slate-500">{T('xls_reading')}</div>}
+              {!xlsLoading && !xlsData && <div className="text-center py-4 text-slate-400">{T('xls_no_file')}</div>}
               {!xlsLoading && xlsData && (
                 <>
                   <div>
-                    <p className="section-title mb-4">Associer les colonnes</p>
+                    <p className="section-title mb-4">{T('xls_select_col')}</p>
                     <div className="space-y-3">
-                      <ColSelect label="Colonne Nom" value={mapNom} onChange={setMapNom} required/>
-                      <ColSelect label="Colonne Adresse" value={mapAdresse} onChange={setMapAdresse}/>
-                      <ColSelect label="Colonne Téléphone" value={mapTel} onChange={setMapTel}/>
+                      <ColSelect label={T('col_nom')} value={mapNom} onChange={setMapNom} required/>
+                      <ColSelect label={T('col_adresse')} value={mapAdresse} onChange={setMapAdresse}/>
+                      <ColSelect label={T('col_telephone')} value={mapTel} onChange={setMapTel}/>
                     </div>
                   </div>
                   <div>
-                    <p className="section-title mb-3">Aperçu (5 premières lignes)</p>
+                    <p className="section-title mb-3">{T('xls_preview_title')}</p>
                     <div className="overflow-x-auto rounded-lg border" style={{borderColor:'var(--border-color)'}}>
                       <table className="w-full text-xs">
                         <thead>
@@ -540,8 +540,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                               <th key={h} className="px-3 py-2 text-left font-semibold" style={{color:'var(--text-secondary)',borderBottom:'1px solid var(--border-color)'}}>
                                 {h}
                                 {h===mapNom && <span className="ml-1 text-blue-500">←Nom</span>}
-                                {h===mapAdresse && <span className="ml-1 text-green-500">←Adresse</span>}
-                                {h===mapTel && <span className="ml-1 text-orange-500">←Tél</span>}
+                                {h===mapAdresse && <span className="ml-1 text-green-500">←{T('col_adresse')}</span>}
+                                {h===mapTel && <span className="ml-1 text-orange-500">←{T('field_telephone')}</span>}
                               </th>
                             ))}
                           </tr>
@@ -557,7 +557,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                         </tbody>
                       </table>
                     </div>
-                    <p className="text-xs text-slate-400 mt-2">{xlsData.data.length} ligne(s) au total.</p>
+                    <p className="text-xs text-slate-400 mt-2">{xlsData.data.length} {T('xls_total_rows')}</p>
                   </div>
                 </>
               )}
@@ -565,8 +565,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
             <div className="flex justify-end gap-3 px-6 py-4 border-t flex-shrink-0" style={{background:'var(--bg-alt)',borderColor:'var(--border-color)'}}>
               <button onClick={() => setXlsModal(false)} className="btn-secondary">{T('btn_cancel')}</button>
               {xlsData && (
-                <button onClick={doImport} disabled={!mapNom||xlsImporting} className="btn-primary">
-                  <FileSpreadsheet size={14}/> {xlsImporting?'Importation...':`Importer ${xlsData.data.length} ligne(s)`}
+                  <button onClick={doImport} disabled={!mapNom||xlsImporting} className="btn-primary">
+                    <FileSpreadsheet size={14}/> {xlsImporting?T('xls_importing'):`${T('xls_import_count_prefix')}${xlsData.data.length}${T('xls_import_count_suffix')}`}
                 </button>
               )}
             </div>

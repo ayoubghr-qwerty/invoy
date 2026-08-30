@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { Plus, ChevronDown, X } from 'lucide-react';
 import ArticlesTable from '../components/ArticlesTable';
 import ClientSelect from '../components/ClientSelect';
+import PageSizeSelect from '../components/PageSizeSelect';
 import { buildProgrammePdf } from '../utils/pdfTemplate';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
-
-function todayIso() { return new Date().toISOString().slice(0, 10); }
+import { todayIso } from '../utils/helpers';
 
 const EMPTY_CLIENT = () => ({
   id: Date.now() + Math.random(),
@@ -95,20 +95,7 @@ export default function ProgrammeLivraison({ settings, showToast }) {
               <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} />
             </div>
             <div>
-              <label className="form-label">{T('field_taille_pdf')}</label>
-              <div className="flex gap-2 mt-1">
-                {['A4', 'A5'].map(s => (
-                  <button key={s} onClick={() => setPageSize(s)}
-                    className="flex-1 py-2 rounded-lg border text-sm font-bold transition-all"
-                    style={{
-                      background: pageSize === s ? docColor : 'var(--bg-input)',
-                      color: pageSize === s ? 'white' : 'var(--text-secondary)',
-                      borderColor: pageSize === s ? docColor : 'var(--border-input)',
-                    }}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+              <PageSizeSelect value={pageSize} onChange={setPageSize} color={docColor} />
             </div>
           </div>
         </div>

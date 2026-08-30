@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, X } from 'lucide-react';
 import ArticlesTable from '../components/ArticlesTable';
 import ClientSelect from '../components/ClientSelect';
+import PageSizeSelect from '../components/PageSizeSelect';
+import PhoneSection from '../components/PhoneSection';
 import { buildBonLivraisonPdf } from '../utils/pdfTemplate';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
 import { saveToHistory } from '../utils/history';
-
-function todayIso() { return new Date().toISOString().slice(0, 10); }
+import { todayIso, saveClientIfNew } from '../utils/helpers';
 
 export default function BonLivraison({ settings, showToast, pendingLoad, onLoadConsumed }) {
   const { lang } = useLang();
@@ -48,14 +48,6 @@ export default function BonLivraison({ settings, showToast, pendingLoad, onLoadC
 
   const total = articles.reduce((s, a) => s + (parseFloat(a.montant) || 0), 0);
 
-  async function saveClientIfNew() {
-    if (!client.nom.trim()) return;
-    const existing = await window.api.storeGet('clients', []);
-    if (!existing.find(c => c.nom.toLowerCase() === client.nom.toLowerCase())) {
-      await window.api.storeSet('clients', [...existing, { ...client, id: Date.now() }]);
-    }
-  }
-
   async function exportDoc(format) {
     if (!articles.length) { showToast(T('add_article_error'), 'error'); return; }
     const counters = await window.api.storeGet('counters', {});
@@ -77,7 +69,7 @@ export default function BonLivraison({ settings, showToast, pendingLoad, onLoadC
         result = await window.api.exportPdf({ htmlContent: buildBonLivraisonPdf(docData, settings), filePath, pageSize });
       }
       if (result.success) {
-        await saveClientIfNew();
+        await saveClientIfNew(client);
         if (!isManual) {
           await window.api.storeSet('counters', { ...counters, bonLivraison: newNum });
           const nextAuto = String(newNum + 1).padStart(4, '0');
@@ -113,20 +105,7 @@ export default function BonLivraison({ settings, showToast, pendingLoad, onLoadC
             <div><label className="form-label">{T('field_date')}</label>
               <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} /></div>
             <div>
-              <label className="form-label">{T('field_taille_pdf')}</label>
-              <div className="flex gap-2 mt-1">
-                {['A4', 'A5'].map(s => (
-                  <button key={s} onClick={() => setPageSize(s)}
-                    className="flex-1 py-2 rounded-lg border text-sm font-bold transition-all"
-                    style={{
-                      background: pageSize === s ? docColor : 'var(--bg-input)',
-                      color: pageSize === s ? 'white' : 'var(--text-secondary)',
-                      borderColor: pageSize === s ? docColor : 'var(--border-input)',
-                    }}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+              <PageSizeSelect value={pageSize} onChange={setPageSize} color={docColor} />
             </div>
           </div>
         </div>
@@ -139,26 +118,7 @@ export default function BonLivraison({ settings, showToast, pendingLoad, onLoadC
               <input className="form-input" value={client.nom} onChange={e => setClient(c => ({ ...c, nom: e.target.value }))} /></div>
             <div><label className="form-label">{T('field_adresse')}</label>
               <input className="form-input" value={client.adresse} onChange={e => setClient(c => ({ ...c, adresse: e.target.value }))} /></div>
-            <div className="col-span-2">
-              <label className="form-label">{T('field_telephones')}</label>
-              <div className="space-y-2">
-                {(client.telephones || ['']).map((p, i) => (
-                  <div key={i} className="flex gap-2">
-                    <input className="form-input flex-1" value={p} onChange={e => {
-                      const tt = [...(client.telephones || [''])]; tt[i] = e.target.value;
-                      setClient(c => ({ ...c, telephones: tt }));
-                    }} placeholder={`${T('field_telephone')} ${i + 1}`} />
-                    {(client.telephones || []).length > 1 && (
-                      <button onClick={() => setClient(c => ({ ...c, telephones: c.telephones.filter((_, idx) => idx !== i) }))} className="btn-danger p-2"><X size={14} /></button>
-                    )}
-                  </div>
-                ))}
-                <button onClick={() => setClient(c => ({ ...c, telephones: [...(c.telephones || ['']), ''] }))}
-                  className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800">
-                  <Plus size={13} /> {T('btn_add_phone')}
-                </button>
-              </div>
-            </div>
+            <PhoneSection phones={client.telephones || ['']} onChange={tt => setClient(c => ({ ...c, telephones: tt }))} />
           </div>
         </div>
 

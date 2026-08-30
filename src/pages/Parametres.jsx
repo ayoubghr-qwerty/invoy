@@ -41,7 +41,7 @@ export default function Parametres({ settings, onSave, showToast }) {
   ];
 
   async function resetOneCounter(key) {
-    if (!confirm(`Réinitialiser le compteur "${COUNTER_DOCS.find(d=>d.key===key)?.label}" à zéro ?`)) return;
+    if (!confirm(`${T('reset_counter_confirm')} "${COUNTER_DOCS.find(d=>d.key===key)?.label}" ?`)) return;
     const updated = { ...counters, [key]: 0 };
     await window.api.storeSet('counters', updated);
     setCounters(updated);
@@ -386,7 +386,7 @@ export default function Parametres({ settings, onSave, showToast }) {
                 onClick={() => resetOneCounter(key)}
                 className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-colors hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300"
                 style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
-                <RotateCcw size={12} /> Réinitialiser
+                <RotateCcw size={12} /> {T('reset')}
               </button>
             </div>
           ))}

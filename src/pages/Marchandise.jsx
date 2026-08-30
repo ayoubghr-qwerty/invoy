@@ -3,8 +3,7 @@ import { Download, Plus, X, ShoppingCart, Trash2, ChevronLeft, Clock } from 'luc
 import { buildMarchandisePdf } from '../utils/pdfTemplate';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
-
-function todayIso() { return new Date().toISOString().slice(0, 10); }
+import { todayIso } from '../utils/helpers';
 function fmtDate(d) {
   if (!d) return '';
   const dt = new Date(d);
@@ -281,7 +280,7 @@ export default function Marchandise({ settings, showToast }) {
           <button onClick={addProduit}
             className="mt-4 w-full py-3 rounded-xl border-2 border-dashed text-sm font-medium transition-all"
             style={{ borderColor: `${docColor}50`, color: docColor, background: `${docColor}08` }}>
-            <Plus size={14} className="inline mr-1" /> Ajouter un produit
+            <Plus size={14} className="inline mr-1" /> {T('btn_add_produit')}
           </button>
         </div>
       </div>

@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { FileText, Download, Plus, X } from 'lucide-react';
 import ArticlesTable from '../components/ArticlesTable';
 import ClientSelect from '../components/ClientSelect';
+import PhoneSection from '../components/PhoneSection';
 import { numberToWordsFR } from '../utils/numberToWords';
 import { buildFacturePdf } from '../utils/pdfTemplate';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
 import { saveToHistory } from '../utils/history';
-
-function todayIso() { return new Date().toISOString().slice(0, 10); }
+import { todayIso, saveClientIfNew } from '../utils/helpers';
 
 export default function FactureProforma({ settings, showToast, pendingLoad, onLoadConsumed }) {
   const { lang } = useLang();
@@ -77,14 +76,6 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
   const ttc   = htTva + timbre;
   const totaux = { ht, tva, tvaEnabled, tvaTaux, timbre, timbreEnabled: modeReglement === 'espece', ttc };
 
-  async function saveClientIfNew() {
-    if (!client.nom.trim()) return;
-    const existing = await window.api.storeGet('clients', []);
-    if (!existing.find(c => c.nom.toLowerCase() === client.nom.toLowerCase())) {
-      await window.api.storeSet('clients', [...existing, { ...client, id: Date.now() }]);
-    }
-  }
-
   async function exportDoc(format) {
     if (!articles.length) { showToast(T('add_article_error'), 'error'); return; }
     const counters = await window.api.storeGet('counters', {});
@@ -107,7 +98,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
         result = await window.api.exportPdf({ htmlContent: buildFacturePdf(docData, settings), filePath });
       }
       if (result.success) {
-        await saveClientIfNew();
+        await saveClientIfNew(client);
         // Only increment counter if number was auto-generated
         if (!isManual) {
           await window.api.storeSet('counters', { ...counters, facture: newNum });
@@ -125,30 +116,6 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
   }
 
   const docColor = settings?.couleur || '#0f2044';
-
-  function phoneSection() {
-    return (
-      <div className="col-span-2">
-        <label className="form-label">{T('field_telephones')}</label>
-        <div className="space-y-2">
-          {(client.telephones || ['']).map((p, i) => (
-            <div key={i} className="flex gap-2">
-              <input className="form-input flex-1" value={p}
-                onChange={e => { const tt = [...(client.telephones || [''])]; tt[i] = e.target.value; setClient(c => ({ ...c, telephones: tt })); }}
-                placeholder={`${T('field_telephone')} ${i + 1}`} />
-              {(client.telephones || []).length > 1 && (
-                <button onClick={() => setClient(c => ({ ...c, telephones: c.telephones.filter((_, idx) => idx !== i) }))} className="btn-danger p-2"><X size={14} /></button>
-              )}
-            </div>
-          ))}
-          <button onClick={() => setClient(c => ({ ...c, telephones: [...(c.telephones || ['']), ''] }))}
-            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800">
-            <Plus size={13} /> {T('btn_add_phone')}
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="p-8 max-w-5xl">
@@ -227,7 +194,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
               <label className="form-label">{T('field_adresse')}</label>
               <input className="form-input" value={client.adresse} onChange={e => setClient(c => ({ ...c, adresse: e.target.value }))} />
             </div>
-            {phoneSection()}
+            <PhoneSection phones={client.telephones || ['']} onChange={tt => setClient(c => ({ ...c, telephones: tt }))} />
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <p className="form-label mb-3">{T('sec_client_fiscal')}</p>
