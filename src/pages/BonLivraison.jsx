@@ -107,7 +107,7 @@ export default function BonLivraison({ settings, showToast, pendingLoad, onLoadC
               {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
             </ul>
           )}
-          <ExportButton onExport={exportDoc} loading={loading} color={docColor} htmlContent={buildBonLivraisonPdf({ client, articles, total, date, numero: num, settings, pageSize }, settings)} T={T} />
+          <ExportButton onExport={exportDoc} loading={loading} color={docColor} htmlContent={buildBonLivraisonPdf({ client, articles, total, date, numero: num, settings, pageSize }, settings)} T={T} client={client} docTitle={T('title_livraison')} num={num} showToast={showToast} />
         </div>
       </div>
 
