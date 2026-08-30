@@ -121,7 +121,7 @@ export default function Marchandise({ settings, showToast }) {
         pageSize: 'A4',
       });
       if (result.success) {
-        showToast(`Bon de marchandise — exporté en PDF`);
+        showToast(T('marchandise_exported'));
       } else { showToast(`${T('export_error')}: ${result.error}`, 'error'); }
     } finally { setLoading(''); }
   }
@@ -202,7 +202,7 @@ export default function Marchandise({ settings, showToast }) {
         </div>
         <div className="flex gap-2">
           <button onClick={() => setView('list')} className="btn-secondary">
-            <Clock size={16} /> Historique
+            <Clock size={16} /> {T('btn_historique')}
           </button>
           <button onClick={exportPdf} disabled={!!loading} className="btn-secondary">
             <Download size={16} /> {loading === 'pdf' ? T('btn_exporting') : T('btn_export_pdf')}
@@ -239,7 +239,7 @@ export default function Marchandise({ settings, showToast }) {
               <div key={p.id} className="rounded-xl border p-4 relative" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-alt)' }}>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'var(--bg-input)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}>
-                    Produit {idx + 1}
+                    {T('badge_produit')} {idx + 1}
                   </span>
                   {produits.length > 1 && (
                     <button onClick={() => removeProduit(p.id)} className="btn-danger p-1.5">
@@ -252,25 +252,25 @@ export default function Marchandise({ settings, showToast }) {
                     <label className="form-label">{T('field_designation')}</label>
                     <input className="form-input" value={p.designation}
                       onChange={e => updateProduit(p.id, 'designation', e.target.value)}
-                      placeholder="Nom du produit" />
+                      placeholder={T('placeholder_produit_nom')} />
                   </div>
                   <div>
                     <label className="form-label">{T('field_quantite')}</label>
                     <input className="form-input" value={p.quantite}
                       onChange={e => updateProduit(p.id, 'quantite', e.target.value)}
-                      placeholder="Ex: 10 kg" />
+                      placeholder={T('placeholder_produit_qty')} />
                   </div>
                   <div>
                     <label className="form-label">{T('field_description_produit')}</label>
                     <input className="form-input" value={p.description}
                       onChange={e => updateProduit(p.id, 'description', e.target.value)}
-                      placeholder="Description optionnelle" />
+                      placeholder={T('placeholder_produit_desc')} />
                   </div>
                   <div>
                     <label className="form-label">{T('field_lieu_achat')}</label>
                     <input className="form-input" value={p.lieuAchat}
                       onChange={e => updateProduit(p.id, 'lieuAchat', e.target.value)}
-                      placeholder="Ex: Marché central" />
+                      placeholder={T('placeholder_produit_source')} />
                   </div>
                 </div>
               </div>

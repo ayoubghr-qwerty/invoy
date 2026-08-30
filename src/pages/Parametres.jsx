@@ -33,23 +33,23 @@ export default function Parametres({ settings, onSave, showToast }) {
   }
 
   const COUNTER_DOCS = [
-    { key: 'facture',      label: 'Facture Proforma' },
-    { key: 'bonLivraison', label: 'Bon de Livraison' },
-    { key: 'bonVersement', label: 'Bon de Versement' },
-    { key: 'programme',    label: 'Programme de Livraison' },
-    { key: 'marchandise',  label: 'Marchandise' },
+    { key: 'facture',      labelKey: 'counter_facture' },
+    { key: 'bonLivraison', labelKey: 'counter_bon_livraison' },
+    { key: 'bonVersement', labelKey: 'counter_bon_versement' },
+    { key: 'programme',    labelKey: 'counter_programme' },
+    { key: 'marchandise',  labelKey: 'counter_marchandise' },
   ];
 
   async function resetOneCounter(key) {
-    if (!confirm(`${T('reset_counter_confirm')} "${COUNTER_DOCS.find(d=>d.key===key)?.label}" ?`)) return;
+    if (!confirm(`${T('reset_counter_confirm')} "${T(COUNTER_DOCS.find(d=>d.key===key)?.labelKey)}" ?`)) return;
     const updated = { ...counters, [key]: 0 };
     await window.api.storeSet('counters', updated);
     setCounters(updated);
-    showToast(`Compteur remis à zéro — prochain N° 0001`);
+    showToast(T('counter_reset_one'));
   }
 
   async function resetAllCounters() {
-    if (!confirm('Remettre TOUS les compteurs à zéro ?')) return;
+    if (!confirm(T('counter_reset_all_confirm'))) return;
     await window.api.storeSet('counters', {});
     setCounters({});
     showToast(T('reset_counters_ok'));
@@ -114,7 +114,7 @@ export default function Parametres({ settings, onSave, showToast }) {
     const date = new Date().toISOString().slice(0, 10);
     const filePath = await window.api.saveDialog({
             defaultName: `Invoy-sauvegarde-${date}.json`,
-      filters: [{ name: 'Sauvegarde JSON', extensions: ['json'] }],
+      filters: [{ name: T('backup_json_filter'), extensions: ['json'] }],
     });
     if (!filePath) return;
     const result = await window.api.exportBackupFile({ filePath, json });
@@ -191,7 +191,7 @@ export default function Parametres({ settings, onSave, showToast }) {
       <div className="card mb-6">
         <h2 className="section-title">{T('sec_language')}</h2>
         <div className="flex gap-3">
-          {[{ code: 'fr', label: 'Français' }, { code: 'ar', label: 'العربية' }].map(({ code, label }) => (
+          {[{ code: 'fr', label: T('lang_fr_label') }, { code: 'ar', label: 'العربية' }].map(({ code, label }) => (
             <button key={code} disabled className="flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition-all"
               style={{ borderColor: settings?.langue === code ? appColor : '#e2e8f0', color: settings?.langue === code ? appColor : '#94a3b8', background: settings?.langue === code ? appColor + '10' : 'white' }}>
               {label}
@@ -199,7 +199,7 @@ export default function Parametres({ settings, onSave, showToast }) {
           ))}
         </div>
         <p className="text-xs text-slate-400 mt-2">
-          {lang === 'fr' ? 'Changez la langue via le sélecteur en bas de la barre latérale.' : 'غيّر اللغة عبر المحدد في أسفل الشريط الجانبي.'}
+          {lang === 'fr' ? T('lang_hint_fr') : T('lang_hint_ar')}
         </p>
       </div>
 
@@ -275,12 +275,12 @@ export default function Parametres({ settings, onSave, showToast }) {
         <p className="text-xs mb-4" style={{color:"var(--text-muted)"}}>{T('font_hint')}</p>
         <div className="grid grid-cols-3 gap-2">
           {[
-            { name: 'Arial',           label: 'Arial',             sub: 'Standard' },
-            { name: 'Times New Roman', label: 'Times New Roman',   sub: 'Classique' },
-            { name: 'Calibri',         label: 'Calibri',           sub: 'Moderne' },
-            { name: 'Tahoma',          label: 'Tahoma',            sub: 'Lisible' },
-            { name: 'Verdana',         label: 'Verdana',           sub: 'Net' },
-            { name: 'Courier New',     label: 'Courier New',       sub: 'Monospace' },
+            { name: 'Arial',           label: 'Arial',             subKey: 'font_standard_label' },
+            { name: 'Times New Roman', label: 'Times New Roman',   subKey: 'font_classique_label' },
+            { name: 'Calibri',         label: 'Calibri',           subKey: 'font_moderne_label' },
+            { name: 'Tahoma',          label: 'Tahoma',            subKey: 'font_lisible_label' },
+            { name: 'Verdana',         label: 'Verdana',           subKey: 'font_net_label' },
+            { name: 'Courier New',     label: 'Courier New',       subKey: 'font_monospace_label' },
           ].map(f => (
             <button key={f.name} onClick={() => set('fontDoc', f.name)}
               className="p-3 rounded-lg border-2 text-left transition-all"
@@ -289,7 +289,7 @@ export default function Parametres({ settings, onSave, showToast }) {
                 background: form.fontDoc === f.name ? appColor + '22' : 'var(--bg-input)',
               }}>
               <div className="font-semibold text-sm" style={{ fontFamily: f.name, color: form.fontDoc === f.name ? appColor : '#334155' }}>{f.label}</div>
-              <div className="text-xs text-slate-400 mt-0.5">{f.sub}</div>
+              <div className="text-xs text-slate-400 mt-0.5">{T(f.subKey)}</div>
               <div className="text-xs mt-1" style={{ fontFamily: f.name, color: '#64748b' }}>Abc 123</div>
             </button>
           ))}
@@ -367,19 +367,19 @@ export default function Parametres({ settings, onSave, showToast }) {
       {/* Counters */}
       <div className="card mb-6">
         <h2 className="section-title flex items-center gap-2">
-          <RotateCcw size={16} /> Compteurs des documents
+          <RotateCcw size={16} /> {T('counter_section_title')}
         </h2>
         <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
-          Le prochain document exporté utilisera le numéro suivant le compteur actuel.
+          {T('counter_hint')}
         </p>
         <div className="space-y-2 mb-4">
-          {COUNTER_DOCS.map(({ key, label }) => (
+          {COUNTER_DOCS.map(({ key, labelKey }) => (
             <div key={key} className="flex items-center justify-between px-4 py-2.5 rounded-lg"
               style={{ background: 'var(--bg-alt)', border: '1px solid var(--border-color)' }}>
               <div>
-                <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{label}</span>
+                <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{T(labelKey)}</span>
                 <span className="ml-3 text-xs font-mono px-2 py-0.5 rounded" style={{ background: 'var(--bg-input)', color: 'var(--text-secondary)' }}>
-                  N° {String((counters[key] || 0) + 1).padStart(4, '0')} (prochain)
+                  N° {String((counters[key] || 0) + 1).padStart(4, '0')} {T('counter_next')}
                 </span>
               </div>
               <button
@@ -417,12 +417,12 @@ export default function Parametres({ settings, onSave, showToast }) {
             <div className="flex gap-3">
               <button onClick={clearAllData}
                 className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">
-                Oui, supprimer tout
+                {T('confirm_delete_all')}
               </button>
               <button onClick={() => setShowClearConfirm(false)}
                 className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
                 style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
-                Annuler
+                {T('cancel')}
               </button>
             </div>
           </div>

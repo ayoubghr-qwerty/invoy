@@ -110,12 +110,12 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
         if (!mapAdresse && (hl.includes('adresse') || hl.includes('address') || hl.includes('adr'))) setMapAdresse(h);
         if (!mapTel     && (hl.includes('tel') || hl.includes('phone') || hl.includes('mob'))) setMapTel(h);
       });
-    } catch (e) { showToast('Erreur: ' + e.message, 'error'); setXlsModal(false);
+    } catch (e) { showToast(T('xls_read_error') + e.message, 'error'); setXlsModal(false);
     } finally { setXlsLoading(false); }
   }
 
   async function doImport() {
-    if (!mapNom) { showToast('Veuillez choisir la colonne Nom', 'error'); return; }
+    if (!mapNom) { showToast(T('xls_choose_column'), 'error'); return; }
     setXlsImporting(true);
     try {
       const { headers, data } = xlsData;
@@ -131,7 +131,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
       if (!newC.length) { showToast(T('xls_no_valid'), 'error'); return; }
       await saveClients([...clients, ...newC]);
       setXlsModal(false);
-      showToast(`${newC.length} client(s) importé(s)`);
+      showToast(`${newC.length} ${T('xls_imported_count')}`);
     } catch (e) {       showToast(T('xls_read_error') + e.message, 'error');
     } finally { setXlsImporting(false); }
   }
@@ -273,15 +273,15 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                       <th className="px-4 py-3 text-left font-semibold" style={{color:'var(--text-secondary)'}}>N°</th>
                       <th className="px-4 py-3 text-left font-semibold" style={{color:'var(--text-secondary)'}}>Date</th>
                       <th className="px-4 py-3 text-left font-semibold" style={{color:'var(--text-secondary)'}}>Articles</th>
-                      <th className="px-4 py-3 text-right font-semibold" style={{color:'var(--text-secondary)'}}>HT</th>
-                      <th className="px-4 py-3 text-right font-semibold" style={{color:'var(--text-secondary)'}}>TVA</th>
-                      <th className="px-4 py-3 text-right font-semibold" style={{color:'var(--text-secondary)'}}>TTC</th>
+                      <th className="px-4 py-3 text-right font-semibold" style={{color:'var(--text-secondary)'}}>{T('col_ht')}</th>
+                      <th className="px-4 py-3 text-right font-semibold" style={{color:'var(--text-secondary)'}}>{T('col_tva')}</th>
+                      <th className="px-4 py-3 text-right font-semibold" style={{color:'var(--text-secondary)'}}>{T('col_ttc')}</th>
                       <th className="px-3 py-3 w-16"></th>
                     </tr>
                   </thead>
                   <tbody>
                     {clientHistory.map((h, i) => {
-                      const typeLabel = h.type === 'facture' ? 'Facture' : h.type === 'livraison' ? 'Bon Livraison' : 'Bon Versement';
+                      const typeLabel = h.type === 'facture' ? T('type_facture_label') : h.type === 'livraison' ? T('type_bon_livraison_label') : T('type_bon_versement_label');
                       const typeColor = h.type === 'facture' ? '#3b82f6' : h.type === 'livraison' ? '#10b981' : '#f59e0b';
                       const ht = h.totaux?.ht ?? (h.articles||[]).reduce((s,a)=>s+(parseFloat(a.montant)||0),0);
                       const tva = h.totaux?.tvaEnabled ? (h.totaux?.tva||0) : 0;
@@ -315,7 +315,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
         )}
 
         {histDetail && createPortal((() => {
-          const typeLabel = histDetail.type==='facture'?'Facture':histDetail.type==='livraison'?'Bon de Livraison':'Bon de Versement';
+          const typeLabel = histDetail.type==='facture'?T('type_facture_label'):histDetail.type==='livraison'?T('type_bon_livraison_label'):T('type_bon_versement_label');
           const typeColor = histDetail.type==='facture'?'#3b82f6':histDetail.type==='livraison'?'#10b981':'#f59e0b';
           return (
             <div style={{position:"fixed",top:0,left:0,width:"100vw",height:"100vh",zIndex:60,display:"flex",alignItems:"center",justifyContent:"center",padding:"24px",background:"rgba(0,0,0,0.5)",backdropFilter:"blur(3px)"}}>
@@ -344,8 +344,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                           <tr style={{background:'var(--bg-alt)'}}>
                             <th className="px-3 py-2 text-left font-semibold" style={{color:'var(--text-secondary)'}}>{T('col_designation')}</th>
                             <th className="px-3 py-2 text-center font-semibold w-20" style={{color:'var(--text-secondary)'}}>{T('col_quantite')}</th>
-                            <th className="px-3 py-2 text-right font-semibold w-28" style={{color:'var(--text-secondary)'}}>Prix Unit.</th>
-                            <th className="px-3 py-2 text-right font-semibold w-28" style={{color:'var(--text-secondary)'}}>Montant</th>
+                            <th className="px-3 py-2 text-right font-semibold w-28" style={{color:'var(--text-secondary)'}}>{T('col_prix_unit')}</th>
+                            <th className="px-3 py-2 text-right font-semibold w-28" style={{color:'var(--text-secondary)'}}>{T('col_montant')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -365,25 +365,25 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                     <div className="flex-1 rounded-xl overflow-hidden border min-w-[240px]" style={{borderColor:'var(--border-color)'}}>
                           <div className="px-3 py-2 text-xs font-bold uppercase tracking-wide" style={{background:'var(--bg-alt)',color:'var(--text-muted)',borderBottom:'1px solid var(--border-color)'}}>{T('recap_label')}</div>
                       <div className="flex justify-between px-4 py-2 border-b" style={{borderColor:'var(--border-color)'}}>
-                        <span className="text-sm" style={{color:'var(--text-secondary)'}}>Total HT</span>
+                        <span className="text-sm" style={{color:'var(--text-secondary)'}}>{T('total_ht')}</span>
                         <span className="font-medium" style={{color:'var(--text-primary)'}}>
                           {((histDetail.totaux?.ht)??(histDetail.articles||[]).reduce((s,a)=>s+(parseFloat(a.montant)||0),0)).toLocaleString('fr-DZ',{minimumFractionDigits:2})} DA
                         </span>
                       </div>
                       {histDetail.totaux?.tvaEnabled && (
                         <div className="flex justify-between px-4 py-2 border-b" style={{borderColor:'var(--border-color)',background:'#fffbeb'}}>
-                          <span className="text-sm font-medium" style={{color:'#b45309'}}>TVA ({histDetail.totaux.tvaTaux}%)</span>
+                          <span className="text-sm font-medium" style={{color:'#b45309'}}>{T('tva_label')} ({histDetail.totaux.tvaTaux}%)</span>
                           <span className="font-semibold" style={{color:'#b45309'}}>{(histDetail.totaux.tva||0).toLocaleString('fr-DZ',{minimumFractionDigits:2})} DA</span>
                         </div>
                       )}
                       {(histDetail.totaux?.timbre>0) && (
                         <div className="flex justify-between px-4 py-2 border-b" style={{borderColor:'var(--border-color)'}}>
-                          <span className="text-sm" style={{color:'var(--text-secondary)'}}>Droit de Timbre</span>
+                          <span className="text-sm" style={{color:'var(--text-secondary)'}}>{T('droit_timbre')}</span>
                           <span className="font-medium" style={{color:'var(--text-primary)'}}>{histDetail.totaux.timbre.toLocaleString('fr-DZ',{minimumFractionDigits:2})} DA</span>
                         </div>
                       )}
                       <div className="flex justify-between px-4 py-3" style={{background:typeColor+'18'}}>
-                        <span className="font-bold text-sm" style={{color:typeColor}}>Total TTC</span>
+                        <span className="font-bold text-sm" style={{color:typeColor}}>{T('total_ttc')}</span>
                         <span className="font-bold text-base" style={{color:typeColor}}>{(histDetail.montant||0).toLocaleString('fr-DZ',{minimumFractionDigits:2})} DA</span>
                       </div>
                       {histDetail.montantVerse!=null && (
@@ -398,18 +398,18 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                         {histDetail.modeReglement && (
                           <div className="rounded-lg px-3 py-2 text-sm" style={{background:'var(--bg-alt)',border:'1px solid var(--border-color)'}}>
                             <span style={{color:'var(--text-muted)'}}>{T('mode_reglement')} : </span>
-                            <span className="font-medium" style={{color:'var(--text-primary)'}}>{histDetail.modeReglement==='cheque'?'Chèque':'Espèce'}</span>
+                            <span className="font-medium" style={{color:'var(--text-primary)'}}>{histDetail.modeReglement==='cheque'?T('mode_cheque'):T('mode_espece')}</span>
                           </div>
                         )}
                         {histDetail.pageSize && (
                           <div className="rounded-lg px-3 py-2 text-sm" style={{background:'var(--bg-alt)',border:'1px solid var(--border-color)'}}>
-                            <span style={{color:'var(--text-muted)'}}>Format : </span>
+                            <span style={{color:'var(--text-muted)'}}>{T('format_label')}</span>
                             <span className="font-medium" style={{color:'var(--text-primary)'}}>{histDetail.pageSize}</span>
                           </div>
                         )}
                         {histDetail.notes && (
                           <div className="rounded-lg px-3 py-2 text-sm" style={{background:'var(--bg-alt)',border:'1px solid var(--border-color)'}}>
-                            <span style={{color:'var(--text-muted)'}}>Notes : </span>
+                            <span style={{color:'var(--text-muted)'}}>{T('notes_label')}</span>
                             <span style={{color:'var(--text-primary)'}}>{histDetail.notes}</span>
                           </div>
                         )}
@@ -476,7 +476,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                 <th className="table-header text-left">{T('th_telephones')}</th>
                 <th className="table-header text-left">{T('th_nif')}</th>
                 <th className="table-header text-left">{T('th_articles')}</th>
-                <th className="table-header w-44 text-center">Actions</th>
+                <th className="table-header w-44 text-center">{T('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -495,7 +495,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                     <div className="flex items-center justify-center gap-2">
                       <button onClick={() => openDetail(clients.indexOf(c), 'historique')}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200">
-                        <Clock size={13}/> Historique
+                        <Clock size={13}/> {T('btn_histo')}
                       </button>
                       <button onClick={() => deleteClient(clients.indexOf(c))}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors bg-red-50 text-red-500 hover:bg-red-100 border border-red-200">

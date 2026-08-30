@@ -47,7 +47,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
     if (d.date) setDate(d.date);
     if (d.numero) setNum(d.numero);
     onLoadConsumed?.();
-    showToast('Document chargé depuis l\'historique');
+    showToast(T('doc_loaded_from_history'));
   }, [pendingLoad]);
 
   async function loadData() {
@@ -145,7 +145,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
                       color: docTitle === opt ? 'white' : 'var(--text-secondary)',
                       borderRight: opt === 'FACTURE PROFORMA' ? '1px solid var(--border-input)' : 'none',
                     }}>
-                    {opt}
+                    {opt === 'FACTURE PROFORMA' ? T('doc_title_proforma') : T('doc_title_facture')}
                   </button>
                 ))}
               </div>

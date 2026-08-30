@@ -35,6 +35,7 @@ export default function App() {
   const [darkMode, setDarkModeState] = useState(false);
   const [pendingLoad, setPendingLoad] = useState(null); // { type, data } from history
   const toastTimerRef = useRef(null);
+  const T = (k) => t(lang, k);
 
   function loadFromHistory(histEntry) {
     // Map history type to page id
@@ -150,7 +151,7 @@ export default function App() {
               {darkMode
                 ? <Sun size={14} />
                 : <Moon size={14} />}
-              <span style={{ fontSize: '12px' }}>{darkMode ? (lang === 'ar' ? 'وضع النهار' : 'Mode clair') : (lang === 'ar' ? 'وضع الليل' : 'Mode sombre')}</span>
+              <span style={{ fontSize: '12px' }}>{darkMode ? T('dark_mode_on') : T('dark_mode_off')}</span>
             </button>
 
             {/* Language switcher */}
@@ -169,7 +170,7 @@ export default function App() {
           </div>
 
           <div className="px-4 py-2 text-center" style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px' }}>
-            Invoy v2.0
+            {T('app_version')}
           </div>
         </aside>
 
@@ -177,7 +178,7 @@ export default function App() {
         <main className="flex-1 h-full overflow-y-auto" style={{ background: 'var(--bg-app)' }}>
           {settings === null ? (
             <div className="flex items-center justify-center h-full">
-              <div className="animate-pulse text-slate-400 text-sm">Chargement...</div>
+              <div className="animate-pulse text-slate-400 text-sm">{T('loading')}</div>
             </div>
           ) : (
             <div key={page} className="page-enter">

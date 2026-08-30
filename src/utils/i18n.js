@@ -11,6 +11,11 @@ export const translations = {
     nav_produits: 'Produits',
     app_version: 'Invoy v2.0',
 
+    // App mode
+    dark_mode_on: 'Mode clair',
+    dark_mode_off: 'Mode sombre',
+    loading: 'Chargement...',
+
     // Common
     btn_save: 'Enregistrer',
     btn_cancel: 'Annuler',
@@ -219,6 +224,13 @@ export const translations = {
     produit_num: 'Produit',
     btn_add_produit_xls: 'Ajouter un produit',
     marchandise_export_ok: 'Bon de marchandise — exporté en PDF',
+    marchandise_exported: 'Bon de marchandise — exporté en PDF',
+    btn_historique: 'Historique',
+    badge_produit: 'Produit',
+    placeholder_produit_nom: 'Nom du produit',
+    placeholder_produit_qty: 'Ex: 10 kg',
+    placeholder_produit_desc: 'Description optionnelle',
+    placeholder_produit_source: 'Ex: Marché central',
 
     // Produits
     produit_dup: 'Désignation déjà dans la liste',
@@ -226,16 +238,65 @@ export const translations = {
     search_produit: 'Rechercher un produit...',
     click_to_edit: 'Cliquer pour modifier',
 
+    // Doc history loaded
+    doc_loaded_from_history: 'Document chargé depuis l\'historique',
+    doc_loaded_from_history_bl: 'Document chargé depuis l\'historique',
+    doc_title_proforma: 'FACTURE PROFORMA',
+    doc_title_facture: 'FACTURE',
+
+    // Clients - Excel import
+    xls_choose_column: 'Veuillez choisir la colonne Nom',
+    xls_imported_count: 'client(s) importé(s)',
+
+    // Clients - History detail
+    type_facture_label: 'Facture',
+    type_bon_livraison_label: 'Bon de Livraison',
+    type_bon_versement_label: 'Bon de Versement',
+    col_prix_unit: 'Prix Unit.',
+    col_montant: 'Montant',
+    col_ht: 'HT',
+    col_tva: 'TVA',
+    col_ttc: 'TTC',
+    tva_label: 'TVA',
+    droit_timbre: 'Droit de Timbre',
+    format_label: 'Format : ',
+    notes_label: 'Notes : ',
+    actions: 'Actions',
+    btn_histo: 'Historique',
+
     // Counter
+    counter_facture: 'Facture Proforma',
+    counter_bon_livraison: 'Bon de Livraison',
+    counter_bon_versement: 'Bon de Versement',
+    counter_programme: 'Programme de Livraison',
+    counter_marchandise: 'Marchandise',
     counter_reset_one: 'Compteur remis à zéro — prochain N° 0001',
-    counter_reset_all: 'Remettre TOUS les compteurs à zéro ?',
+    counter_reset_all_confirm: 'Remettre TOUS les compteurs à zéro ?',
     counter_reset_confirm: 'Réinitialiser le compteur',
     counter_reset_to_zero: 'à zéro ?',
+    counter_section_title: 'Compteurs des documents',
     counter_next: '(prochain)',
     counter_reset_label: 'Réinitialiser',
     counter_hint: 'Le prochain document exporté utilisera le numéro suivant le compteur actuel.',
     counter_title: 'Compteurs des documents',
     save_all: 'Enregistrer tous les paramètres',
+    reset_all: 'Supprimer tout',
+
+    // Backup filter
+    backup_json_filter: 'Sauvegarde JSON',
+
+    // Language
+    lang_fr_label: 'Français',
+    lang_hint_fr: 'Changez la langue via le sélecteur en bas de la barre latérale.',
+    lang_hint_ar: 'غيّر اللغة عبر المحدد في أسفل الشريط الجانبي.',
+
+    // Font labels
+    font_standard_label: 'Standard',
+    font_classique_label: 'Classique',
+    font_moderne_label: 'Moderne',
+    font_lisible_label: 'Lisible',
+    font_net_label: 'Net',
+    font_monospace_label: 'Monospace',
 
     // Danger zone
     confirm_delete_all: 'Oui, supprimer tout',
@@ -323,6 +384,11 @@ export const translations = {
     nav_marchandise: 'البضاعة',
     nav_produits: 'المنتجات',
     app_version: 'Invoy v2.0',
+
+    // App mode
+    dark_mode_on: 'الوضع الفاتح',
+    dark_mode_off: 'الوضع الداكن',
+    loading: 'جاري التحميل...',
 
     // Common
     btn_save: 'حفظ',
@@ -534,6 +600,13 @@ export const translations = {
     produit_num: 'منتج',
     btn_add_produit_xls: 'إضافة منتج',
     marchandise_export_ok: 'وثيقة البضاعة — تم التصدير كـ PDF',
+    marchandise_exported: 'سند بضائع — تم التصدير كـ PDF',
+    btn_historique: 'السجل',
+    badge_produit: 'منتج',
+    placeholder_produit_nom: 'اسم المنتج',
+    placeholder_produit_qty: 'مثال: 10 كغ',
+    placeholder_produit_desc: 'وصف اختياري',
+    placeholder_produit_source: 'مثال: السوق المركزي',
 
     // Produits
     produit_dup: 'التسمية موجودة بالفعل في القائمة',
@@ -541,20 +614,69 @@ export const translations = {
     search_produit: 'البحث عن منتج...',
     click_to_edit: 'انقر للتعديل',
 
+    // Doc history loaded
+    doc_loaded_from_history: 'تم تحميل المستند من السجل',
+    doc_loaded_from_history_bl: 'تم تحميل المستند من السجل',
+    doc_title_proforma: 'فاتورة تقديمية',
+    doc_title_facture: 'فاتورة',
+
+    // Clients - Excel import
+    xls_choose_column: 'يرجى اختيار عمود الاسم',
+    xls_imported_count: 'عميل(عملاء) مستورَد',
+
+    // Clients - History detail
+    type_facture_label: 'فاتورة',
+    type_bon_livraison_label: 'سند تسليم',
+    type_bon_versement_label: 'سند صرف',
+    col_prix_unit: 'سعر الوحدة',
+    col_montant: 'المبلغ',
+    col_ht: 'المبلغ',
+    col_tva: 'الضريبة',
+    col_ttc: 'الإجمالي',
+    tva_label: 'الضريبة',
+    droit_timbre: 'حقوق الطوابع',
+    format_label: 'الصيغة : ',
+    notes_label: 'ملاحظات : ',
+    actions: 'إجراءات',
+    btn_histo: 'السجل',
+
     // Counter
+    counter_facture: 'فاتورة تقديمية',
+    counter_bon_livraison: 'سند تسليم',
+    counter_bon_versement: 'سند صرف',
+    counter_programme: 'جدول تسليم',
+    counter_marchandise: 'بضائع',
     counter_reset_one: 'تمت إعادة تعيين العداد — المستند التالي: N° 0001',
-    counter_reset_all: 'إعادة تعيين جميع العدادات إلى الصفر؟',
+    counter_reset_all_confirm: 'إعادة تعيين جميع العدادات إلى الصفر؟',
     counter_reset_confirm: 'إعادة تعيين عداد',
     counter_reset_to_zero: 'إلى الصفر؟',
+    counter_section_title: 'عدادات المستندات',
     counter_next: '(التالي)',
     counter_reset_label: 'إعادة تعيين',
-    counter_hint: 'سيستخدم المستند التالي رقم العداد الحالي + 1.',
+    counter_hint: 'المستند التالي المُصدَّر سيحمل رقم العداد الحالي.',
     counter_title: 'عدادات المستندات',
     save_all: 'حفظ جميع الإعدادات',
+    reset_all: 'حذف الكل',
 
     // Danger zone
     confirm_delete_all: 'نعم، حذف الكل',
     cancel: 'إلغاء',
+
+    // Backup filter
+    backup_json_filter: 'نسخ احتياطي JSON',
+
+    // Language
+    lang_fr_label: 'Français',
+    lang_hint_fr: 'غيّر اللغة عبر المحدد في أسفل الشريط الجانبي.',
+    lang_hint_ar: 'غيّر اللغة عبر المحدد في أسفل الشريط الجانبي.',
+
+    // Font labels
+    font_standard_label: 'قياسي',
+    font_classique_label: 'كلاسيكي',
+    font_moderne_label: 'عصري',
+    font_lisible_label: 'مقروء',
+    font_net_label: 'نظيف',
+    font_monospace_label: 'خط ثابت',
 
     title_produits: 'قائمة المنتجات',
     sub_produits: 'أدر تسميات منتجاتك. تُضاف تلقائيًا من مستنداتك.',

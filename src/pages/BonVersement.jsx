@@ -38,7 +38,7 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
     if (d.date)         setDate(d.date);
     if (d.numero)       setNum(d.numero);
     onLoadConsumed?.();
-    showToast('Document chargé depuis l\'historique');
+    showToast(T('doc_loaded_from_history_bl'));
   }, [pendingLoad]);
 
   async function loadData() {
