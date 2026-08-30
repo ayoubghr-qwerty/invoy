@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef, createContext, useContext } f
 import { Users, Truck, Package, CreditCard, Settings, Sun, Moon, ShoppingCart, LayoutList } from 'lucide-react';
 import { t } from './utils/i18n';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { initDb } from './utils/db';
+import { migrateFromStore } from './utils/migrate';
 
 import FactureProforma from './pages/FactureProforma';
 import Clients from './pages/Clients';
@@ -56,7 +58,9 @@ export default function App() {
     setDarkModeState(dm);
   }, []);
 
-  useEffect(() => { loadSettings(); }, [loadSettings]);
+  useEffect(() => {
+    initDb().then(() => migrateFromStore()).then(() => loadSettings());
+  }, [loadSettings]);
 
   function applyDark(enabled) {
     document.documentElement.classList.toggle('dark', enabled);
