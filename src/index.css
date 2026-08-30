@@ -41,6 +41,11 @@ html.dark {
 
 * { box-sizing: border-box; }
 
+html, body, #root {
+  overscroll-behavior: none;
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;

@@ -19,8 +19,9 @@
         "minHeight": 680,
         "resizable": true,
         "fullscreen": false,
-        "maximized": false,
-        "backgroundColor": "#f5f7fb"
+        "maximized": true,
+        "backgroundColor": "#f5f7fb",
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll"
       }
     ],
     "security": {
