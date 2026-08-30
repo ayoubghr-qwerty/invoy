@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Save, Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
 import { useLang } from '../App';
+import { useCompany } from '../context/CompanyContext';
 import { t } from '../utils/i18n';
 
 const APP_THEMES = [
@@ -24,6 +25,11 @@ export default function Parametres({ settings, onSave, showToast }) {
 
   const [counters, setCounters] = useState({});
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [editingCompany, setEditingCompany] = useState(null);
+  const [companyForm, setCompanyForm] = useState({ name: '', adresse: '', telephone: '', nif: '', nis: '', agrement: '', rc: '' });
+  const [showAddCompany, setShowAddCompany] = useState(false);
+
+  const { companies, activeCompanyId, setActiveCompanyId, addCompany, updateCompany, deleteCompany } = useCompany();
 
   useEffect(() => { loadCounters(); }, []);
 
@@ -201,6 +207,114 @@ export default function Parametres({ settings, onSave, showToast }) {
         <p className="text-xs text-slate-400 mt-2">
           {lang === 'fr' ? T('lang_hint_fr') : T('lang_hint_ar')}
         </p>
+      </div>
+
+      {/* Company Management */}
+      <div className="card mb-6">
+        <h2 className="section-title">{T('company_title')}</h2>
+        <div className="flex items-center gap-3 mb-4">
+          <select
+            value={activeCompanyId || ''}
+            onChange={e => setActiveCompanyId(Number(e.target.value))}
+            className="form-input flex-1"
+          >
+            {companies.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+          <button onClick={() => { setShowAddCompany(true); setEditingCompany(null); setCompanyForm({ name: '', adresse: '', telephone: '', nif: '', nis: '', agrement: '', rc: '' }); }}
+            className="btn-secondary text-sm"><Plus size={14} /> {T('company_add')}</button>
+        </div>
+
+        {(showAddCompany || editingCompany) && (
+          <div className="p-4 rounded-lg border" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-alt)' }}>
+            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+              {editingCompany ? T('btn_edit') : T('company_add')}
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <label className="form-label">{T('company_name')}</label>
+                <input className="form-input" value={companyForm.name} onChange={e => setCompanyForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label">{T('company_adresse')}</label>
+                <input className="form-input" value={companyForm.adresse} onChange={e => setCompanyForm(f => ({ ...f, adresse: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label">{T('company_telephone')}</label>
+                <input className="form-input" value={companyForm.telephone} onChange={e => setCompanyForm(f => ({ ...f, telephone: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label">{T('field_nif')}</label>
+                <input className="form-input" value={companyForm.nif} onChange={e => setCompanyForm(f => ({ ...f, nif: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label">{T('field_nis')}</label>
+                <input className="form-input" value={companyForm.nis} onChange={e => setCompanyForm(f => ({ ...f, nis: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label">{T('field_agrement')}</label>
+                <input className="form-input" value={companyForm.agrement} onChange={e => setCompanyForm(f => ({ ...f, agrement: e.target.value }))} />
+              </div>
+              <div>
+                <label className="form-label">{T('field_rc')}</label>
+                <input className="form-input" value={companyForm.rc} onChange={e => setCompanyForm(f => ({ ...f, rc: e.target.value }))} />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button onClick={async () => {
+                if (!companyForm.name.trim()) return;
+                if (editingCompany) {
+                  await updateCompany(editingCompany.id, companyForm);
+                  showToast(T('company_saved'));
+                } else {
+                  await addCompany(companyForm.name);
+                  showToast(T('company_added'));
+                }
+                setShowAddCompany(false);
+                setEditingCompany(null);
+              }} className="btn-primary text-sm">
+                <Save size={14} /> {T('btn_save')}
+              </button>
+              <button onClick={() => { setShowAddCompany(false); setEditingCompany(null); }}
+                className="btn-secondary text-sm">{T('btn_cancel')}</button>
+            </div>
+          </div>
+        )}
+
+        {!showAddCompany && !editingCompany && companies.length > 0 && (
+          <div className="space-y-2">
+            {companies.map(c => (
+              <div key={c.id} className="flex items-center justify-between px-4 py-2.5 rounded-lg"
+                style={{ background: c.id === activeCompanyId ? appColor + '10' : 'var(--bg-alt)', border: c.id === activeCompanyId ? `1px solid ${appColor}30` : '1px solid var(--border-color)' }}>
+                <div>
+                  <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>{c.name}</span>
+                  {c.id === activeCompanyId && (
+                    <span className="ml-2 text-xs px-2 py-0.5 rounded-full" style={{ background: appColor, color: 'white' }}>{T('company_active')}</span>
+                  )}
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => { setEditingCompany(c); setCompanyForm({ name: c.name, adresse: c.adresse || '', telephone: c.telephone || '', nif: c.nif || '', nis: c.nis || '', agrement: c.agrement || '', rc: c.rc || '' }); }}
+                    className="text-xs px-2 py-1 rounded border transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
+                    style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
+                    {T('btn_edit')}
+                  </button>
+                  {c.id !== 1 && (
+                    <button onClick={async () => {
+                      if (!confirm(T('company_delete_confirm'))) return;
+                      await deleteCompany(c.id);
+                      showToast(T('company_deleted'));
+                    }}
+                      className="text-xs px-2 py-1 rounded border transition-colors hover:bg-red-50 hover:text-red-600 hover:border-red-300"
+                      style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
+                      <Trash2 size={12} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* App Theme */}

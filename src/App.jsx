@@ -4,6 +4,7 @@ import { t } from './utils/i18n';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { initDb } from './utils/db';
 import { migrateFromStore } from './utils/migrate';
+import { CompanyProvider } from './context/CompanyContext';
 
 import FactureProforma from './pages/FactureProforma';
 import Clients from './pages/Clients';
@@ -111,8 +112,9 @@ export default function App() {
   ];
 
   return (
-    <LangContext.Provider value={{ lang, setLang }}>
-      <div className={`flex h-screen overflow-hidden${isRTL ? ' rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <CompanyProvider>
+      <LangContext.Provider value={{ lang, setLang }}>
+        <div className={`flex h-screen overflow-hidden${isRTL ? ' rtl' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Sidebar */}
         <aside className="flex flex-col w-60 min-w-60 h-full flex-shrink-0" style={{ background: appColor }}>
           {/* Logo */}
@@ -220,6 +222,7 @@ export default function App() {
           </div>
         )}
       </div>
-    </LangContext.Provider>
+      </LangContext.Provider>
+    </CompanyProvider>
   );
 }

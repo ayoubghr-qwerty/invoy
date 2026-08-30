@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS companies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  adresse TEXT DEFAULT '',
+  telephone TEXT DEFAULT '',
+  nif TEXT DEFAULT '',
+  nis TEXT DEFAULT '',
+  agrement TEXT DEFAULT '',
+  rc TEXT DEFAULT '',
+  active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE clients ADD COLUMN company_id INTEGER DEFAULT 1;
+ALTER TABLE history ADD COLUMN company_id INTEGER DEFAULT 1;
+ALTER TABLE programme_clients ADD COLUMN company_id INTEGER DEFAULT 1;
+
+INSERT OR IGNORE INTO companies (id, name) VALUES (1, 'Entreprise');

@@ -65,3 +65,11 @@ export async function dbExecute(sql, args = []) {
 }
 
 export function isDbReady() { return sqlReady; }
+
+export async function dbQueryCompany(sql, params = [], companyId = null) {
+  if (companyId) {
+    const separator = sql.includes('WHERE') ? 'AND' : 'WHERE';
+    return dbQuery(`${sql} ${separator} company_id = ?`, [...params, companyId]);
+  }
+  return dbQuery(sql, params);
+}

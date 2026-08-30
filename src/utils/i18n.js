@@ -398,6 +398,23 @@ export const translations = {
 
     // Print
     btn_print: 'Imprimer',
+
+    // Companies
+    company_title: 'Entreprises',
+    company_add: 'Ajouter une entreprise',
+    company_name: 'Nom de l\'entreprise',
+    company_active: 'Entreprise active',
+    company_delete_confirm: 'Supprimer cette entreprise ?',
+    company_cant_delete_default: 'Impossible de supprimer l\'entreprise par défaut',
+    company_switch: 'Changer d\'entreprise',
+    company_details: 'Détails de l\'entreprise',
+    company_saved: 'Entreprise enregistrée',
+    company_added: 'Entreprise ajoutée',
+    company_deleted: 'Entreprise supprimée',
+    company_select: 'Sélectionner une entreprise',
+    company_no_companies: 'Aucune entreprise',
+    company_adresse: 'Adresse',
+    company_telephone: 'Téléphone',
   },
 
   ar: {
@@ -799,6 +816,23 @@ export const translations = {
 
     // Print
     btn_print: 'طباعة',
+
+    // Companies
+    company_title: 'الشركات',
+    company_add: 'إضافة شركة',
+    company_name: 'اسم الشركة',
+    company_active: 'الشركة النشطة',
+    company_delete_confirm: 'حذف هذه الشركة؟',
+    company_cant_delete_default: 'لا يمكن حذف الشركة الافتراضية',
+    company_switch: 'تغيير الشركة',
+    company_details: 'تفاصيل الشركة',
+    company_saved: 'تم حفظ الشركة',
+    company_added: 'تمت إضافة الشركة',
+    company_deleted: 'تم حذف الشركة',
+    company_select: 'اختر شركة',
+    company_no_companies: 'لا توجد شركات',
+    company_adresse: 'العنوان',
+    company_telephone: 'الهاتف',
   },
 };
 
