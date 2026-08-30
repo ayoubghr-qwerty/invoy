@@ -122,9 +122,7 @@ export default function App() {
             {settings?.logo ? (
               <img src={settings.logo} alt="logo" className="w-14 h-14 object-contain rounded-lg mb-2" />
             ) : (
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,255,255,0.15)' }}>
-                <InvoiceIcon size={32} />
-              </div>
+              <img src="/logo.png" alt="Invoy" className="w-14 h-14 object-contain rounded-lg mb-2" />
             )}
             <span className="text-white font-bold text-sm text-center leading-tight">
               {settings?.organisation || 'Invoy'}
