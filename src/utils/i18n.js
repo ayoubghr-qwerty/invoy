@@ -384,6 +384,20 @@ export const translations = {
     pdf_espece: 'Espèce',
     pdf_cordialement: 'Cordialement,',
     pdf_reglement: 'En votre aimable règlement,',
+
+    // Empty states
+    empty_articles_title: 'Aucun article',
+    empty_articles_subtitle: 'Cliquez sur "Ajouter une ligne" pour commencer',
+    empty_products_title: 'Aucun produit',
+    empty_products_subtitle: 'Ajoutez des produits pour les suggestions automatiques',
+    empty_history_title: 'Aucun historique',
+    empty_history_subtitle: 'Les documents exportés apparaîtront ici',
+
+    // Keyboard shortcuts
+    shortcut_toast: 'Raccourci : {action}',
+
+    // Print
+    btn_print: 'Imprimer',
   },
 
   ar: {
@@ -771,6 +785,20 @@ export const translations = {
     pdf_espece: 'نقداً',
     pdf_cordialement: 'مع فائق الاحترام،',
     pdf_reglement: 'في انتظار تسويةكم اللطيفة،',
+
+    // Empty states
+    empty_articles_title: 'لا توجد منتجات',
+    empty_articles_subtitle: 'انقر على "إضافة سطر" للبدء',
+    empty_products_title: 'لا توجد منتجات',
+    empty_products_subtitle: 'أضف منتجات للحصول على اقتراحات تلقائية',
+    empty_history_title: 'لا يوجد سجل',
+    empty_history_subtitle: 'ستظهر المستندات المُصدَّرة هنا',
+
+    // Keyboard shortcuts
+    shortcut_toast: 'اختصار: {action}',
+
+    // Print
+    btn_print: 'طباعة',
   },
 };
 

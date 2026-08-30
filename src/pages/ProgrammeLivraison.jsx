@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, ChevronDown, X } from 'lucide-react';
+import { Plus, ChevronDown, X, Package } from 'lucide-react';
 import ArticlesTable from '../components/ArticlesTable';
 import ClientSelect from '../components/ClientSelect';
 import PageSizeSelect from '../components/PageSizeSelect';
@@ -7,6 +7,7 @@ import { buildProgrammePdf } from '../utils/pdfTemplate';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
+import EmptyState from '../components/EmptyState';
 import { todayIso } from '../utils/helpers';
 import { validateDoc } from '../utils/validation';
 
@@ -99,7 +100,7 @@ export default function ProgrammeLivraison({ settings, showToast }) {
               {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
             </ul>
           )}
-          <ExportButton onExport={exportDoc} loading={loading} color={docColor} />
+          <ExportButton onExport={exportDoc} loading={loading} color={docColor} htmlContent={buildProgrammePdf({ date, clients: clients.filter(c => c.nom || c.articles.length), settings, pageSize }, settings)} T={T} />
         </div>
       </div>
 

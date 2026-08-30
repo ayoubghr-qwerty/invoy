@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
-import { Download, ChevronDown, FileText, FileType } from 'lucide-react';
+import { Download, ChevronDown, FileText, FileType, Printer } from 'lucide-react';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
+import { printDocument } from '../utils/printPdf';
 
 /**
- * ExportButton — dropdown with PDF (primary) and DOCX (secondary)
- * Props: onExport(format: 'pdf'|'docx'), loading: ''|'pdf'|'docx', color
+ * ExportButton — dropdown with PDF (primary), DOCX (secondary), and Print
+ * Props: onExport(format: 'pdf'|'docx'), loading: ''|'pdf'|'docx'|'print', color, htmlContent, T
  */
-export default function ExportButton({ onExport, loading = '', color = '#0f2044' }) {
+export default function ExportButton({ onExport, loading = '', color = '#0f2044', htmlContent, T: TProp }) {
   const { lang } = useLang();
-  const T = (k) => t(lang, k);
+  const T = TProp || ((k) => t(lang, k));
   const [open, setOpen] = useState(false);
+  const [printLoading, setPrintLoading] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
     return () => document.removeEventListener('mousedown', close);
   }, []);
 
-  const busy = !!loading;
+  const busy = !!loading || printLoading;
 
   return (
     <div ref={ref} className="export-dropdown">
@@ -54,6 +56,12 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
             <FileType size={14} style={{ color: '#3b82f6' }} />
             {loading === 'docx' ? T('btn_exporting') : T('btn_export_docx')}
           </button>
+          {htmlContent && (
+            <button onClick={() => { setOpen(false); setPrintLoading(true); printDocument(htmlContent); setTimeout(() => setPrintLoading(false), 500); }} disabled={busy}>
+              <Printer size={14} style={{ color: '#10b981' }} />
+              {T('btn_print')}
+            </button>
+          )}
         </div>
       )}
     </div>

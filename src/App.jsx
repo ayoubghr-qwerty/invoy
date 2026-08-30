@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
 import { Users, Truck, Package, CreditCard, Settings, Sun, Moon, ShoppingCart, LayoutList } from 'lucide-react';
 import { t } from './utils/i18n';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 import FactureProforma from './pages/FactureProforma';
 import Clients from './pages/Clients';
@@ -87,6 +88,12 @@ export default function App() {
 
   const isRTL = lang === 'ar';
   const appColor = settings?.couleurApp || '#0f2044';
+
+  const handleDarkToggle = useCallback(() => {
+    toggleDark();
+  }, [darkMode]);
+
+  useKeyboardShortcuts({ setPage, setDarkMode: handleDarkToggle, setLang, lang, showToast });
 
   const PAGES = [
     { id: 'facture',    icon: () => <InvoiceIcon size={18} />, key: 'nav_facture' },

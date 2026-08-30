@@ -138,7 +138,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
               {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
             </ul>
           )}
-          <ExportButton onExport={exportDoc} loading={loading} color={docColor} />
+          <ExportButton onExport={exportDoc} loading={loading} color={docColor} htmlContent={buildFacturePdf({ client, articles, totaux, date, numero: num, modeReglement, docTitle, showArrete, showModeReglement, settings }, settings)} T={T} />
         </div>
       </div>
 

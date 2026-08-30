@@ -4,6 +4,7 @@ import { Plus, Trash2, Save, Users, X, FileSpreadsheet, ChevronDown, Clock, Rece
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import { getClientHistory } from '../utils/history';
+import EmptyState from '../components/EmptyState';
 
 const EMPTY_CLIENT = { nom: '', adresse: '', telephones: [''], agrement: '', nif: '', articlesImp: '', nis: '' };
 
@@ -259,10 +260,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
         {activeTab === 'historique' && (
           <div>
             {clientHistory.length === 0 ? (
-              <div className="card text-center py-16">
-                <Receipt size={36} className="mx-auto mb-3 text-slate-300"/>
-                <p className="font-medium text-slate-500">{T('no_doc_history')}</p>
-                <p className="text-sm text-slate-400 mt-1">{T('no_doc_history_sub')}</p>
+              <div className="card">
+                <EmptyState icon={Receipt} title={T('empty_history_title')} subtitle={T('empty_history_subtitle')} />
               </div>
             ) : (
               <div className="card p-0 overflow-hidden">

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Package } from 'lucide-react';
 import ArticlesTable from '../components/ArticlesTable';
 import ClientSelect from '../components/ClientSelect';
 import PageSizeSelect from '../components/PageSizeSelect';
@@ -7,6 +8,7 @@ import { buildBonVersementPdf } from '../utils/pdfTemplate';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import ExportButton from '../components/ExportButton';
+import EmptyState from '../components/EmptyState';
 import { saveToHistory } from '../utils/history';
 import { todayIso, saveClientIfNew } from '../utils/helpers';
 import { validateDoc } from '../utils/validation';
@@ -110,7 +112,7 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
               {validationErrors.map((e, i) => <li key={i}>{e}</li>)}
             </ul>
           )}
-          <ExportButton onExport={exportDoc} loading={loading} color={docColor} />
+          <ExportButton onExport={exportDoc} loading={loading} color={docColor} htmlContent={buildBonVersementPdf({ client, articles, total, montantVerse: parseFloat(montantVerse) || 0, notes, date, numero: num, settings, pageSize }, settings)} T={T} />
         </div>
       </div>
 
@@ -142,7 +144,11 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
 
         <div className="card">
           <h2 className="section-title">{T('sec_articles_section')}</h2>
-          <ArticlesTable articles={articles} onChange={setArticles} />
+          {articles.length === 0 ? (
+            <EmptyState icon={Package} title={T('empty_articles_title')} subtitle={T('empty_articles_subtitle')} />
+          ) : (
+            <ArticlesTable articles={articles} onChange={setArticles} />
+          )}
         </div>
 
         <div className="card">

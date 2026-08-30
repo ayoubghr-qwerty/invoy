@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Package, Check, X } from 'lucide-react';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
+import EmptyState from '../components/EmptyState';
 
 export default function Produits({ showToast }) {
   const { lang } = useLang();
@@ -130,10 +131,8 @@ export default function Produits({ showToast }) {
 
       {/* Products list */}
       {produits.length === 0 ? (
-        <div className="card text-center py-12">
-          <Package size={36} className="mx-auto mb-3 text-slate-300" />
-          <p className="font-semibold text-slate-500">{T('no_produits')}</p>
-          <p className="text-sm text-slate-400 mt-1 max-w-sm mx-auto">{T('no_produits_sub')}</p>
+        <div className="card">
+          <EmptyState icon={Package} title={T('empty_products_title')} subtitle={T('empty_products_subtitle')} />
         </div>
       ) : (
         <div className="card p-0 overflow-hidden">
