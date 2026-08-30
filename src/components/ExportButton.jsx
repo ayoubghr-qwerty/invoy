@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Download, ChevronDown, FileText, FileType } from 'lucide-react';
+import { useLang } from '../App';
+import { t } from '../utils/i18n';
 
 /**
  * ExportButton — dropdown with PDF (primary) and DOCX (secondary)
  * Props: onExport(format: 'pdf'|'docx'), loading: ''|'pdf'|'docx', color
  */
-export default function ExportButton({ onExport, loading = '', color = '#0f2044', label = 'Exporter' }) {
+export default function ExportButton({ onExport, loading = '', color = '#0f2044' }) {
+  const { lang } = useLang();
+  const T = (k) => t(lang, k);
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -27,7 +31,7 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
         style={{ background: color, minWidth: 120 }}
       >
         <Download size={15} />
-        {loading === 'pdf' ? 'Export...' : `${label} PDF`}
+        {loading === 'pdf' ? T('btn_exporting') : `${T('btn_export_pdf')}`}
       </button>
 
       {/* Chevron toggle */}
@@ -36,7 +40,6 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
         disabled={busy}
         className="btn-primary rounded-l-none px-2"
         style={{ background: color }}
-        title="Plus d'options"
       >
         <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -45,11 +48,11 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
       {open && (
         <div className="export-dropdown-menu">
           <button onClick={() => { setOpen(false); onExport('pdf'); }}>
-            <FileText size={14} style={{ color: '#ef4444' }} /> Exporter en PDF
+            <FileText size={14} style={{ color: '#ef4444' }} /> {T('btn_export_pdf')}
           </button>
           <button onClick={() => { setOpen(false); onExport('docx'); }}>
             <FileType size={14} style={{ color: '#3b82f6' }} />
-            {loading === 'docx' ? 'Export...' : 'Exporter en DOCX'}
+            {loading === 'docx' ? T('btn_exporting') : T('btn_export_docx')}
           </button>
         </div>
       )}

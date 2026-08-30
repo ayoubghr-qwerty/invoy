@@ -174,9 +174,9 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
                   <button key={opt} onClick={() => setDocTitle(opt)}
                     className="flex-1 py-2 text-xs font-bold transition-all"
                     style={{
-                      background: docTitle === opt ? (settings?.couleur || '#0f2044') : 'white',
-                      color: docTitle === opt ? 'white' : '#64748b',
-                      borderRight: opt === 'FACTURE PROFORMA' ? '1px solid #e2e8f0' : 'none',
+                      background: docTitle === opt ? (settings?.couleur || '#0f2044') : 'var(--bg-input)',
+                      color: docTitle === opt ? 'white' : 'var(--text-secondary)',
+                      borderRight: opt === 'FACTURE PROFORMA' ? '1px solid var(--border-input)' : 'none',
                     }}>
                     {opt}
                   </button>

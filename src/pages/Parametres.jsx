@@ -33,11 +33,11 @@ export default function Parametres({ settings, onSave, showToast }) {
   }
 
   const COUNTER_DOCS = [
-    { key: 'facture',    label: 'Facture Proforma' },
-    { key: 'livraison',  label: 'Bon de Livraison' },
-    { key: 'versement',  label: 'Bon de Versement' },
-    { key: 'programme',  label: 'Programme de Livraison' },
-    { key: 'marchandise',label: 'Marchandise' },
+    { key: 'facture',      label: 'Facture Proforma' },
+    { key: 'bonLivraison', label: 'Bon de Livraison' },
+    { key: 'bonVersement', label: 'Bon de Versement' },
+    { key: 'programme',    label: 'Programme de Livraison' },
+    { key: 'marchandise',  label: 'Marchandise' },
   ];
 
   async function resetOneCounter(key) {
@@ -121,13 +121,47 @@ export default function Parametres({ settings, onSave, showToast }) {
     showToast(result?.success ? T('backup_exported') : T('export_error'), result?.success ? 'success' : 'error');
   }
 
+  function validateBackup(data) {
+    if (!data || typeof data !== 'object') return false;
+    if (typeof data.version !== 'string') return false;
+    if (!data.settings || typeof data.settings !== 'object') return false;
+    if (data.settings.__proto__ && Object.keys(data.settings.__proto__).length > 0) return false;
+    if (data.clients != null && !Array.isArray(data.clients)) return false;
+    if (data.counters != null && typeof data.counters !== 'object') return false;
+    if (data.produits != null && !Array.isArray(data.produits)) return false;
+    if (data.marchandise != null && !Array.isArray(data.marchandise)) return false;
+    if (data.historique != null && !Array.isArray(data.historique)) return false;
+    if (data.clients && data.clients.length > 10000) return false;
+    if (data.historique && data.historique.length > 50000) return false;
+    for (const key of ['settings', 'counters']) {
+      if (data[key]) {
+        for (const k of Object.keys(data[key])) {
+          if (k === '__proto__' || k === 'constructor' || k === 'prototype') return false;
+        }
+      }
+    }
+    return true;
+  }
+
   async function importBackup() {
     const raw = await window.api.pickJson();
     if (!raw) return;
     let backup;
     try { backup = JSON.parse(raw); } catch { showToast(T('backup_json_error'), 'error'); return; }
-    if (!backup.version || !backup.settings) { showToast(T('backup_invalid'), 'error'); return; }
+    if (!validateBackup(backup)) { showToast(T('backup_invalid'), 'error'); return; }
     if (!confirm(T('backup_confirm'))) return;
+
+    // Auto-backup current state before restore
+    try {
+      const current = {};
+      for (const key of ['settings', 'clients', 'counters', 'produits', 'marchandise', 'historique']) {
+        current[key] = await window.api.storeGet(key, key === 'settings' ? {} : []);
+      }
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const autoPath = `${ts}-invoy-auto-backup.json`;
+      await window.api.exportBackupFile({ filePath: autoPath, json: JSON.stringify({ version: '2.0.0', ...current }, null, 2) });
+    } catch { /* best-effort, don't block restore */ }
+
     await Promise.all([
       window.api.storeSet('settings', backup.settings || {}),
       window.api.storeSet('clients', backup.clients || []),

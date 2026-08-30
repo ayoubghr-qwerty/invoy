@@ -219,6 +219,31 @@ export const translations = {
 
     // Cordialement (doc)
     cordialement: 'En votre aimable règlement,\nCordialement,',
+
+    // PDF labels
+    pdf_arrete_facture: 'Arrêté la présente facture à la somme en toutes taxes comprises de :',
+    pdf_designation_articles: 'Désignation des articles',
+    pdf_articles_livres: 'Articles livrés',
+    pdf_articles: 'Articles',
+    pdf_liste_produits: 'Liste des produits achetés',
+    pdf_info_client: 'Informations client',
+    pdf_total_facture: 'Total Facture',
+    pdf_montant_verse: 'Montant Versé',
+    pdf_notes_label: 'Notes :',
+    pdf_date_livraison: 'Date de livraison :',
+    pdf_total_client: 'Total client :',
+    pdf_horaire: 'Horaire',
+    pdf_designation_col: 'Désignation',
+    pdf_quantite_col: 'Quantité',
+    pdf_prix_unitaire_col: 'Prix Unitaire',
+    pdf_montant_da_col: 'Montant (DA)',
+    pdf_total_label: 'TOTAL',
+    pdf_droit_timbre: 'Droit de Timbre',
+    pdf_mode_reglement: 'Mode de règlement',
+    pdf_cheque: 'Chèque',
+    pdf_espece: 'Espèce',
+    pdf_cordialement: 'Cordialement,',
+    pdf_reglement: 'En votre aimable règlement,',
   },
 
   ar: {
@@ -441,6 +466,31 @@ export const translations = {
 
     // Cordialement (doc)
     cordialement: 'En votre aimable règlement,\nCordialement,',
+
+    // PDF labels
+    pdf_arrete_facture: 'حُرِّرت هذه الفاتورة بمبلغ إجمالي شامل للرسوم :',
+    pdf_designation_articles: 'بيان المنتجات',
+    pdf_articles_livres: 'المنتجات المسلّمة',
+    pdf_articles: 'المنتجات',
+    pdf_liste_produits: 'قائمة المنتجات المشتراة',
+    pdf_info_client: 'معلومات العميل',
+    pdf_total_facture: 'مجموع الفاتورة',
+    pdf_montant_verse: 'المبلغ المدفوع',
+    pdf_notes_label: 'ملاحظات :',
+    pdf_date_livraison: 'تاريخ التسليم :',
+    pdf_total_client: 'مجموع العميل :',
+    pdf_horaire: 'التوقيت',
+    pdf_designation_col: 'البيان',
+    pdf_quantite_col: 'الكمية',
+    pdf_prix_unitaire_col: 'سعر الوحدة',
+    pdf_montant_da_col: 'المبلغ (دج)',
+    pdf_total_label: 'المجموع',
+    pdf_droit_timbre: 'حق الطابع',
+    pdf_mode_reglement: 'طريقة الدفع',
+    pdf_cheque: 'شيك',
+    pdf_espece: 'نقداً',
+    pdf_cordialement: 'مع فائق الاحترام،',
+    pdf_reglement: 'في انتظار تسويةكم اللطيفة،',
   },
 };
 

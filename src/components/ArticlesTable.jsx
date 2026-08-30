@@ -33,7 +33,7 @@ export default function ArticlesTable({ articles = [], onChange, showNum = true 
       if (field === 'quantite' || field === 'prixUnitaire') {
         const qty = parseFloat(field === 'quantite' ? value : a.quantite) || 0;
         const pu  = parseFloat(field === 'prixUnitaire' ? value : a.prixUnitaire) || 0;
-        next.montant = (qty * pu).toFixed(2);
+        next.montant = qty * pu;
       }
       return next;
     });
@@ -92,7 +92,7 @@ export default function ArticlesTable({ articles = [], onChange, showNum = true 
       <div className="overflow-x-auto rounded-lg border" style={{ borderColor: 'var(--border-input)' }}>
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr style={{ background: '#1e293b' }}>
+            <tr style={{ background: 'var(--bg-table-header, #1e293b)' }}>
               {showNum && <th className="table-header w-10 text-center">{T('field_num_ordre')}</th>}
               <th className="table-header text-left">{T('field_designation')}</th>
               <th className="table-header w-24 text-center">{T('field_quantite')}</th>
@@ -174,7 +174,7 @@ export default function ArticlesTable({ articles = [], onChange, showNum = true 
           </tbody>
           {articles.length > 0 && (
             <tfoot>
-              <tr style={{ background: '#f0f3f9' }}>
+              <tr style={{ background: 'var(--bg-table-footer, #f0f3f9)' }}>
                 {showNum && <td></td>}
                 <td colSpan={2} className="px-3 py-2 text-xs text-slate-500 italic">
                   {articles.length} {articles.length > 1 ? T('articles_count_plural') : T('articles_count')}

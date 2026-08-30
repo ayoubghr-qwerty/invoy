@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
 import { Users, Truck, Package, CreditCard, Settings, Sun, Moon, ShoppingCart, LayoutList } from 'lucide-react';
 import { t } from './utils/i18n';
 
@@ -34,6 +34,7 @@ export default function App() {
   const [lang, setLangState] = useState('fr');
   const [darkMode, setDarkModeState] = useState(false);
   const [pendingLoad, setPendingLoad] = useState(null); // { type, data } from history
+  const toastTimerRef = useRef(null);
 
   function loadFromHistory(histEntry) {
     // Map history type to page id
@@ -72,8 +73,9 @@ export default function App() {
   }
 
   function showToast(msg, type = 'success') {
+    clearTimeout(toastTimerRef.current);
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3500);
+    toastTimerRef.current = setTimeout(() => setToast(null), 3500);
   }
 
   const isRTL = lang === 'ar';
@@ -173,7 +175,11 @@ export default function App() {
 
         {/* Main content */}
         <main className="flex-1 h-full overflow-y-auto" style={{ background: 'var(--bg-app)' }}>
-          {settings !== null && (
+          {settings === null ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-pulse text-slate-400 text-sm">Chargement...</div>
+            </div>
+          ) : (
             <div key={page} className="page-enter">
               {page === 'facture'    && <FactureProforma settings={settings} showToast={showToast} pendingLoad={pendingLoad?.type==='facture' ? pendingLoad : null} onLoadConsumed={() => setPendingLoad(null)} />}
               {page === 'clients'    && <Clients         settings={settings} showToast={showToast} onLoadFromHistory={loadFromHistory} />}

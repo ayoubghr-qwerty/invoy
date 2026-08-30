@@ -50,8 +50,13 @@ function makeApi() {
     async storeGet(key, def) {
       const p = await ensurePlugins();
       const store = await getStore(p);
-      const v = await store.get(key);
-      return v === undefined ? def : v;
+      try {
+        const v = await store.get(key);
+        return v === undefined ? def : v;
+      } catch {
+        console.warn(`Store read failed for key "${key}", using default`);
+        return def;
+      }
     },
     async storeSet(key, value) {
       const p = await ensurePlugins();
@@ -78,6 +83,13 @@ function makeApi() {
       });
       if (!path || Array.isArray(path)) return null;
       const data = await p.fs.readFile(path);
+      if (data.length > 5 * 1024 * 1024) return null;
+      const magic = Array.from(data.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join('');
+      const isPng = magic.startsWith('89504e47');
+      const isJpeg = magic.startsWith('ffd8ff');
+      const isGif = magic.startsWith('47494638');
+      const isWebp = magic.slice(8, 16) === '52494646' && magic.slice(16, 24) === '57454250';
+      if (!isPng && !isJpeg && !isGif && !isWebp) return null;
       const ext = path.split('.').pop().toLowerCase();
       const mime = ext === 'jpg' ? 'jpeg' : ext;
       return `data:image/${mime};base64,${b64FromU8(data)}`;

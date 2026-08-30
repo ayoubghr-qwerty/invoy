@@ -169,8 +169,8 @@ fn setup_and_print(
                                         data_b64,
                                     ) {
                                         Ok(pdf_bytes) => {
-                                            if let Err(e) = std::fs::write(&file_for_cdp_inner, &pdf_bytes) {
-                                                let _ = done_tx_for_cdp_inner.send(Err(format!("failed to write PDF: {e}")));
+                                            if let Err(_e) = std::fs::write(&file_for_cdp_inner, &pdf_bytes) {
+                                                let _ = done_tx_for_cdp_inner.send(Err("failed to write PDF file".to_string()));
                                             } else {
                                                 let _ = done_tx_for_cdp_inner.send(Ok(file_for_cdp_inner));
                                             }
@@ -180,7 +180,7 @@ fn setup_and_print(
                                         }
                                     }
                                 } else {
-                                    let _ = done_tx_for_cdp_inner.send(Err(format!("unexpected CDP response: {result_json}")));
+                                    let _ = done_tx_for_cdp_inner.send(Err("unexpected response from PDF renderer".to_string()));
                                 }
                             }
                             Err(e) => {
@@ -221,8 +221,8 @@ fn setup_and_print(
         Ok(())
     })();
 
-    if let Err(e) = result {
-        let msg = format!("failed to set up WebView2 PDF export: {e}");
+    if let Err(_e) = result {
+        let msg = "failed to initialize PDF export".to_string();
         let _ = done_tx_for_nav_err.send(Err(msg));
     }
 }

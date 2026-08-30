@@ -1,4 +1,20 @@
-import { numberToWordsFR } from './numberToWords';
+import { numberToWordsFR, numberToWordsAR } from './numberToWords';
+import { translations } from './i18n';
+
+function pdfT(lang, key) {
+  const dict = translations[lang] || translations.fr;
+  return dict[key] ?? translations.fr[key] ?? key;
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function fmt(n, d = 2) {
   return (parseFloat(n) || 0).toLocaleString('fr-DZ', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -66,23 +82,23 @@ function headerHtml(settings, title, subtitle, showFiscal = false, pageSize = 'A
     ? `<img src="${settings.logo}" alt="logo" />`
     : '';
   const fiscalParts = [];
-  if (settings.rc) fiscalParts.push(`RC N°: ${settings.rc}`);
-  if (settings.artImp) fiscalParts.push(`Art.Imp: ${settings.artImp}`);
-  if (settings.nif) fiscalParts.push(`NIF: ${settings.nif}`);
-  if (settings.nis) fiscalParts.push(`NIS: ${settings.nis}`);
+  if (settings.rc) fiscalParts.push(`RC N°: ${escapeHtml(settings.rc)}`);
+  if (settings.artImp) fiscalParts.push(`Art.Imp: ${escapeHtml(settings.artImp)}`);
+  if (settings.nif) fiscalParts.push(`NIF: ${escapeHtml(settings.nif)}`);
+  if (settings.nis) fiscalParts.push(`NIS: ${escapeHtml(settings.nis)}`);
 
-  const phones = (settings.telephones || []).join(' / ');
+  const phones = (settings.telephones || []).map(escapeHtml).join(' / ');
 
   return `
     <table class="header-table">
       <tr>
         <td class="header-logo">${logoHtml}</td>
         <td class="header-info">
-          <div class="org-name"><span dir="auto">${settings.organisation || ''}</span></div>
-          ${settings.proprietaire ? `<div class="org-sub"><span dir="auto">${settings.proprietaire}</span></div>` : ''}
-          ${settings.adresse ? `<div class="org-sub">${settings.adresse}</div>` : ''}
+          <div class="org-name"><span dir="auto">${escapeHtml(settings.organisation || '')}</span></div>
+          ${settings.proprietaire ? `<div class="org-sub"><span dir="auto">${escapeHtml(settings.proprietaire)}</span></div>` : ''}
+          ${settings.adresse ? `<div class="org-sub">${escapeHtml(settings.adresse)}</div>` : ''}
           ${phones ? `<div class="org-sub">Tél: ${phones}</div>` : ''}
-          ${settings.email ? `<div class="org-sub">Email: ${settings.email}</div>` : ''}
+          ${settings.email ? `<div class="org-sub">Email: ${escapeHtml(settings.email)}</div>` : ''}
           ${showFiscal && fiscalParts.length ? `<div class="fiscal-line">${fiscalParts.join(isA5 ? ' | ' : '   |   ')}</div>` : ''}
         </td>
       </tr>
@@ -112,7 +128,7 @@ function clientHtml(client, showFiscal = false) {
   ].filter(([, v]) => v);
 
   const rowsHtml = rows.map(([l, v]) =>
-    `<div class="client-row"><span class="client-label">${l}</span><span class="client-value">${v}</span></div>`
+    `<div class="client-row"><span class="client-label">${l}</span><span class="client-value" dir="auto">${escapeHtml(v)}</span></div>`
   ).join('');
 
   return `
@@ -123,14 +139,14 @@ function clientHtml(client, showFiscal = false) {
   `;
 }
 
-function itemsTableHtml(articles) {
+function itemsTableHtml(articles, lang = 'fr') {
   const rows = (articles || []).map((a, i) => {
     const qty = parseFloat(a.quantite) || 0;
     const pu = parseFloat(a.prixUnitaire) || 0;
     const montant = parseFloat(a.montant) || qty * pu;
     return `<tr>
       <td class="text-center">${i + 1}</td>
-      <td>${a.designation || ''}</td>
+      <td dir="auto">${escapeHtml(a.designation || '')}</td>
       <td class="text-center">${fmt(qty, 0)}</td>
       <td class="text-right">${fmt(pu)}</td>
       <td class="text-right">${fmt(montant)}</td>
@@ -141,10 +157,10 @@ function itemsTableHtml(articles) {
     <table class="items">
       <thead><tr>
         <th style="width:40px; text-align:center">N°</th>
-        <th style="text-align:left">Désignation</th>
-        <th style="width:80px; text-align:center">Quantité</th>
-        <th style="width:110px; text-align:right">Prix Unitaire</th>
-        <th style="width:120px; text-align:right">Montant (DA)</th>
+        <th style="text-align:left">${pdfT(lang, 'pdf_designation_col')}</th>
+        <th style="width:80px; text-align:center">${pdfT(lang, 'pdf_quantite_col')}</th>
+        <th style="width:110px; text-align:right">${pdfT(lang, 'pdf_prix_unitaire_col')}</th>
+        <th style="width:120px; text-align:right">${pdfT(lang, 'pdf_montant_da_col')}</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
@@ -157,38 +173,39 @@ export function buildFacturePdf(data, settings) {
   const { client = {}, articles = [], totaux = {}, date, numero, modeReglement = 'espece', docTitle = 'FACTURE PROFORMA', showArrete = true, showModeReglement = true, pageSize = 'A4' } = data;
   const primary = settings.couleur || '#0f2044';
   const fontFamily = settings.fontDoc || 'Arial';
+  const lang = settings.langue || 'fr';
   const subtitle = `N° ${numero || '____'}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
-  const ttcWords = numberToWordsFR(totaux.ttc || 0);
+  const ttcWords = (lang === 'ar' ? numberToWordsAR : numberToWordsFR)(totaux.ttc || 0);
 
   const totauxRows = [`
-    <tr><td></td><td class="totals-label">Total HT</td><td class="totals-value">${fmt(totaux.ht)} DA</td></tr>
-    ${totaux.tvaEnabled && totaux.tva > 0 ? `<tr><td></td><td class="totals-label">TVA (${totaux.tvaTaux}%)</td><td class="totals-value">${fmt(totaux.tva)} DA</td></tr>` : ''}
-    ${totaux.timbreEnabled && totaux.timbre > 0 ? `<tr><td></td><td class="totals-label">Droit de Timbre</td><td class="totals-value">${fmt(totaux.timbre)} DA</td></tr>` : ''}
-    <tr class="totals-highlight"><td></td><td class="totals-label">TOTAL TTC</td><td class="totals-value">${fmt(totaux.ttc)} DA</td></tr>
+    <tr><td></td><td class="totals-label">${pdfT(lang, 'total_ht')}</td><td class="totals-value">${fmt(totaux.ht)} DA</td></tr>
+    ${totaux.tvaEnabled && totaux.tva > 0 ? `<tr><td></td><td class="totals-label">${pdfT(lang, 'total_tva')} (${totaux.tvaTaux}%)</td><td class="totals-value">${fmt(totaux.tva)} DA</td></tr>` : ''}
+    ${totaux.timbreEnabled && totaux.timbre > 0 ? `<tr><td></td><td class="totals-label">${pdfT(lang, 'pdf_droit_timbre')}</td><td class="totals-value">${fmt(totaux.timbre)} DA</td></tr>` : ''}
+    <tr class="totals-highlight"><td></td><td class="totals-label">${pdfT(lang, 'total_ttc')}</td><td class="totals-value">${fmt(totaux.ttc)} DA</td></tr>
   `];
 
-  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  return `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
       ${headerHtml(settings, docTitle, subtitle, true, pageSize)}
       ${clientHtml(client, true)}
-      <div class="section-label">Désignation des articles</div>
-      ${itemsTableHtml(articles)}
+      <div class="section-label">${pdfT(lang, 'pdf_designation_articles')}</div>
+      ${itemsTableHtml(articles, lang)}
       <table class="totals-table"><tbody>${totauxRows.join('')}</tbody></table>
       ${showArrete ? `<div class="arrete">
-        Arrêté la présente facture à la somme en toutes taxes comprises de :<br>
+        ${pdfT(lang, 'pdf_arrete_facture')}<br>
         <strong>${ttcWords.toUpperCase()}</strong>
       </div>` : ''}
       <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:${pageSize === 'A5' ? '20px' : '40px'};">
         ${showModeReglement ? `<div>
           <div style="display:inline-block; border:1.5px solid ${primary}; border-radius:6px; padding:${pageSize === 'A5' ? '5px 12px' : '8px 20px'};">
-            <div style="font-size:${pageSize === 'A5' ? '8px' : '10px'}; color:#666; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">Mode de règlement</div>
-            <div style="font-size:${pageSize === 'A5' ? '11px' : '13px'}; font-weight:bold; color:${primary};">${modeReglement === 'cheque' ? 'Chèque' : 'Espèce'}</div>
+            <div style="font-size:${pageSize === 'A5' ? '8px' : '10px'}; color:#666; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px;">${pdfT(lang, 'pdf_mode_reglement')}</div>
+            <div style="font-size:${pageSize === 'A5' ? '11px' : '13px'}; font-weight:bold; color:${primary};">${modeReglement === 'cheque' ? pdfT(lang, 'pdf_cheque') : pdfT(lang, 'pdf_espece')}</div>
           </div>
         </div>` : '<div></div>'}
         <div class="cordialement" style="margin-top:0;">
-          En votre aimable règlement,<br>
-          Cordialement,<br>
-          ${settings.proprietaire ? `<div class="owner-name"><span dir="auto">${settings.proprietaire}</span></div>` : ''}
+          ${pdfT(lang, 'pdf_reglement')}<br>
+          ${pdfT(lang, 'pdf_cordialement')}<br>
+          ${settings.proprietaire ? `<div class="owner-name"><span dir="auto">${escapeHtml(settings.proprietaire)}</span></div>` : ''}
         </div>
       </div>
     </div>
@@ -199,16 +216,17 @@ export function buildBonLivraisonPdf(data, settings) {
   const { client = {}, articles = [], total = 0, date, numero, pageSize = 'A4' } = data;
   const primary = settings.couleur || '#0f2044';
   const fontFamily = settings.fontDoc || 'Arial';
+  const lang = settings.langue || 'fr';
   const subtitle = `N° ${numero || '____'}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
 
-  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  return `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, 'BON DE LIVRAISON', subtitle, false, pageSize)}
+      ${headerHtml(settings, lang === 'ar' ? 'سند التسليم' : 'BON DE LIVRAISON', subtitle, true, pageSize)}
       ${clientHtml(client, false)}
-      <div class="section-label">Articles livrés</div>
-      ${itemsTableHtml(articles)}
+      <div class="section-label">${pdfT(lang, 'pdf_articles_livres')}</div>
+      ${itemsTableHtml(articles, lang)}
       <table class="totals-table"><tbody>
-        <tr class="totals-highlight"><td></td><td class="totals-label">TOTAL</td><td class="totals-value">${fmt(total)} DA</td></tr>
+        <tr class="totals-highlight"><td></td><td class="totals-label">${pdfT(lang, 'pdf_total_label')}</td><td class="totals-value">${fmt(total)} DA</td></tr>
       </tbody></table>
     </div>
   </body></html>`;
@@ -218,19 +236,20 @@ export function buildBonVersementPdf(data, settings) {
   const { client = {}, articles = [], total = 0, montantVerse = 0, notes = '', date, numero, pageSize = 'A4' } = data;
   const primary = settings.couleur || '#0f2044';
   const fontFamily = settings.fontDoc || 'Arial';
+  const lang = settings.langue || 'fr';
   const subtitle = `N° ${numero || '____'}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
 
-  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  return `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, 'BON DE VERSEMENT', subtitle, false, pageSize)}
+      ${headerHtml(settings, lang === 'ar' ? 'سند الدفع' : 'BON DE VERSEMENT', subtitle, false, pageSize)}
       ${clientHtml(client, false)}
-      <div class="section-label">Articles</div>
-      ${itemsTableHtml(articles)}
+      <div class="section-label">${pdfT(lang, 'pdf_articles')}</div>
+      ${itemsTableHtml(articles, lang)}
       <table class="totals-table"><tbody>
-        <tr><td></td><td class="totals-label">Total Facture</td><td class="totals-value">${fmt(total)} DA</td></tr>
-        <tr class="versement-row"><td></td><td class="totals-label">Montant Versé</td><td class="totals-value">${fmt(montantVerse)} DA</td></tr>
+        <tr><td></td><td class="totals-label">${pdfT(lang, 'pdf_total_facture')}</td><td class="totals-value">${fmt(total)} DA</td></tr>
+        <tr class="versement-row"><td></td><td class="totals-label">${pdfT(lang, 'pdf_montant_verse')}</td><td class="totals-value">${fmt(montantVerse)} DA</td></tr>
       </tbody></table>
-      ${notes ? `<div class="notes-block"><strong>Notes :</strong><br>${notes}</div>` : ''}
+      ${notes ? `<div class="notes-block" dir="auto"><strong>${pdfT(lang, 'pdf_notes_label')}</strong><br>${escapeHtml(notes)}</div>` : ''}
     </div>
   </body></html>`;
 }
@@ -239,6 +258,7 @@ export function buildProgrammePdf(data, settings) {
   const { date, clients = [], pageSize = 'A4' } = data;
   const primary = settings.couleur || '#0f2044';
   const fontFamily = settings.fontDoc || 'Arial';
+  const lang = settings.langue || 'fr';
   const isA5 = pageSize === 'A5';
   const titleFs = isA5 ? '12px' : '13px';
   const infoFs = isA5 ? '10px' : '10.5px';
@@ -252,21 +272,21 @@ export function buildProgrammePdf(data, settings) {
     }, 0);
 
     const horaireStr = (cl.horaireDE || cl.horaireA)
-      ? `${cl.horaireDE || '?'} — ${cl.horaireA || '?'}`
+      ? `${escapeHtml(cl.horaireDE || '?')} — ${escapeHtml(cl.horaireA || '?')}`
       : '';
 
     // Phone and address on same line
     const infoLine = [
-      cl.telephone ? `Tél: ${cl.telephone}` : '',
-      cl.adresse || '',
+      cl.telephone ? `Tél: ${escapeHtml(cl.telephone)}` : '',
+      escapeHtml(cl.adresse || ''),
     ].filter(Boolean).join('&nbsp;&nbsp;|&nbsp;&nbsp;');
 
     return `
       ${idx > 0 ? '<div style="page-break-before:always"></div>' : ''}
       <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start;">
         <div>
-          <strong style="font-size:${titleFs};color:${primary}">${idx + 1}. ${cl.nom || 'Client'}</strong>
-          ${infoLine ? `<div style="color:#666;font-size:${infoFs};margin-top:2px">${infoLine}</div>` : ''}
+          <strong style="font-size:${titleFs};color:${primary}" dir="auto">${idx + 1}. ${escapeHtml(cl.nom || 'Client')}</strong>
+          ${infoLine ? `<div style="color:#666;font-size:${infoFs};margin-top:2px" dir="auto">${infoLine}</div>` : ''}
         </div>
         ${horaireStr ? `
           <div style="border:1.5px solid ${primary};border-radius:5px;padding:4px 12px;text-align:center;">
@@ -274,18 +294,18 @@ export function buildProgrammePdf(data, settings) {
             <div style="font-size:${horaireFs};font-weight:bold;color:${primary};">${horaireStr}</div>
           </div>` : ''}
       </div>
-      ${itemsTableHtml(cl.articles || [])}
+      ${itemsTableHtml(cl.articles || [], lang)}
       <div style="text-align:right;font-weight:bold;color:${primary};margin-bottom:${isA5 ? '12px' : '20px'}">
-        Total client : ${fmt(clTotal)} DA
+        ${pdfT(lang, 'pdf_total_client')} ${fmt(clTotal)} DA
       </div>
     `;
   }).join('');
 
-  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  return `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, 'PROGRAMME DE LIVRAISON', '', false, pageSize)}
+      ${headerHtml(settings, lang === 'ar' ? 'برنامج التوزيع' : 'PROGRAMME DE LIVRAISON', '', false, pageSize)}
       <div style="margin-bottom:${isA5 ? '10px' : '14px'}">
-        ${date ? `<div><strong>Date de livraison :</strong> ${fmtDate(date)}</div>` : ''}
+        ${date ? `<div><strong>${pdfT(lang, 'pdf_date_livraison')}</strong> ${fmtDate(date)}</div>` : ''}
       </div>
       ${clientsHtml}
     </div>
@@ -296,29 +316,30 @@ export function buildMarchandisePdf(data, settings) {
   const { date, numero, produits = [] } = data;
   const primary = settings.couleur || '#0f2044';
   const fontFamily = settings.fontDoc || 'Arial';
+  const lang = settings.langue || 'fr';
   const subtitle = `N° ${numero || '____'}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
 
   const rows = produits.map((p, i) => `
     <tr>
       <td class="text-center">${i + 1}</td>
-      <td>${p.designation || ''}</td>
-      <td class="text-center">${p.quantite || ''}</td>
-      <td>${p.description || ''}</td>
-      <td>${p.lieuAchat || ''}</td>
+      <td>${escapeHtml(p.designation || '')}</td>
+      <td class="text-center">${escapeHtml(p.quantite || '')}</td>
+      <td>${escapeHtml(p.description || '')}</td>
+      <td>${escapeHtml(p.lieuAchat || '')}</td>
     </tr>
   `).join('');
 
-  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily)}</head><body>
+  return `<!DOCTYPE html><html lang="${lang}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, 'BON DE MARCHANDISE', subtitle)}
-      <div class="section-label">Liste des produits achetés</div>
+      ${headerHtml(settings, lang === 'ar' ? 'وثيقة البضاعة' : 'BON DE MARCHANDISE', subtitle)}
+      <div class="section-label">${pdfT(lang, 'pdf_liste_produits')}</div>
       <table class="items">
         <thead><tr>
           <th style="width:40px">N°</th>
-          <th style="text-align:left">Désignation</th>
-          <th style="width:70px">Quantité</th>
-          <th style="text-align:left">Description</th>
-          <th style="text-align:left;width:130px">Lieu d'achat</th>
+          <th style="text-align:left">${pdfT(lang, 'pdf_designation_col')}</th>
+          <th style="width:70px">${pdfT(lang, 'pdf_quantite_col')}</th>
+          <th style="text-align:left">${lang === 'ar' ? 'الوصف' : 'Description'}</th>
+          <th style="text-align:left;width:130px">${lang === 'ar' ? 'مكان الشراء' : "Lieu d'achat"}</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
