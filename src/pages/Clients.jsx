@@ -6,11 +6,11 @@ import { t } from '../utils/i18n';
 import { getClientHistory } from '../utils/history';
 import EmptyState from '../components/EmptyState';
 
-const EMPTY_CLIENT = { nom: '', adresse: '', telephones: [''], agrement: '', nif: '', articlesImp: '', nis: '' };
+const EMPTY_CLIENT = { nom: '', adresse: '', telephones: [''], email: '', agrement: '', nif: '', articlesImp: '', nis: '' };
 
 function normalizeClient(c) {
-  if (!c.telephones) return { ...c, telephones: c.telephone ? [c.telephone] : [''], articlesImp: c.articlesImp || '' };
-  return { ...c, articlesImp: c.articlesImp || '' };
+  if (!c.telephones) return { ...c, email: c.email || '', telephones: c.telephone ? [c.telephone] : [''], articlesImp: c.articlesImp || '' };
+  return { ...c, email: c.email || '', articlesImp: c.articlesImp || '' };
 }
 
 export default function Clients({ settings, showToast, onLoadFromHistory }) {
@@ -127,7 +127,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
         id: Date.now() + Math.random(), nom: nomIdx >= 0 ? row[nomIdx] : '',
         adresse: adrIdx >= 0 ? row[adrIdx] : '',
         telephones: telIdx >= 0 && row[telIdx] ? [row[telIdx]] : [''],
-        agrement: '', nif: '', articlesImp: '', nis: '',
+        email: '', agrement: '', nif: '', articlesImp: '', nis: '',
       })).filter(c => c.nom.trim());
       if (!newC.length) { showToast(T('xls_no_valid'), 'error'); return; }
       await saveClients([...clients, ...newC]);
@@ -242,6 +242,10 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                       <Plus size={13}/> {T('btn_add_phone')}
                     </button>
                   </div>
+                </div>
+                <div className="col-span-2">
+                  <label className="form-label">{T('field_email')}</label>
+                  <input className="form-input" type="email" value={form.email || ''} onChange={e => set('email', e.target.value)} />
                 </div>
               </div>
             </div>

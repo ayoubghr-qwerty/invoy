@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Download, ChevronDown, FileText, FileType, Printer } from 'lucide-react';
+import { Download, ChevronDown, FileText, FileType, Printer, Mail } from 'lucide-react';
 import { useLang } from '../App';
 import { t } from '../utils/i18n';
 import { printDocument } from '../utils/printPdf';
+import { composeEmail } from '../utils/email';
 
 /**
- * ExportButton — dropdown with PDF (primary), DOCX (secondary), and Print
- * Props: onExport(format: 'pdf'|'docx'), loading: ''|'pdf'|'docx'|'print', color, htmlContent, T
+ * ExportButton — dropdown with PDF (primary), DOCX (secondary), Print, and Email
+ * Props: onExport(format: 'pdf'|'docx'), loading, color, htmlContent, T, client, docTitle, num, showToast
  */
-export default function ExportButton({ onExport, loading = '', color = '#0f2044', htmlContent, T: TProp }) {
+export default function ExportButton({ onExport, loading = '', color = '#0f2044', htmlContent, T: TProp, client, docTitle, num, showToast }) {
   const { lang } = useLang();
   const T = TProp || ((k) => t(lang, k));
   const [open, setOpen] = useState(false);
@@ -60,6 +61,20 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
             <button onClick={() => { setOpen(false); setPrintLoading(true); printDocument(htmlContent); setTimeout(() => setPrintLoading(false), 500); }} disabled={busy}>
               <Printer size={14} style={{ color: '#10b981' }} />
               {T('btn_print')}
+            </button>
+          )}
+          {client && (
+            <button onClick={() => {
+              const email = client.email || '';
+              if (!email) { showToast(T('email_client_required'), 'error'); return; }
+              composeEmail({
+                to: email,
+                subject: `${docTitle || 'Document'} N° ${num || ''}`,
+                body: `Veuillez trouver ci-joint le document.`,
+              });
+            }}>
+              <Mail size={14} style={{ color: '#8b5cf6' }} />
+              {T('btn_email')}
             </button>
           )}
         </div>

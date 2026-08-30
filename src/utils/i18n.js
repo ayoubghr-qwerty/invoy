@@ -398,6 +398,8 @@ export const translations = {
 
     // Print
     btn_print: 'Imprimer',
+    btn_email: 'Envoyer par email',
+    email_client_required: 'Sélectionnez un client avec email',
 
     // Companies
     company_title: 'Entreprises',
@@ -816,6 +818,8 @@ export const translations = {
 
     // Print
     btn_print: 'طباعة',
+    btn_email: 'إرسال بالبريد الإلكتروني',
+    email_client_required: 'اختر عميلاً لديه بريد إلكتروني',
 
     // Companies
     company_title: 'الشركات',
