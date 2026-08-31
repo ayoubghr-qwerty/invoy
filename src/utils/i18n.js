@@ -199,6 +199,11 @@ export const translations = {
     col_nom: 'Colonne Nom',
     col_adresse: 'Colonne Adresse',
     col_telephone: 'Colonne Téléphone',
+    col_email: 'Colonne Email',
+    col_agrement: 'Colonne Agrément',
+    col_nif: 'Colonne N° Identification Fiscale',
+    col_nis: 'Colonne NIS',
+    col_articles_imp: 'Colonne N° Articles',
     xls_preview_title: 'Aperçu (5 premières lignes)',
     xls_total_rows: 'ligne(s) au total.',
     xls_importing: 'Importation...',
@@ -305,11 +310,11 @@ export const translations = {
 
     // Font labels
     font_standard_label: 'Standard',
-    font_classique_label: 'Classique',
     font_moderne_label: 'Moderne',
-    font_lisible_label: 'Lisible',
-    font_net_label: 'Net',
-    font_monospace_label: 'Monospace',
+    font_elegant_label: 'Élégant',
+    font_contemporain_label: 'Contemporain',
+    font_tech_label: 'Tech',
+    font_classique_label: 'Classique',
 
     // Danger zone
     confirm_delete_all: 'Oui, supprimer tout',
@@ -621,6 +626,11 @@ export const translations = {
     col_nom: 'عمود الاسم',
     col_adresse: 'عمود العنوان',
     col_telephone: 'عمود الهاتف',
+    col_email: 'عمود البريد الإلكتروني',
+    col_agrement: 'عمود رقم الاعتماد',
+    col_nif: 'عمود رقم التعريف الجبائي',
+    col_nis: 'عمود NIS',
+    col_articles_imp: 'عمود رقم المواد',
     xls_preview_title: 'معاينة (أول 5 صفوف)',
     xls_total_rows: 'صف(وف) في المجموع.',
     xls_importing: 'جارٍ الاستيراد...',
@@ -731,11 +741,11 @@ export const translations = {
 
     // Font labels
     font_standard_label: 'قياسي',
-    font_classique_label: 'كلاسيكي',
     font_moderne_label: 'عصري',
-    font_lisible_label: 'مقروء',
-    font_net_label: 'نظيف',
-    font_monospace_label: 'خط ثابت',
+    font_elegant_label: 'أنيق',
+    font_contemporain_label: 'معاصر',
+    font_tech_label: 'تقني',
+    font_classique_label: 'كلاسيكي',
 
     title_produits: 'قائمة المنتجات',
     sub_produits: 'أدر تسميات منتجاتك. تُضاف تلقائيًا من مستنداتك.',

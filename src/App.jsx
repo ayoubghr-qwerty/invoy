@@ -192,7 +192,7 @@ export default function App() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 h-full overflow-y-auto" style={{ background: 'var(--bg-app)' }}>
+        <main className="flex-1 h-full overflow-y-auto px-8 py-6" style={{ background: 'var(--bg-app)' }}>
           {settings === null ? (
             <div className="flex items-center justify-center h-full">
               <div className="animate-pulse text-slate-400 text-sm">{T('loading')}</div>

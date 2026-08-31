@@ -126,8 +126,8 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
   const docColor = settings?.couleur || '#0f2044';
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-5xl mx-auto">
+      <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
         <div>
           <h1 className="text-2xl font-bold" style={{color:"var(--text-primary)"}}>{T('title_facture')}</h1>
           <p className="text-slate-500 text-sm mt-1">{T('sub_facture')}</p>
@@ -169,7 +169,7 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
             </div>
             <div>
               <label className="form-label">{T('field_date')}</label>
-              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} />
+              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} placeholder="JJ/MM/AAAA" />
             </div>
             <div className="flex items-end pb-1">
               <label className="flex items-center gap-3 cursor-pointer select-none">
@@ -201,25 +201,29 @@ export default function FactureProforma({ settings, showToast, pendingLoad, onLo
           <div className="mt-3 grid grid-cols-2 gap-4">
             <div>
               <label className="form-label">{T('field_nom')}</label>
-              <input className="form-input" value={client.nom} onChange={e => setClient(c => ({ ...c, nom: e.target.value }))} />
+              <input className="form-input" value={client.nom} onChange={e => setClient(c => ({ ...c, nom: e.target.value }))} placeholder="Ex: Société ABC" />
             </div>
             <div>
               <label className="form-label">{T('field_adresse')}</label>
-              <input className="form-input" value={client.adresse} onChange={e => setClient(c => ({ ...c, adresse: e.target.value }))} />
+              <input className="form-input" value={client.adresse} onChange={e => setClient(c => ({ ...c, adresse: e.target.value }))} placeholder="Ex: 123 Rue Didouche Mourad, Alger" />
             </div>
             <PhoneSection phones={client.telephones || ['']} onChange={tt => setClient(c => ({ ...c, telephones: tt }))} />
+            <div>
+              <label className="form-label">{T('field_email')}</label>
+              <input className="form-input" type="email" value={client.email || ''} onChange={e => setClient(c => ({ ...c, email: e.target.value }))} placeholder="Ex: contact@entreprise.dz" />
+            </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <p className="form-label mb-3">{T('sec_client_fiscal')}</p>
             <div className="grid grid-cols-2 gap-4">
               <div><label className="form-label">{T('field_agrement')}</label>
-                <input className="form-input" value={client.agrement} onChange={e => setClient(c => ({ ...c, agrement: e.target.value }))} /></div>
+                <input className="form-input" value={client.agrement} onChange={e => setClient(c => ({ ...c, agrement: e.target.value }))} placeholder="Ex: AGR-2024-00123" /></div>
               <div><label className="form-label">{T('field_nif')}</label>
-                <input className="form-input" value={client.nif} onChange={e => setClient(c => ({ ...c, nif: e.target.value }))} /></div>
+                <input className="form-input" value={client.nif} onChange={e => setClient(c => ({ ...c, nif: e.target.value }))} placeholder="Ex: 1234567890123" /></div>
               <div><label className="form-label">{T('field_articles_imp')}</label>
-                <input className="form-input" value={client.articlesImp} onChange={e => setClient(c => ({ ...c, articlesImp: e.target.value }))} /></div>
+                <input className="form-input" value={client.articlesImp} onChange={e => setClient(c => ({ ...c, articlesImp: e.target.value }))} placeholder="Ex: 123" /></div>
               <div><label className="form-label">{T('field_nis')}</label>
-                <input className="form-input" value={client.nis} onChange={e => setClient(c => ({ ...c, nis: e.target.value }))} /></div>
+                <input className="form-input" value={client.nis} onChange={e => setClient(c => ({ ...c, nis: e.target.value }))} placeholder="Ex: 1234567890123" /></div>
             </div>
           </div>
         </div>

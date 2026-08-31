@@ -139,8 +139,8 @@ export default function Marchandise({ settings, showToast }) {
   // ─── LIST VIEW ──────────────────────────────────────────────
   if (view === 'list') {
     return (
-      <div className="p-8 max-w-5xl">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
           <div>
             <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{T('title_marchandise')}</h1>
             <p className="text-slate-500 text-sm mt-1">{T('sub_marchandise')}</p>
@@ -195,8 +195,8 @@ export default function Marchandise({ settings, showToast }) {
 
   // ─── FORM VIEW ──────────────────────────────────────────────
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-5xl mx-auto">
+      <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
         <div className="flex items-center gap-3">
           <button onClick={() => setView('list')} className="btn-secondary p-2">
             <ChevronLeft size={18} />
@@ -232,9 +232,9 @@ export default function Marchandise({ settings, showToast }) {
           <h2 className="section-title">{T('sec_doc_info')}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="form-label">{T('field_numero')}</label>
-              <input className="form-input font-mono" value={num} onChange={e => setNum(e.target.value)} /></div>
+              <input className="form-input font-mono" value={num} onChange={e => setNum(e.target.value)} placeholder="0001" /></div>
             <div><label className="form-label">{T('field_date')}</label>
-              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} /></div>
+              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} placeholder="JJ/MM/AAAA" /></div>
           </div>
         </div>
 

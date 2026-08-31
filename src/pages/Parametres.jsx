@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, Save, Download, Upload, RotateCcw, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
 import { useLang } from '../App';
 import { useCompany } from '../context/CompanyContext';
 import { t } from '../utils/i18n';
@@ -25,6 +25,7 @@ export default function Parametres({ settings, onSave, showToast }) {
 
   const [counters, setCounters] = useState({});
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [dangerCollapsed, setDangerCollapsed] = useState(true);
   const [editingCompany, setEditingCompany] = useState(null);
   const [companyForm, setCompanyForm] = useState({ name: '', adresse: '', telephone: '', nif: '', nis: '', agrement: '', rc: '' });
   const [showAddCompany, setShowAddCompany] = useState(false);
@@ -184,29 +185,13 @@ export default function Parametres({ settings, onSave, showToast }) {
   const docColor = form.couleur || '#0f2044';
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-4xl mx-auto">
+      <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
         <div>
           <h1 className="text-2xl font-bold" style={{color:"var(--text-primary)"}}>{T('title_parametres')}</h1>
           <p className="text-slate-500 text-sm mt-1">{T('sub_parametres')}</p>
         </div>
         <button onClick={save} className="btn-primary"><Save size={16} /> {T('btn_save')}</button>
-      </div>
-
-      {/* Language */}
-      <div className="card mb-6">
-        <h2 className="section-title">{T('sec_language')}</h2>
-        <div className="flex gap-3">
-          {[{ code: 'fr', label: T('lang_fr_label') }, { code: 'ar', label: 'العربية' }].map(({ code, label }) => (
-            <button key={code} disabled className="flex-1 py-2 rounded-lg border-2 text-sm font-semibold transition-all"
-              style={{ borderColor: settings?.langue === code ? appColor : '#e2e8f0', color: settings?.langue === code ? appColor : '#94a3b8', background: settings?.langue === code ? appColor + '10' : 'white' }}>
-              {label}
-            </button>
-          ))}
-        </div>
-        <p className="text-xs text-slate-400 mt-2">
-          {lang === 'fr' ? T('lang_hint_fr') : T('lang_hint_ar')}
-        </p>
       </div>
 
       {/* Company Management */}
@@ -234,31 +219,31 @@ export default function Parametres({ settings, onSave, showToast }) {
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
                 <label className="form-label">{T('company_name')}</label>
-                <input className="form-input" value={companyForm.name} onChange={e => setCompanyForm(f => ({ ...f, name: e.target.value }))} />
+                <input className="form-input" value={companyForm.name} onChange={e => setCompanyForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Ma Société SARL" />
               </div>
               <div>
                 <label className="form-label">{T('company_adresse')}</label>
-                <input className="form-input" value={companyForm.adresse} onChange={e => setCompanyForm(f => ({ ...f, adresse: e.target.value }))} />
+                <input className="form-input" value={companyForm.adresse} onChange={e => setCompanyForm(f => ({ ...f, adresse: e.target.value }))} placeholder="Ex: 123 Rue Didouche Mourad, Alger" />
               </div>
               <div>
                 <label className="form-label">{T('company_telephone')}</label>
-                <input className="form-input" value={companyForm.telephone} onChange={e => setCompanyForm(f => ({ ...f, telephone: e.target.value }))} />
+                <input className="form-input" value={companyForm.telephone} onChange={e => setCompanyForm(f => ({ ...f, telephone: e.target.value }))} placeholder="Ex: +213 58 123 456" />
               </div>
               <div>
                 <label className="form-label">{T('field_nif')}</label>
-                <input className="form-input" value={companyForm.nif} onChange={e => setCompanyForm(f => ({ ...f, nif: e.target.value }))} />
+                <input className="form-input" value={companyForm.nif} onChange={e => setCompanyForm(f => ({ ...f, nif: e.target.value }))} placeholder="Ex: 1234567890123" />
               </div>
               <div>
                 <label className="form-label">{T('field_nis')}</label>
-                <input className="form-input" value={companyForm.nis} onChange={e => setCompanyForm(f => ({ ...f, nis: e.target.value }))} />
+                <input className="form-input" value={companyForm.nis} onChange={e => setCompanyForm(f => ({ ...f, nis: e.target.value }))} placeholder="Ex: 1234567890123" />
               </div>
               <div>
                 <label className="form-label">{T('field_agrement')}</label>
-                <input className="form-input" value={companyForm.agrement} onChange={e => setCompanyForm(f => ({ ...f, agrement: e.target.value }))} />
+                <input className="form-input" value={companyForm.agrement} onChange={e => setCompanyForm(f => ({ ...f, agrement: e.target.value }))} placeholder="Ex: AGR-2024-00123" />
               </div>
               <div>
                 <label className="form-label">{T('field_rc')}</label>
-                <input className="form-input" value={companyForm.rc} onChange={e => setCompanyForm(f => ({ ...f, rc: e.target.value }))} />
+                <input className="form-input" value={companyForm.rc} onChange={e => setCompanyForm(f => ({ ...f, rc: e.target.value }))} placeholder="Ex: 12/A/12345" />
               </div>
             </div>
             <div className="flex gap-2 mt-4">
@@ -390,11 +375,11 @@ export default function Parametres({ settings, onSave, showToast }) {
         <div className="grid grid-cols-3 gap-2">
           {[
             { name: 'Arial',           label: 'Arial',             subKey: 'font_standard_label' },
-            { name: 'Times New Roman', label: 'Times New Roman',   subKey: 'font_classique_label' },
             { name: 'Calibri',         label: 'Calibri',           subKey: 'font_moderne_label' },
-            { name: 'Tahoma',          label: 'Tahoma',            subKey: 'font_lisible_label' },
-            { name: 'Verdana',         label: 'Verdana',           subKey: 'font_net_label' },
-            { name: 'Courier New',     label: 'Courier New',       subKey: 'font_monospace_label' },
+            { name: 'Helvetica',       label: 'Helvetica',         subKey: 'font_elegant_label' },
+            { name: 'Inter',           label: 'Inter',             subKey: 'font_contemporain_label' },
+            { name: 'Roboto',          label: 'Roboto',            subKey: 'font_tech_label' },
+            { name: 'Times New Roman', label: 'Times New Roman',   subKey: 'font_classique_label' },
           ].map(f => (
             <button key={f.name} onClick={() => set('fontDoc', f.name)}
               className="p-3 rounded-lg border-2 text-left transition-all"
@@ -434,7 +419,7 @@ export default function Parametres({ settings, onSave, showToast }) {
           <div className="space-y-2">
             {form.telephones.map((p, i) => (
               <div key={i} className="flex items-center gap-2">
-                <input className="form-input flex-1" value={p} onChange={e => setPhone(i, e.target.value)} placeholder={`${T('field_telephone')} ${i + 1}`} />
+                <input className="form-input flex-1" value={p} onChange={e => setPhone(i, e.target.value)} placeholder="Ex: +213 58 123 456" />
                 {form.telephones.length > 1 && (
                   <button onClick={() => removePhone(i)} className="btn-danger p-2"><Trash2 size={14} /></button>
                 )}
@@ -453,13 +438,13 @@ export default function Parametres({ settings, onSave, showToast }) {
         <p className="text-xs mb-4" style={{color:"var(--text-muted)"}}>{T('fiscal_hint')}</p>
         <div className="grid grid-cols-2 gap-4">
           <div><label className="form-label">{T('field_rc')}</label>
-            <input className="form-input" value={form.rc} onChange={e => set('rc', e.target.value)} /></div>
+            <input className="form-input" value={form.rc} onChange={e => set('rc', e.target.value)} placeholder="Ex: 12/A/12345" /></div>
           <div><label className="form-label">{T('field_art_imp')}</label>
-            <input className="form-input" value={form.artImp} onChange={e => set('artImp', e.target.value)} /></div>
+            <input className="form-input" value={form.artImp} onChange={e => set('artImp', e.target.value)} placeholder="Ex: 123" /></div>
           <div><label className="form-label">{T('field_nif')}</label>
-            <input className="form-input" value={form.nif} onChange={e => set('nif', e.target.value)} /></div>
+            <input className="form-input" value={form.nif} onChange={e => set('nif', e.target.value)} placeholder="Ex: 1234567890123" /></div>
           <div><label className="form-label">{T('field_nis')}</label>
-            <input className="form-input" value={form.nis} onChange={e => set('nis', e.target.value)} /></div>
+            <input className="form-input" value={form.nis} onChange={e => set('nis', e.target.value)} placeholder="Ex: 1234567890123" /></div>
         </div>
       </div>
 
@@ -514,38 +499,44 @@ export default function Parametres({ settings, onSave, showToast }) {
 
       {/* Danger zone */}
       <div className="card mb-6" style={{ borderColor: '#ef4444', border: '1.5px solid #ef4444' }}>
-        <h2 className="section-title flex items-center gap-2" style={{ color: '#ef4444' }}>
-          <AlertTriangle size={16} /> {T('sec_danger')}
-        </h2>
-        <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{T('clear_all_hint')}</p>
+        <button
+          onClick={() => setDangerCollapsed(!dangerCollapsed)}
+          className="w-full flex items-center justify-between cursor-pointer"
+        >
+          <h2 className="section-title flex items-center gap-2" style={{ color: '#ef4444' }}>
+            <AlertTriangle size={16} /> {T('sec_danger')}
+          </h2>
+          {dangerCollapsed ? <ChevronRight size={18} style={{ color: '#ef4444', transition: 'transform 0.25s ease' }} /> : <ChevronDown size={18} style={{ color: '#ef4444', transition: 'transform 0.25s ease' }} />}
+        </button>
+        <div style={{ display: 'grid', gridTemplateRows: dangerCollapsed ? '0fr' : '1fr', transition: 'grid-template-rows 0.25s ease' }}>
+          <div style={{ overflow: 'hidden' }}>
+            <p className="text-sm mb-4 mt-3" style={{ color: 'var(--text-secondary)' }}>{T('clear_all_hint')}</p>
 
-        {!showClearConfirm ? (
-          <button onClick={() => setShowClearConfirm(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-            style={{ background: '#dc2626', color: 'white' }}>
-            <Trash2 size={14} /> {T('btn_clear_all')}
-          </button>
-        ) : (
-          <div className="p-4 rounded-lg" style={{ border: '1px solid #ef4444', background: 'var(--bg-alt)' }}>
-            <p className="text-sm font-semibold mb-3" style={{ color: '#ef4444' }}>{T('clear_all_confirm')}</p>
-            <div className="flex gap-3">
-              <button onClick={clearAllData}
-                className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">
-                {T('confirm_delete_all')}
+            {!showClearConfirm ? (
+              <button onClick={() => setShowClearConfirm(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                style={{ background: '#dc2626', color: 'white' }}>
+                <Trash2 size={14} /> {T('btn_clear_all')}
               </button>
-              <button onClick={() => setShowClearConfirm(false)}
-                className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
-                style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
-                {T('cancel')}
-              </button>
-            </div>
+            ) : (
+              <div className="p-4 rounded-lg" style={{ border: '1px solid #ef4444', background: 'var(--bg-alt)' }}>
+                <p className="text-sm font-semibold mb-3" style={{ color: '#ef4444' }}>{T('clear_all_confirm')}</p>
+                <div className="flex gap-3">
+                  <button onClick={clearAllData}
+                    className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition-colors">
+                    {T('confirm_delete_all')}
+                  </button>
+                  <button onClick={() => setShowClearConfirm(false)}
+                    className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+                    style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-color)' }}>
+                    {T('cancel')}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-
-      <button onClick={save} className="btn-primary w-full justify-center py-3 text-base">
-        <Save size={18} /> {T('btn_save_all')}
-      </button>
     </div>
   );
 }

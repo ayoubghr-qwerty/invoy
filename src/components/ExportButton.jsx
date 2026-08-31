@@ -26,26 +26,32 @@ export default function ExportButton({ onExport, loading = '', color = '#0f2044'
 
   return (
     <div ref={ref} className="export-dropdown">
-      {/* Main PDF button */}
-      <button
-        onClick={() => { setOpen(false); onExport('pdf'); }}
-        disabled={busy}
-        className="btn-primary rounded-r-none border-r border-white/20"
-        style={{ background: color, minWidth: 120 }}
-      >
-        <Download size={15} />
-        {loading === 'pdf' ? T('btn_exporting') : `${T('btn_export_pdf')}`}
-      </button>
+      {/* Connected button group */}
+      <div className="flex rounded-lg overflow-hidden shadow-sm" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)' }}>
+        {/* Main PDF button */}
+        <button
+          onClick={() => { setOpen(false); onExport('pdf'); }}
+          disabled={busy}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-150"
+          style={{ background: color, minWidth: 120 }}
+        >
+          <Download size={15} />
+          {loading === 'pdf' ? T('btn_exporting') : `${T('btn_export_pdf')}`}
+        </button>
 
-      {/* Chevron toggle */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        disabled={busy}
-        className="btn-primary rounded-l-none px-2"
-        style={{ background: color }}
-      >
-        <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
+        {/* Separator line */}
+        <div className="w-px" style={{ background: 'rgba(255,255,255,0.2)' }} />
+
+        {/* Chevron toggle */}
+        <button
+          onClick={() => setOpen(o => !o)}
+          disabled={busy}
+          className="flex items-center px-3 text-white transition-all duration-150 hover:brightness-110"
+          style={{ background: color }}
+        >
+          <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
 
       {/* Dropdown */}
       {open && (

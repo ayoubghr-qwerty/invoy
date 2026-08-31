@@ -88,8 +88,8 @@ export default function ProgrammeLivraison({ settings, showToast }) {
   const docColor = settings?.couleur || '#0f2044';
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-5xl mx-auto">
+      <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
         <div>
           <h1 className="text-2xl font-bold" style={{color:"var(--text-primary)"}}>{T('title_programme')}</h1>
           <p className="text-slate-500 text-sm mt-1">{T('sub_programme')}</p>
@@ -111,7 +111,7 @@ export default function ProgrammeLivraison({ settings, showToast }) {
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2">
               <label className="form-label">{T('field_date_livraison')}</label>
-              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} />
+              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} placeholder="JJ/MM/AAAA" />
             </div>
             <div>
               <PageSizeSelect value={pageSize} onChange={setPageSize} color={docColor} />
@@ -174,15 +174,15 @@ export default function ProgrammeLivraison({ settings, showToast }) {
                         <div className="grid grid-cols-3 gap-3">
                           <div>
                             <label className="form-label">{T('field_nom')}</label>
-                            <input className="form-input" value={cl.nom} onChange={e => updateClient(i, 'nom', e.target.value)} />
+                            <input className="form-input" value={cl.nom} onChange={e => updateClient(i, 'nom', e.target.value)} placeholder="Ex: Société ABC" />
                           </div>
                           <div>
                             <label className="form-label">{T('field_telephone')}</label>
-                            <input className="form-input" value={cl.telephone} onChange={e => updateClient(i, 'telephone', e.target.value)} />
+                            <input className="form-input" value={cl.telephone} onChange={e => updateClient(i, 'telephone', e.target.value)} placeholder="Ex: +213 58 123 456" />
                           </div>
                           <div>
                             <label className="form-label">{T('field_adresse')}</label>
-                            <input className="form-input" value={cl.adresse} onChange={e => updateClient(i, 'adresse', e.target.value)} />
+                            <input className="form-input" value={cl.adresse} onChange={e => updateClient(i, 'adresse', e.target.value)} placeholder="Ex: 123 Rue Didouche Mourad, Alger" />
                           </div>
                         </div>
                       </div>

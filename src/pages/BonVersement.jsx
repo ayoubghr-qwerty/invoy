@@ -100,8 +100,8 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
   const solde = total - parseFloat(montantVerse || 0);
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-5xl mx-auto">
+      <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
         <div>
           <h1 className="text-2xl font-bold" style={{color:"var(--text-primary)"}}>{T('title_versement')}</h1>
           <p className="text-slate-500 text-sm mt-1">{T('sub_versement')}</p>
@@ -121,9 +121,9 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
           <h2 className="section-title">{T('sec_doc_info')}</h2>
           <div className="grid grid-cols-3 gap-4">
             <div><label className="form-label">{T('field_numero')}</label>
-              <input className="form-input font-mono" value={num} onChange={e => setNum(e.target.value)} /></div>
+              <input className="form-input font-mono" value={num} onChange={e => setNum(e.target.value)} placeholder="0001" /></div>
             <div><label className="form-label">{T('field_date')}</label>
-              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} /></div>
+              <input type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} placeholder="JJ/MM/AAAA" /></div>
             <div>
               <PageSizeSelect value={pageSize} onChange={setPageSize} color={docColor} />
             </div>
@@ -135,20 +135,20 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
           <ClientSelect clients={clients} value={client} onChange={setClient} />
           <div className="mt-3 grid grid-cols-2 gap-4">
             <div><label className="form-label">{T('field_nom')}</label>
-              <input className="form-input" value={client.nom} onChange={e => setClient(c => ({ ...c, nom: e.target.value }))} /></div>
+              <input className="form-input" value={client.nom} onChange={e => setClient(c => ({ ...c, nom: e.target.value }))} placeholder="Ex: Société ABC" /></div>
             <div><label className="form-label">{T('field_adresse')}</label>
-              <input className="form-input" value={client.adresse} onChange={e => setClient(c => ({ ...c, adresse: e.target.value }))} /></div>
+              <input className="form-input" value={client.adresse} onChange={e => setClient(c => ({ ...c, adresse: e.target.value }))} placeholder="Ex: 123 Rue Didouche Mourad, Alger" /></div>
             <PhoneSection phones={client.telephones || ['']} onChange={tt => setClient(c => ({ ...c, telephones: tt }))} />
+            <div>
+              <label className="form-label">{T('field_email')}</label>
+              <input className="form-input" type="email" value={client.email || ''} onChange={e => setClient(c => ({ ...c, email: e.target.value }))} placeholder="Ex: contact@entreprise.dz" />
+            </div>
           </div>
         </div>
 
         <div className="card">
           <h2 className="section-title">{T('sec_articles_section')}</h2>
-          {articles.length === 0 ? (
-            <EmptyState icon={Package} title={T('empty_articles_title')} subtitle={T('empty_articles_subtitle')} />
-          ) : (
-            <ArticlesTable articles={articles} onChange={setArticles} />
-          )}
+          <ArticlesTable articles={articles} onChange={setArticles} />
         </div>
 
         <div className="card">
@@ -182,7 +182,7 @@ export default function BonVersement({ settings, showToast, pendingLoad, onLoadC
           </div>
           <div className="mt-4">
             <label className="form-label">{T('field_notes')}</label>
-            <textarea className="form-input resize-none" rows={3} value={notes} onChange={e => setNotes(e.target.value)} />
+            <textarea className="form-input resize-none" rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes, observations..." />
           </div>
         </div>
       </div>

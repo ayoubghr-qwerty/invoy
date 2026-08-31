@@ -25,7 +25,7 @@ export default function PhoneSection({ phones = [''], onChange }) {
   }
 
   return (
-    <div className="col-span-2">
+    <div>
       <label className="form-label">{T('field_telephones')}</label>
       <div className="space-y-2">
         {phones.map((p, i) => (
@@ -34,7 +34,7 @@ export default function PhoneSection({ phones = [''], onChange }) {
               className="form-input flex-1"
               value={p}
               onChange={e => update(i, e.target.value)}
-              placeholder={`${T('field_telephone')} ${i + 1}`}
+              placeholder="Ex: +213 58 123 456"
             />
             {phones.length > 1 && (
               <button onClick={() => remove(i)} className="btn-danger p-2">

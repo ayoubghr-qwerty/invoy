@@ -33,6 +33,11 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
   const [mapNom, setMapNom]             = useState('');
   const [mapAdresse, setMapAdresse]     = useState('');
   const [mapTel, setMapTel]             = useState('');
+  const [mapEmail, setMapEmail]         = useState('');
+  const [mapAgrement, setMapAgrement]   = useState('');
+  const [mapNif, setMapNif]             = useState('');
+  const [mapNis, setMapNis]             = useState('');
+  const [mapArticlesImp, setMapArticlesImp] = useState('');
   const [xlsImporting, setXlsImporting] = useState(false);
 
   useEffect(() => { loadClients(); }, []);
@@ -98,7 +103,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
 
   async function openXlsModal() {
     setXlsLoading(true); setXlsData(null);
-    setMapNom(''); setMapAdresse(''); setMapTel('');
+    setMapNom(''); setMapAdresse(''); setMapTel(''); setMapEmail(''); setMapAgrement(''); setMapNif(''); setMapNis(''); setMapArticlesImp('');
     setXlsModal(true);
     try {
       const result = await window.api.readExcel();
@@ -107,9 +112,14 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
       setXlsData(result);
       result.headers.forEach(h => {
         const hl = h.toLowerCase();
-        if (!mapNom     && (hl.includes('nom') || hl.includes('name') || hl.includes('client'))) setMapNom(h);
-        if (!mapAdresse && (hl.includes('adresse') || hl.includes('address') || hl.includes('adr'))) setMapAdresse(h);
-        if (!mapTel     && (hl.includes('tel') || hl.includes('phone') || hl.includes('mob'))) setMapTel(h);
+        if (!mapNom         && (hl.includes('nom') || hl.includes('name') || hl.includes('client')))   setMapNom(h);
+        if (!mapAdresse     && (hl.includes('adresse') || hl.includes('address') || hl.includes('adr'))) setMapAdresse(h);
+        if (!mapTel         && (hl.includes('tel') || hl.includes('phone') || hl.includes('mob')))   setMapTel(h);
+        if (!mapEmail       && (hl.includes('email') || hl.includes('mail')))                          setMapEmail(h);
+        if (!mapAgrement    && (hl.includes('agr') || hl.includes('agreement')))                       setMapAgrement(h);
+        if (!mapNif         && (hl.includes('nif') || hl.includes('identification fiscale') || hl.includes('fiscale'))) setMapNif(h);
+        if (!mapNis         && (hl.includes('nis')))                                                   setMapNis(h);
+        if (!mapArticlesImp && (hl.includes('article') || hl.includes('art.') || hl.includes('articles'))) setMapArticlesImp(h);
       });
     } catch (e) { showToast(T('xls_read_error') + e.message, 'error'); setXlsModal(false);
     } finally { setXlsLoading(false); }
@@ -123,11 +133,20 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
       const nomIdx = headers.indexOf(mapNom);
       const adrIdx = mapAdresse ? headers.indexOf(mapAdresse) : -1;
       const telIdx = mapTel ? headers.indexOf(mapTel) : -1;
+      const emailIdx = mapEmail ? headers.indexOf(mapEmail) : -1;
+      const agrIdx = mapAgrement ? headers.indexOf(mapAgrement) : -1;
+      const nifIdx = mapNif ? headers.indexOf(mapNif) : -1;
+      const nisIdx = mapNis ? headers.indexOf(mapNis) : -1;
+      const artIdx = mapArticlesImp ? headers.indexOf(mapArticlesImp) : -1;
       const newC = data.map(row => ({
         id: Date.now() + Math.random(), nom: nomIdx >= 0 ? row[nomIdx] : '',
         adresse: adrIdx >= 0 ? row[adrIdx] : '',
         telephones: telIdx >= 0 && row[telIdx] ? [row[telIdx]] : [''],
-        email: '', agrement: '', nif: '', articlesImp: '', nis: '',
+        email: emailIdx >= 0 ? row[emailIdx] : '',
+        agrement: agrIdx >= 0 ? row[agrIdx] : '',
+        nif: nifIdx >= 0 ? row[nifIdx] : '',
+        articlesImp: artIdx >= 0 ? row[artIdx] : '',
+        nis: nisIdx >= 0 ? row[nisIdx] : '',
       })).filter(c => c.nom.trim());
       if (!newC.length) { showToast(T('xls_no_valid'), 'error'); return; }
       await saveClients([...clients, ...newC]);
@@ -143,6 +162,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
     return clients.filter(c =>
       (c.nom||'').toLowerCase().includes(q) ||
       (c.adresse||'').toLowerCase().includes(q) ||
+      (c.email||'').toLowerCase().includes(q) ||
       (c.telephones||[]).some(p => p.includes(q))
     );
   }, [clients, search]);
@@ -165,8 +185,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
   // ═══════════════ DETAIL PAGE ═══════════════
   if (view === 'detail') {
     return (
-      <div className="p-8 max-w-5xl">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
           <div className="flex items-center gap-4">
               <button onClick={goBack}
                 className="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-xl border transition-colors hover:bg-slate-50"
@@ -223,18 +243,18 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="form-label">{T('field_nom_required')}</label>
-                  <input className="form-input" value={form.nom} onChange={e => set('nom', e.target.value)} autoFocus />
+                  <input className="form-input" value={form.nom} onChange={e => set('nom', e.target.value)} autoFocus placeholder="Ex: Société ABC" />
                 </div>
                 <div className="col-span-2">
                   <label className="form-label">{T('field_adresse')}</label>
-                  <input className="form-input" value={form.adresse} onChange={e => set('adresse', e.target.value)} />
+                  <input className="form-input" value={form.adresse} onChange={e => set('adresse', e.target.value)} placeholder="Ex: 123 Rue Didouche Mourad, Alger" />
                 </div>
                 <div className="col-span-2">
                   <label className="form-label">{T('field_telephones')}</label>
                   <div className="space-y-2">
                     {form.telephones.map((p, i) => (
                       <div key={i} className="flex gap-2">
-                        <input className="form-input flex-1" value={p} onChange={e => setPhone(i, e.target.value)} placeholder={`${T('field_telephone')} ${i+1}`}/>
+                        <input className="form-input flex-1" value={p} onChange={e => setPhone(i, e.target.value)} placeholder="Ex: +213 58 123 456"/>
                         {form.telephones.length > 1 && <button onClick={() => removePhone(i)} className="btn-danger p-2"><Trash2 size={14}/></button>}
                       </div>
                     ))}
@@ -245,17 +265,17 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                 </div>
                 <div className="col-span-2">
                   <label className="form-label">{T('field_email')}</label>
-                  <input className="form-input" type="email" value={form.email || ''} onChange={e => set('email', e.target.value)} />
+                  <input className="form-input" type="email" value={form.email || ''} onChange={e => set('email', e.target.value)} placeholder="Ex: contact@entreprise.dz" />
                 </div>
               </div>
             </div>
             <div className="card">
               <p className="section-title">{T('sec_coord_fisc')}</p>
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="form-label">{T('field_agrement')}</label><input className="form-input" value={form.agrement} onChange={e => set('agrement', e.target.value)}/></div>
-                <div><label className="form-label">{T('field_nif')}</label><input className="form-input" value={form.nif} onChange={e => set('nif', e.target.value)}/></div>
-                <div><label className="form-label">{T('field_articles_imp')}</label><input className="form-input" value={form.articlesImp} onChange={e => set('articlesImp', e.target.value)}/></div>
-                <div><label className="form-label">{T('field_nis')}</label><input className="form-input" value={form.nis} onChange={e => set('nis', e.target.value)}/></div>
+                <div><label className="form-label">{T('field_agrement')}</label><input className="form-input" value={form.agrement} onChange={e => set('agrement', e.target.value)} placeholder="Ex: AGR-2024-00123"/></div>
+                <div><label className="form-label">{T('field_nif')}</label><input className="form-input" value={form.nif} onChange={e => set('nif', e.target.value)} placeholder="Ex: 1234567890123"/></div>
+                <div><label className="form-label">{T('field_articles_imp')}</label><input className="form-input" value={form.articlesImp} onChange={e => set('articlesImp', e.target.value)} placeholder="Ex: 123"/></div>
+                <div><label className="form-label">{T('field_nis')}</label><input className="form-input" value={form.nis} onChange={e => set('nis', e.target.value)} placeholder="Ex: 1234567890123"/></div>
               </div>
             </div>
           </div>
@@ -441,8 +461,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
 
   // ═══════════════ LIST VIEW ═══════════════
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div>
+      <div className="sticky top-0 z-10 flex items-center justify-between py-4 mb-6 -mx-8 px-8" style={{ background: 'var(--bg-app)', borderBottom: '1px solid var(--border-color)' }}>
         <div>
           <h1 className="text-2xl font-bold" style={{color:'var(--text-primary)'}}>{T('title_clients')}</h1>
           <p className="text-slate-500 text-sm mt-1">{clients.length} {clients.length!==1?T('sub_clients_plural'):T('sub_clients')}</p>
@@ -477,14 +497,13 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                 <th className="table-header text-left">{T('th_nom')}</th>
                 <th className="table-header text-left">{T('th_adresse')}</th>
                 <th className="table-header text-left">{T('th_telephones')}</th>
-                <th className="table-header text-left">{T('th_nif')}</th>
-                <th className="table-header text-left">{T('th_articles')}</th>
+                <th className="table-header text-left">{T('field_email')}</th>
                 <th className="table-header w-44 text-center">{T('actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-8 text-slate-400 italic">{T('client_history_empty')} «&nbsp;{search}&nbsp;»</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-slate-400 italic">{T('client_history_empty')} «&nbsp;{search}&nbsp;»</td></tr>
               )}
               {filtered.map((c, i) => (
                 <tr key={c.id||i} className={`hover:bg-slate-50 cursor-pointer${i%2===1?' table-row-alt':''}`}
@@ -492,8 +511,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                   <td className="table-cell font-medium text-slate-800">{c.nom}</td>
                   <td className="table-cell text-slate-600">{c.adresse||'—'}</td>
                   <td className="table-cell text-slate-600">{(c.telephones||[]).filter(Boolean).join(' / ')||'—'}</td>
-                  <td className="table-cell text-slate-500 font-mono text-xs">{c.nif||'—'}</td>
-                  <td className="table-cell text-slate-500 font-mono text-xs">{c.articlesImp||'—'}</td>
+                  <td className="table-cell text-slate-600">{c.email||'—'}</td>
                   <td className="table-cell text-center" onClick={e => e.stopPropagation()}>
                     <div className="flex items-center justify-center gap-2">
                       <button onClick={() => openDetail(clients.indexOf(c), 'historique')}
@@ -528,9 +546,14 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                   <div>
                     <p className="section-title mb-4">{T('xls_select_col')}</p>
                     <div className="space-y-3">
-                      <ColSelect label={T('col_nom')} value={mapNom} onChange={setMapNom} required/>
-                      <ColSelect label={T('col_adresse')} value={mapAdresse} onChange={setMapAdresse}/>
-                      <ColSelect label={T('col_telephone')} value={mapTel} onChange={setMapTel}/>
+<ColSelect label={T('col_nom')} value={mapNom} onChange={setMapNom} required/>
+                        <ColSelect label={T('col_adresse')} value={mapAdresse} onChange={setMapAdresse}/>
+                        <ColSelect label={T('col_telephone')} value={mapTel} onChange={setMapTel}/>
+                        <ColSelect label={T('col_email')} value={mapEmail} onChange={setMapEmail}/>
+                        <ColSelect label={T('col_agrement')} value={mapAgrement} onChange={setMapAgrement}/>
+                        <ColSelect label={T('col_nif')} value={mapNif} onChange={setMapNif}/>
+                        <ColSelect label={T('col_nis')} value={mapNis} onChange={setMapNis}/>
+                        <ColSelect label={T('col_articles_imp')} value={mapArticlesImp} onChange={setMapArticlesImp}/>
                     </div>
                   </div>
                   <div>
