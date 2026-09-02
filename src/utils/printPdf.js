@@ -1,7 +1,7 @@
 export function printDocument(htmlContent) {
-  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  const printWindow = window.open("", "_blank", "width=800,height=600");
   if (!printWindow) {
-    alert('Popup blocked — please allow popups for printing');
+    alert("Popup blocked — please allow popups for printing");
     return;
   }
   printWindow.document.write(`

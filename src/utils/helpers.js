@@ -13,11 +13,14 @@ export function todayIso() {
  */
 export async function saveClientIfNew(client) {
   if (!client?.nom?.trim()) return;
-  const existing = await window.api.storeGet('clients', []);
-  if (!existing.find(c => c.nom.toLowerCase() === client.nom.toLowerCase())) {
-    await window.api.storeSet('clients', [...existing, { ...client, id: Date.now() }]);
+  const existing = await window.api.storeGet("clients", []);
+  if (!existing.find((c) => c.nom.toLowerCase() === client.nom.toLowerCase())) {
+    await window.api.storeSet("clients", [
+      ...existing,
+      { ...client, id: Date.now() },
+    ]);
   }
 }
 
 /** Available PDF page sizes. */
-export const PAGE_SIZES = ['A4', 'A5'];
+export const PAGE_SIZES = ["A4", "A5"];

@@ -1,12 +1,12 @@
-import { Plus, X } from 'lucide-react';
-import { useLang } from '../App';
-import { t } from '../utils/i18n';
+import { Plus, X } from "lucide-react";
+import { useLang } from "../App";
+import { t } from "../utils/i18n";
 
 /**
  * Reusable phone number list editor.
  * Props: phones (string[]), onChange (fn(newPhones))
  */
-export default function PhoneSection({ phones = [''], onChange }) {
+export default function PhoneSection({ phones = [""], onChange }) {
   const { lang } = useLang();
   const T = (k) => t(lang, k);
 
@@ -21,19 +21,19 @@ export default function PhoneSection({ phones = [''], onChange }) {
   }
 
   function add() {
-    onChange([...phones, '']);
+    onChange([...phones, ""]);
   }
 
   return (
     <div>
-      <label className="form-label">{T('field_telephones')}</label>
+      <label className="form-label">{T("field_telephones")}</label>
       <div className="space-y-2">
         {phones.map((p, i) => (
           <div key={i} className="flex gap-2">
             <input
               className="form-input flex-1"
               value={p}
-              onChange={e => update(i, e.target.value)}
+              onChange={(e) => update(i, e.target.value)}
               placeholder="Ex: +213 58 123 456"
             />
             {phones.length > 1 && (
@@ -43,8 +43,11 @@ export default function PhoneSection({ phones = [''], onChange }) {
             )}
           </div>
         ))}
-        <button onClick={add} className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800">
-          <Plus size={13} /> {T('btn_add_phone')}
+        <button
+          onClick={add}
+          className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+        >
+          <Plus size={13} /> {T("btn_add_phone")}
         </button>
       </div>
     </div>

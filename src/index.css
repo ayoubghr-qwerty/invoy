@@ -1,59 +1,98 @@
 /* ── Local Fonts (offline) ────────────────── */
 @font-face {
-  font-family: 'Inter';
+  font-family: "Inter";
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('/fonts/Inter-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/Inter-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Tajawal';
+  font-family: "Tajawal";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/Tajawal-arabic-400.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  src: url("/fonts/Tajawal-arabic-400.woff2") format("woff2");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF,
+    U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4,
+    U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24,
+    U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47,
+    U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59,
+    U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A,
+    U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89,
+    U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
-  font-family: 'Tajawal';
+  font-family: "Tajawal";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/Tajawal-latin-400.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/Tajawal-latin-400.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Tajawal';
+  font-family: "Tajawal";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/Tajawal-arabic-500.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  src: url("/fonts/Tajawal-arabic-500.woff2") format("woff2");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF,
+    U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4,
+    U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24,
+    U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47,
+    U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59,
+    U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A,
+    U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89,
+    U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
-  font-family: 'Tajawal';
+  font-family: "Tajawal";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/Tajawal-latin-500.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/Tajawal-latin-500.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
-  font-family: 'Tajawal';
+  font-family: "Tajawal";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/Tajawal-arabic-700.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+  src: url("/fonts/Tajawal-arabic-700.woff2") format("woff2");
+  unicode-range:
+    U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF,
+    U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4,
+    U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24,
+    U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47,
+    U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59,
+    U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A,
+    U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89,
+    U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
 }
 @font-face {
-  font-family: 'Tajawal';
+  font-family: "Tajawal";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/Tajawal-latin-700.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/Tajawal-latin-700.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
 }
 
 @tailwind base;
@@ -62,68 +101,103 @@
 
 /* ── CSS Variables ─────────────────────────── */
 :root {
-  --bg-app:        #f5f7fb;
-  --bg-card:       #ffffff;
-  --bg-input:      #ffffff;
-  --bg-alt:        #f9fafc;
-  --bg-hover:      #f0f3f9;
-  --border-color:  #e2e8f0;
-  --border-input:  #cbd5e1;
-  --text-primary:  #1a1a2e;
-  --text-secondary:#475569;
-  --text-muted:    #94a3b8;
-  --text-label:    #64748b;
-  --shadow-card:   0 1px 3px rgba(0,0,0,0.08);
-  --scrollbar-bg:  #f0f2f8;
-  --scrollbar-th:  #c0c8e0;
-  --table-border:  #e8ecf4;
+  --bg-app: #f5f7fb;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-alt: #f9fafc;
+  --bg-hover: #f0f3f9;
+  --border-color: #e2e8f0;
+  --border-input: #cbd5e1;
+  --text-primary: #1a1a2e;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-label: #64748b;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --scrollbar-bg: #f0f2f8;
+  --scrollbar-th: #c0c8e0;
+  --table-border: #e8ecf4;
 }
 
 html.dark {
-  --bg-app:        #0f1117;
-  --bg-card:       #1c1f2a;
-  --bg-input:      #252836;
-  --bg-alt:        #232536;
-  --bg-hover:      #2d3148;
-  --border-color:  #2e3349;
-  --border-input:  #3a3f5c;
-  --text-primary:  #e8eaf6;
-  --text-secondary:#a9b4d4;
-  --text-muted:    #6b7aa1;
-  --text-label:    #8895b8;
-  --shadow-card:   0 1px 6px rgba(0,0,0,0.4);
-  --scrollbar-bg:  #1c1f2a;
-  --scrollbar-th:  #3a3f5c;
-  --table-border:  #2e3349;
+  --bg-app: #0f1117;
+  --bg-card: #1c1f2a;
+  --bg-input: #252836;
+  --bg-alt: #232536;
+  --bg-hover: #2d3148;
+  --border-color: #2e3349;
+  --border-input: #3a3f5c;
+  --text-primary: #e8eaf6;
+  --text-secondary: #a9b4d4;
+  --text-muted: #6b7aa1;
+  --text-label: #8895b8;
+  --shadow-card: 0 1px 6px rgba(0, 0, 0, 0.4);
+  --scrollbar-bg: #1c1f2a;
+  --scrollbar-th: #3a3f5c;
+  --table-border: #2e3349;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body, #root {
+html,
+body,
+#root {
   overscroll-behavior: none;
   height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   background: var(--bg-app);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--scrollbar-bg); }
-::-webkit-scrollbar-thumb { background: var(--scrollbar-th); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9aaac8; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-th);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9aaac8;
+}
 
 /* ── Sidebar ───────────────────────────────── */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
 .sidebar-item {
   @apply flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-150 cursor-pointer;
   white-space: nowrap;
   overflow: hidden;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255, 255, 255, 0.65);
 }
 .sidebar-item span {
   overflow: hidden;
@@ -132,11 +206,11 @@ body {
   font-size: 12.5px;
 }
 .sidebar-item:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
 }
 .sidebar-item.active {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.18);
   color: white;
   font-weight: 700;
 }
@@ -152,20 +226,29 @@ body {
   color: var(--text-primary);
   border: 1px solid var(--border-input);
 }
-.form-input:focus { border-color: #60a5fa; }
+.form-input:focus {
+  border-color: #60a5fa;
+}
 .form-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.form-select { @apply form-input; }
+.form-select {
+  @apply form-input;
+}
 
 /* ── Buttons ───────────────────────────────── */
 .btn-primary {
   @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-150 shadow-sm;
   background: #0f2044;
 }
-.btn-primary:hover { background: #1a3360; }
-.btn-primary:disabled { background: #9aaac8; cursor: not-allowed; }
+.btn-primary:hover {
+  background: #1a3360;
+}
+.btn-primary:disabled {
+  background: #9aaac8;
+  cursor: not-allowed;
+}
 
 .btn-secondary {
   @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150;
@@ -173,21 +256,27 @@ body {
   border: 1px solid var(--border-color);
   background: var(--bg-card);
 }
-.btn-secondary:hover { background: var(--bg-hover); }
+.btn-secondary:hover {
+  background: var(--bg-hover);
+}
 
 .btn-danger {
   @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all;
   color: #f87171;
-  border: 1px solid rgba(248,113,113,0.3);
-  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.08);
 }
-.btn-danger:hover { background: rgba(248,113,113,0.15); }
+.btn-danger:hover {
+  background: rgba(248, 113, 113, 0.15);
+}
 
 .btn-gold {
   @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all;
   background: #c9a327;
 }
-.btn-gold:hover { background: #b08c1e; }
+.btn-gold:hover {
+  background: #b08c1e;
+}
 
 /* ── Cards ─────────────────────────────────── */
 .card {
@@ -213,49 +302,118 @@ body {
   color: var(--text-secondary);
   border-bottom: 1px solid var(--table-border);
 }
-.table-row-alt { background: var(--bg-alt); }
+.table-row-alt {
+  background: var(--bg-alt);
+}
 
 /* ── Toast ─────────────────────────────────── */
 .toast {
   @apply fixed bottom-6 right-6 flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-sm font-medium z-50;
   animation: slideUp 0.25s ease;
 }
-.toast-success { background: #0f2044; color: white; }
-.toast-error { @apply bg-red-600 text-white; }
+.toast-success {
+  background: #0f2044;
+  color: white;
+}
+.toast-error {
+  @apply bg-red-600 text-white;
+}
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* ── Dark mode overrides ───────────────────── */
-html.dark .card { background: var(--bg-card); }
-html.dark .form-input { background: var(--bg-input); color: var(--text-primary); }
-html.dark .btn-secondary { background: var(--bg-card); color: var(--text-secondary); border-color: var(--border-color); }
-html.dark .table-row-alt { background: var(--bg-alt); }
-html.dark input[type="checkbox"], html.dark input[type="radio"] { accent-color: #60a5fa; }
+html.dark .card {
+  background: var(--bg-card);
+}
+html.dark .form-input {
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+html.dark .btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+html.dark .table-row-alt {
+  background: var(--bg-alt);
+}
+html.dark input[type="checkbox"],
+html.dark input[type="radio"] {
+  accent-color: #60a5fa;
+}
 
 /* ── RTL / Arabic ──────────────────────────── */
-.rtl .sidebar-item { flex-direction: row-reverse; }
-.rtl .form-label { text-align: right; }
-.rtl .form-input { text-align: right; direction: rtl; }
-.rtl table th, .rtl table td { text-align: right; }
-.rtl .toast { left: 1.5rem; right: auto; }
+.rtl .sidebar-item {
+  flex-direction: row-reverse;
+}
+.rtl .form-label {
+  text-align: right;
+}
+.rtl .form-input {
+  text-align: right;
+  direction: rtl;
+}
+.rtl table th,
+.rtl table td {
+  text-align: right;
+}
+.rtl .toast {
+  left: 1.5rem;
+  right: auto;
+}
 
-.font-arabic, .rtl, .rtl * { font-family: 'Tajawal', 'Segoe UI', sans-serif; }
-.rtl input, .rtl textarea { font-family: 'Tajawal', 'Segoe UI', sans-serif; }
+.font-arabic,
+.rtl,
+.rtl * {
+  font-family: "Tajawal", "Segoe UI", sans-serif;
+}
+.rtl input,
+.rtl textarea {
+  font-family: "Tajawal", "Segoe UI", sans-serif;
+}
 
 /* ── Dark mode Tailwind overrides ──────────────────────────── */
-html.dark .bg-white   { background-color: var(--bg-card) !important; }
-html.dark .bg-slate-50 { background-color: var(--bg-alt) !important; }
-html.dark .bg-slate-100 { background-color: var(--bg-hover) !important; }
-html.dark .text-slate-800, html.dark .text-slate-900 { color: var(--text-primary) !important; }
-html.dark .text-slate-700 { color: var(--text-secondary) !important; }
-html.dark .text-slate-600, html.dark .text-slate-500 { color: var(--text-muted) !important; }
-html.dark .text-slate-400 { color: var(--text-muted) !important; }
-html.dark .border-slate-100 { border-color: var(--border-color) !important; }
-html.dark .border-slate-200 { border-color: var(--border-input) !important; }
-html.dark .divide-slate-100 > * { border-color: var(--border-color) !important; }
+html.dark .bg-white {
+  background-color: var(--bg-card) !important;
+}
+html.dark .bg-slate-50 {
+  background-color: var(--bg-alt) !important;
+}
+html.dark .bg-slate-100 {
+  background-color: var(--bg-hover) !important;
+}
+html.dark .text-slate-800,
+html.dark .text-slate-900 {
+  color: var(--text-primary) !important;
+}
+html.dark .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+html.dark .text-slate-600,
+html.dark .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+html.dark .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+html.dark .border-slate-100 {
+  border-color: var(--border-color) !important;
+}
+html.dark .border-slate-200 {
+  border-color: var(--border-input) !important;
+}
+html.dark .divide-slate-100 > * {
+  border-color: var(--border-color) !important;
+}
 
 /* Inputs, textareas, selects */
 html.dark input[type="text"],
@@ -277,49 +435,80 @@ html.dark input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 /* Modal/overlay backgrounds */
-html.dark .fixed.inset-0 { background-color: rgba(0,0,0,0.6) !important; }
+html.dark .fixed.inset-0 {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
 
 /* Dropdown results */
 html.dark .bg-white.border.border-slate-200.rounded-lg.shadow-xl {
   background-color: var(--bg-card) !important;
   border-color: var(--border-input) !important;
 }
-html.dark button:hover.hover\:bg-slate-50 { background-color: var(--bg-hover) !important; }
+html.dark button:hover.hover\:bg-slate-50 {
+  background-color: var(--bg-hover) !important;
+}
 
 /* Faint info blocks */
 html.dark .bg-slate-50.rounded-lg,
 html.dark .bg-slate-50.rounded-xl,
-html.dark [class*="bg-slate-50"] { background-color: var(--bg-alt) !important; }
+html.dark [class*="bg-slate-50"] {
+  background-color: var(--bg-alt) !important;
+}
 
 /* Toggle switch track */
-html.dark .bg-slate-300 { background-color: #3a3f5c !important; }
+html.dark .bg-slate-300 {
+  background-color: #3a3f5c !important;
+}
 
 /* Green success text */
-html.dark .text-green-600 { color: #4ade80 !important; }
-html.dark .text-blue-600 { color: #60a5fa !important; }
-html.dark .text-orange-600 { color: #fb923c !important; }
+html.dark .text-green-600 {
+  color: #4ade80 !important;
+}
+html.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+html.dark .text-orange-600 {
+  color: #fb923c !important;
+}
 
 /* Table inside pages */
-html.dark table td, html.dark table th {
+html.dark table td,
+html.dark table th {
   border-color: var(--border-color) !important;
 }
-html.dark .table-cell { color: var(--text-secondary) !important; }
-html.dark tr:nth-child(even) td { background-color: var(--bg-alt) !important; }
+html.dark .table-cell {
+  color: var(--text-secondary) !important;
+}
+html.dark tr:nth-child(even) td {
+  background-color: var(--bg-alt) !important;
+}
 
 /* Page headings h1/h2/h3 that use hardcoded colors */
-html.dark h1, html.dark h2, html.dark h3 { color: var(--text-primary) !important; }
+html.dark h1,
+html.dark h2,
+html.dark h3 {
+  color: var(--text-primary) !important;
+}
 
 /* Section titles (section-title class) */
-html.dark .section-title { color: var(--text-primary) !important; }
+html.dark .section-title {
+  color: var(--text-primary) !important;
+}
 
 /* form-label texts */
-html.dark .form-label { color: var(--text-label) !important; }
+html.dark .form-label {
+  color: var(--text-label) !important;
+}
 
 /* paragraph subtitles / description texts */
-html.dark p.text-sm, html.dark .text-sm.text-slate-500 { color: var(--text-muted) !important; }
+html.dark p.text-sm,
+html.dark .text-sm.text-slate-500 {
+  color: var(--text-muted) !important;
+}
 
 /* Info/hint boxes with border */
-html.dark .border.rounded-lg, html.dark .border.rounded-xl {
+html.dark .border.rounded-lg,
+html.dark .border.rounded-xl {
   border-color: var(--border-color) !important;
 }
 
@@ -329,29 +518,52 @@ html.dark .text-sm.p-3.rounded-lg.border {
   border-color: var(--border-color) !important;
   color: var(--text-secondary) !important;
 }
-html.dark .text-sm.p-3.rounded-lg.border .text-slate-600 { color: var(--text-muted) !important; }
+html.dark .text-sm.p-3.rounded-lg.border .text-slate-600 {
+  color: var(--text-muted) !important;
+}
 
 /* Buttons with hover states */
-html.dark .hover\:bg-slate-50:hover { background-color: var(--bg-hover) !important; }
-html.dark .hover\:bg-slate-100:hover { background-color: var(--bg-hover) !important; }
+html.dark .hover\:bg-slate-50:hover {
+  background-color: var(--bg-hover) !important;
+}
+html.dark .hover\:bg-slate-100:hover {
+  background-color: var(--bg-hover) !important;
+}
 
 /* Client select dropdown items */
-html.dark .hover\:bg-blue-50:hover { background-color: var(--bg-hover) !important; }
+html.dark .hover\:bg-blue-50:hover {
+  background-color: var(--bg-hover) !important;
+}
 
 /* Articles count badge */
-html.dark .bg-blue-50 { background-color: #1e2d4a !important; }
-html.dark .text-blue-700 { color: #93c5fd !important; }
+html.dark .bg-blue-50 {
+  background-color: #1e2d4a !important;
+}
+html.dark .text-blue-700 {
+  color: #93c5fd !important;
+}
 
 /* Total TTC row - keep readable in dark mode */
-html.dark .ttc-label { color: var(--text-primary) !important; }
+html.dark .ttc-label {
+  color: var(--text-primary) !important;
+}
 
 /* Disabled / empty state */
-html.dark .text-slate-300 { color: #4a526e !important; }
+html.dark .text-slate-300 {
+  color: #4a526e !important;
+}
 
 /* Parametres page - specific panels */
-html.dark .bg-blue-50.border-blue-100 { background-color: #1a2540 !important; border-color: #253563 !important; }
-html.dark .text-blue-800 { color: #93c5fd !important; }
-html.dark .text-blue-600 { color: #60a5fa !important; }
+html.dark .bg-blue-50.border-blue-100 {
+  background-color: #1a2540 !important;
+  border-color: #253563 !important;
+}
+html.dark .text-blue-800 {
+  color: #93c5fd !important;
+}
+html.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
 
 /* ─── Validation errors ────────────────────────────────────── */
 .field-error {
@@ -380,8 +592,14 @@ html.dark .validation-errors li {
 
 /* ─── Page transitions ─────────────────────────────────────── */
 @keyframes pageEnter {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .page-enter {
   animation: pageEnter 0.18s ease-out forwards;
@@ -392,18 +610,23 @@ html.dark .validation-errors li {
   outline: none;
   border-color: var(--accent, #3b82f6) !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 /* ─── Export dropdown button ───────────────────────────────── */
-.export-dropdown { position: relative; display: inline-flex; }
+.export-dropdown {
+  position: relative;
+  display: inline-flex;
+}
 .export-dropdown-menu {
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
   min-width: 160px;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   z-index: 100;
@@ -424,17 +647,77 @@ html.dark .validation-errors li {
   cursor: pointer;
   transition: background 0.1s;
 }
-.export-dropdown-menu button:hover { background: var(--bg-alt); }
+.export-dropdown-menu button:hover {
+  background: var(--bg-alt);
+}
 
 /* ─── Improved card hover ──────────────────────────────────── */
-.card { transition: box-shadow 0.15s; }
+.card {
+  transition: box-shadow 0.15s;
+}
 
 /* ─── Smooth sidebar ───────────────────────────────────────── */
-aside button { transition: background 0.12s, color 0.12s !important; }
+aside button {
+  transition:
+    background 0.12s,
+    color 0.12s !important;
+}
 
 /* ─── Table row hover ──────────────────────────────────────── */
-tbody tr { transition: background 0.1s; }
+tbody tr {
+  transition: background 0.1s;
+}
 
 /* ─── Tooltip ──────────────────────────────────────────────── */
-[title] { cursor: default; }
-button[title] { cursor: pointer; }
+[title] {
+  cursor: default;
+}
+button[title] {
+  cursor: pointer;
+}
+
+/* ─── Responsive / Tablet ──────────────────────────────────── */
+@media (max-width: 1024px) {
+  main {
+    padding: 1rem;
+  }
+  .sticky {
+    left: 0;
+    right: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  aside {
+    position: fixed;
+    z-index: 50;
+    height: 100vh;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  }
+  main {
+    margin-left: 64px;
+    padding: 1rem;
+  }
+  .sticky {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  .flex.gap-2 {
+    flex-wrap: wrap;
+  }
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+}

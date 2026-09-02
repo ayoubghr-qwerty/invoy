@@ -21,6 +21,13 @@ Thumbs.db
 # Rust
 *.pdb
 *.d
+
+# Test/repo strays
+.playwright-mcp/
+/*.pdf
+screenshot_*.png
+test-clients.xlsx
+self-test-*.txt
   
 # Planning artifacts  
 .superpowers/  
