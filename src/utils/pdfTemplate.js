@@ -1,4 +1,4 @@
-﻿import { numberToWordsFR, numberToWordsAR } from "./numberToWords";
+import { numberToWordsFR, numberToWordsAR } from "./numberToWords";
 import { translations } from "./i18n";
 import { fromCents, toCents, calcTva, calcTimbreCents } from "./money";
 
@@ -247,7 +247,7 @@ export function buildFacturePdf(data, settings) {
   `,
   ];
 
-  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8"><title>${escapeHtml(docTitle)} ${escapeHtml(numero || "")}</title>${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
       ${headerHtml(settings, docTitle, subtitle, true, pageSize)}
       ${clientHtml(client, true)}
@@ -295,9 +295,13 @@ export function buildBonLivraisonPdf(data, settings) {
   const lang = settings.langue || "fr";
   const subtitle = `N\u00b0 ${numero || "____"}\u2003|\u2003Date: ${fmtDate(date)}`;
 
-  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  const docTitle =
+    lang === "ar"
+      ? "\u0633\u0646\u062f \u0627\u0644\u062a\u0633\u0644\u064a\u0645"
+      : "BON DE LIVRAISON";
+  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8"><title>${escapeHtml(docTitle)} ${escapeHtml(numero || "")}</title>${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, lang === "ar" ? "\u0633\u0646\u062f \u0627\u0644\u062a\u0633\u0644\u064a\u0645" : "BON DE LIVRAISON", subtitle, true, pageSize)}
+      ${headerHtml(settings, docTitle, subtitle, true, pageSize)}
       ${clientHtml(client, false)}
       <div class="section-label">${pdfT(lang, "pdf_articles_livres")}</div>
       ${itemsTableHtml(articles, lang)}
@@ -324,9 +328,13 @@ export function buildBonVersementPdf(data, settings) {
   const lang = settings.langue || "fr";
   const subtitle = `N\u00b0 ${numero || "____"}\u2003|\u2003Date: ${fmtDate(date)}`;
 
-  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  const docTitle =
+    lang === "ar"
+      ? "\u0633\u0646\u062f \u0627\u0644\u062f\u0641\u0639"
+      : "BON DE VERSEMENT";
+  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8"><title>${escapeHtml(docTitle)} ${escapeHtml(numero || "")}</title>${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, lang === "ar" ? "\u0633\u0646\u062f \u0627\u0644\u062f\u0641\u0639" : "BON DE VERSEMENT", subtitle, false, pageSize)}
+      ${headerHtml(settings, docTitle, subtitle, false, pageSize)}
       ${clientHtml(client, false)}
       <div class="section-label">${pdfT(lang, "pdf_articles")}</div>
       ${itemsTableHtml(articles, lang)}
@@ -394,9 +402,13 @@ export function buildProgrammePdf(data, settings) {
     })
     .join("");
 
-  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
+  const docTitle =
+    lang === "ar"
+      ? "\u0628\u0631\u0646\u0627\u0645\u062c \u0627\u0644\u062a\u0648\u0632\u064a\u0639"
+      : "PROGRAMME DE LIVRAISON";
+  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8"><title>${escapeHtml(docTitle)}</title>${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, lang === "ar" ? "\u0628\u0631\u0646\u0627\u0645\u062c \u0627\u0644\u062a\u0648\u0632\u064a\u0639" : "PROGRAMME DE LIVRAISON", "", false, pageSize)}
+      ${headerHtml(settings, docTitle, "", false, pageSize)}
       <div style="margin-bottom:${isA5 ? "10px" : "14px"}">
         ${date ? `<div><strong>${pdfT(lang, "pdf_date_livraison")}</strong> ${fmtDate(date)}</div>` : ""}
       </div>
@@ -426,9 +438,13 @@ export function buildMarchandisePdf(data, settings) {
     )
     .join("");
 
-  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily)}</head><body>
+  const docTitle =
+    lang === "ar"
+      ? "\u0648\u062b\u064a\u0642\u0629 \u0627\u0644\u0628\u0636\u0627\u0639\u0629"
+      : "BON DE MARCHANDISE";
+  return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8"><title>${escapeHtml(docTitle)} ${escapeHtml(numero || "")}</title>${baseStyles(primary, fontFamily)}</head><body>
     <div class="doc">
-      ${headerHtml(settings, lang === "ar" ? "\u0648\u062b\u064a\u0642\u0629 \u0627\u0644\u0628\u0636\u0627\u0639\u0629" : "BON DE MARCHANDISE", subtitle)}
+      ${headerHtml(settings, docTitle, subtitle)}
       <div class="section-label">${pdfT(lang, "pdf_liste_produits")}</div>
       <table class="items">
         <thead><tr>

@@ -1,4 +1,4 @@
-﻿import {
+import {
   useState,
   useEffect,
   useCallback,
@@ -149,7 +149,7 @@ export default function App() {
     clearTimeout(toastTimerRef.current);
     const el = toastElRef.current;
     if (!el) return;
-    el.textContent = (type === "success" ? "âœ“ " : "âœ— ") + msg;
+    el.textContent = (type === "success" ? "✓ " : "✗ ") + msg;
     el.className = `toast toast-${type}`;
     el.style.left = isRTL ? "1.5rem" : "auto";
     el.style.right = isRTL ? "auto" : "1.5rem";
@@ -362,7 +362,7 @@ export default function App() {
                         color: lang === l ? "white" : "rgba(255,255,255,0.45)",
                       }}
                     >
-                      {l === "fr" ? "FR" : "AR"}
+                      {l === "fr" ? "FR" : "عربي"}
                     </button>
                   ))}
                 </div>
@@ -382,7 +382,7 @@ export default function App() {
                         color: lang === l ? "white" : "rgba(255,255,255,0.45)",
                       }}
                     >
-                      {l === "fr" ? "FR" : "Ø¹Ø±Ø¨ÙŠ"}
+                      {l === "fr" ? "FR" : "عربي"}
                     </button>
                   ))}
                 </div>

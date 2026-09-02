@@ -114,4 +114,22 @@ describe("Phase 1: export money display contract", () => {
     expect(html).toContain("N\u00b0 0006");
     expect(html).toContain("Date:");
   });
+
+  it("PDF <head> has a <title> (viewers use URL as title without one)", () => {
+    const html = buildFacturePdf(
+      {
+        client: { nom: "Client Test" },
+        articles: [],
+        totaux: { ht: 0, ttc: 0 },
+        numero: "0007",
+        date: "2026-09-02",
+      },
+      settings,
+    );
+    const m = html.match(/<title>([^<]*)<\/title>/);
+    expect(m).not.toBeNull();
+    expect(m[1].trim().length).toBeGreaterThan(0);
+    expect(m[1]).toContain("FACTURE PROFORMA");
+    expect(m[1]).toContain("0007");
+  });
 });
