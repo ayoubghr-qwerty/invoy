@@ -176,6 +176,7 @@ export default function Stock({ showToast }) {
 
   async function remove(id) {
     if (removingId) return;
+    if (!confirm(T("stock_delete_confirm"))) return;
     setRemovingId(id);
     try {
       await deleteStockProduct(id);
@@ -247,7 +248,7 @@ export default function Stock({ showToast }) {
                 className="block text-xs font-medium mb-1"
                 style={{ color: "var(--text-secondary)" }}
               >
-                {T("stock_name_required")}
+                {T("stock_name")}
               </label>
               <input
                 className="form-input w-full"
@@ -442,7 +443,7 @@ export default function Stock({ showToast }) {
                   "stock_min_qty",
                   "stock_cost_price",
                   "stock_sale_price",
-                  "stock_status_ok",
+                  "th_status",
                   "th_actions",
                 ].map((k) => (
                   <th
@@ -487,10 +488,16 @@ export default function Stock({ showToast }) {
                       </td>
                       <td className="px-4 py-2 font-mono">{p.minQty || 0}</td>
                       <td className="px-4 py-2 font-mono">
-                        {(p.costPrice || 0).toLocaleString()} DA
+                        {(p.costPrice || 0).toLocaleString("fr-DZ", {
+                          minimumFractionDigits: 2,
+                        })}{" "}
+                        DA
                       </td>
                       <td className="px-4 py-2 font-mono">
-                        {(p.salePrice || 0).toLocaleString()} DA
+                        {(p.salePrice || 0).toLocaleString("fr-DZ", {
+                          minimumFractionDigits: 2,
+                        })}{" "}
+                        DA
                       </td>
                       <td className="px-4 py-2">
                         <span
@@ -511,6 +518,8 @@ export default function Stock({ showToast }) {
                         </button>
                         <button
                           onClick={() => remove(p.id)}
+                          disabled={removingId === p.id}
+                          aria-label={T("btn_delete")}
                           className="text-red-400 hover:text-red-600 transition-colors p-1 rounded ml-1"
                         >
                           <Trash2 size={14} />

@@ -106,7 +106,7 @@ export default function StockMovements({ showToast }) {
     });
     closeForm();
     await load();
-    showToast(T("stock_added") + " movement");
+    showToast(T("stock_movement_added"));
   }
 
   const filtered = filterType
@@ -149,7 +149,8 @@ export default function StockMovements({ showToast }) {
               <button
                 key={f.value}
                 onClick={() => setFilterType(f.value)}
-                className="px-3 py-1.5 text-xs font-medium transition-all"
+                aria-pressed={filterType === f.value}
+                className="px-3 py-1.5 text-xs font-medium transition-colors"
                 style={{
                   background:
                     filterType === f.value ? "var(--accent)" : "var(--bg-alt)",
@@ -353,7 +354,7 @@ export default function StockMovements({ showToast }) {
                   >
                     <td className="px-4 py-2 text-slate-500">
                       {m.createdAt
-                        ? new Date(m.createdAt).toLocaleDateString()
+                        ? new Date(m.createdAt).toLocaleDateString("fr-DZ")
                         : "—"}
                     </td>
                     <td

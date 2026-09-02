@@ -378,8 +378,10 @@ export default function Marchandise({ settings, showToast }) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (!confirm(T("marchandise_delete_confirm"))) return;
                     deleteRecord(rec.id);
                   }}
+                  aria-label={T("btn_delete")}
                   className="btn-danger p-2 flex-shrink-0"
                 >
                   <Trash2 size={14} />

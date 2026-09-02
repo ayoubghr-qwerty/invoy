@@ -141,6 +141,7 @@ export default function PurchaseOrders({ showToast }) {
   }
 
   async function deletePO(id) {
+    if (!confirm(T("stock_po_delete_confirm"))) return;
     const all = await window.api.storeGet("purchase_orders", []);
     const po = (Array.isArray(all) ? all : []).find((p) => p.id === id);
     if (po && (po.status === "received" || po.status === "partial")) {
@@ -196,7 +197,7 @@ export default function PurchaseOrders({ showToast }) {
             }}
           >
             <ShoppingCart size={14} />
-            {pos.length}
+            {pos.length} {T("stock_po_count")}
           </div>
           <button onClick={openNew} className="btn-primary">
             <Plus size={16} /> {T("stock_po_new")}
@@ -339,7 +340,7 @@ export default function PurchaseOrders({ showToast }) {
             </div>
             {form.lines.length === 0 ? (
               <p className="text-sm text-slate-400 italic">
-                Aucun article — cliquez "+ Ajouter"
+                {T("stock_po_lines_empty")}
               </p>
             ) : (
               <div className="space-y-2">
@@ -474,6 +475,7 @@ export default function PurchaseOrders({ showToast }) {
                   )}
                   <button
                     onClick={() => deletePO(po.id)}
+                    aria-label={T("btn_delete")}
                     className="text-red-400 hover:text-red-600 p-1 transition-colors"
                   >
                     <Trash2 size={14} />
@@ -485,7 +487,7 @@ export default function PurchaseOrders({ showToast }) {
                   {po.lines.map((l, i) => (
                     <span key={i} className="mr-3">
                       {l.productName}: {l.qtyOrdered} {l.unit} (
-                      {l.qtyReceived || 0} reçu)
+                      {l.qtyReceived || 0} {T("stock_po_received_short")})
                     </span>
                   ))}
                 </div>
