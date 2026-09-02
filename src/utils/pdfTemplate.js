@@ -228,7 +228,7 @@ export function buildFacturePdf(data, settings) {
   const lang = settings.langue || "fr";
   const subtitle = `N\u00b0 ${numero || "____"}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
   const ttcWords = (lang === "ar" ? numberToWordsAR : numberToWordsFR)(
-    totaux.ttc || 0,
+    (totaux.ttc || 0) / 100,
   );
 
   const modeReg =

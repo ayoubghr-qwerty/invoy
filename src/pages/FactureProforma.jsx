@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import ArticlesTable from "../components/ArticlesTable";
 import ClientSelect from "../components/ClientSelect";
 import PhoneSection from "../components/PhoneSection";
+import PageSizeSelect from "../components/PageSizeSelect";
 import { numberToWordsFR } from "../utils/numberToWords";
 import { buildFacturePdf } from "../utils/pdfTemplate";
 import { useLang } from "../App";
@@ -166,6 +167,7 @@ export default function FactureProforma({
       showArrete,
       showModeReglement,
       settings,
+      pageSize,
     };
     const safeName = docTitle.replace(/\s+/g, "-");
     const filePath = await window.api.saveDialog({
@@ -245,6 +247,7 @@ export default function FactureProforma({
           showArrete,
           showModeReglement,
           settings,
+          pageSize,
         },
         settings,
       ),
@@ -259,6 +262,7 @@ export default function FactureProforma({
       showArrete,
       showModeReglement,
       settings,
+      pageSize,
     ],
   );
 
@@ -352,6 +356,13 @@ export default function FactureProforma({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 placeholder="JJ/MM/AAAA"
+              />
+            </div>
+            <div className="flex items-end pb-1">
+              <PageSizeSelect
+                value={pageSize}
+                onChange={setPageSize}
+                color={docColor}
               />
             </div>
             <div className="flex items-end pb-1">

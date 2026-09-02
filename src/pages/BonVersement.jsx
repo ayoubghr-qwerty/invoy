@@ -49,7 +49,8 @@ export default function BonVersement({
     const d = pendingLoad;
     if (d.client) setClient(d.client);
     if (d.articles) setArticles(d.articles);
-    if (d.montantVerse != null) setMontantVerse(String(d.montantVerse));
+    if (d.montantVerse != null)
+      setMontantVerse(String((d.montantVerse || 0) / 100));
     if (d.notes) setNotes(d.notes);
     if (d.pageSize) setPageSize(d.pageSize);
     if (d.date) setDate(d.date);
@@ -156,8 +157,8 @@ export default function BonVersement({
           date,
           client,
           articles,
-          montant: parseFloat(montantVerse) || total,
-          montantVerse: parseFloat(montantVerse) || 0,
+          montant: montantVerseCents || total,
+          montantVerse: montantVerseCents,
           notes,
           pageSize,
         });

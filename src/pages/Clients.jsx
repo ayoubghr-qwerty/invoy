@@ -15,6 +15,7 @@ import {
 import { useLang } from "../App";
 import { t } from "../utils/i18n";
 import { getClientHistory } from "../utils/history";
+import { fromCents, sumCents } from "../utils/money";
 import EmptyState from "../components/EmptyState";
 import { useKeyboardActions } from "../hooks/KeyboardActionsContext";
 
@@ -594,10 +595,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                         : "#f59e0b";
                   const ht =
                     h.totaux?.ht ??
-                    (h.articles || []).reduce(
-                      (s, a) => s + (parseFloat(a.montant) || 0),
-                      0,
-                    );
+                    sumCents((h.articles || []).map((a) => a.montant));
                   const tva = h.totaux?.tvaEnabled ? h.totaux?.tva || 0 : 0;
                   const articleCount = (h.articles || []).length;
                   return (
@@ -663,9 +661,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                             className="text-sm font-bold"
                             style={{ color: primary }}
                           >
-                            {(h.montant || 0).toLocaleString("fr-DZ", {
-                              minimumFractionDigits: 2,
-                            })}
+                            {fromCents(h.montant || 0)}
                           </div>
                         </div>
                       </div>
@@ -910,15 +906,14 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                               className="font-medium"
                               style={{ color: "var(--text-primary)" }}
                             >
-                              {(
+                              {fromCents(
                                 histDetail.totaux?.ht ??
-                                (histDetail.articles || []).reduce(
-                                  (s, a) => s + (parseFloat(a.montant) || 0),
-                                  0,
-                                )
-                              ).toLocaleString("fr-DZ", {
-                                minimumFractionDigits: 2,
-                              })}{" "}
+                                  sumCents(
+                                    (histDetail.articles || []).map(
+                                      (a) => a.montant,
+                                    ),
+                                  ),
+                              )}{" "}
                               DA
                             </span>
                           </div>
@@ -940,9 +935,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                                 className="font-semibold"
                                 style={{ color: "#b45309" }}
                               >
-                                {(histDetail.totaux.tva || 0).toLocaleString(
-                                  "fr-DZ",
-                                  { minimumFractionDigits: 2 },
+                                {fromCents(
+                                  histDetail.totaux?.tva || 0,
                                 )}{" "}
                                 DA
                               </span>
@@ -963,9 +957,8 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                                 className="font-medium"
                                 style={{ color: "var(--text-primary)" }}
                               >
-                                {histDetail.totaux.timbre.toLocaleString(
-                                  "fr-DZ",
-                                  { minimumFractionDigits: 2 },
+                                {fromCents(
+                                  histDetail.totaux?.timbre || 0,
                                 )}{" "}
                                 DA
                               </span>
@@ -985,11 +978,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                               className="font-bold text-base"
                               style={{ color: typeColor }}
                             >
-                              {(histDetail.montant || 0).toLocaleString(
-                                "fr-DZ",
-                                { minimumFractionDigits: 2 },
-                              )}{" "}
-                              DA
+                              {fromCents(histDetail.montant || 0)} DA
                             </span>
                           </div>
                           {histDetail.montantVerse != null && (
@@ -1007,11 +996,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                                 className="font-semibold"
                                 style={{ color: "var(--text-primary)" }}
                               >
-                                {(histDetail.montantVerse || 0).toLocaleString(
-                                  "fr-DZ",
-                                  { minimumFractionDigits: 2 },
-                                )}{" "}
-                                DA
+                              {fromCents(histDetail.montantVerse || 0)} DA
                               </span>
                             </div>
                           )}

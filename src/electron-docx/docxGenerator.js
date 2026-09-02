@@ -32,6 +32,14 @@ import {
   PageNumber,
 } from "docx";
 import { numberToWordsFR } from "../utils/numberToWords.js";
+import { fromCents } from "../utils/money.js";
+
+// Convert cents (integer) to formatted dinars string for DOCX display.
+// Convention: pages pass totaux/total/montantVerse in CENTS; article row
+// fields (quantite/prixUnitaire/montant) stay in dinars and are NOT converted.
+function fmtDinars(cents, decimals = 2) {
+  return fromCents(cents, decimals);
+}
 
 // ─── Page size constants (DXA: 1440 = 1 inch) ───────────────
 const A4_W = 11906;
@@ -535,14 +543,14 @@ function buildTotals(
   }
 
   const rows = [];
-  rows.push(totalRow("Total HT", `${formatNum(totaux.ht)} DA`));
+  rows.push(totalRow("Total HT", `${fmtDinars(totaux.ht)} DA`));
   if (totaux.tvaEnabled && totaux.tva > 0)
     rows.push(
-      totalRow(`TVA (${totaux.tvaTaux}%)`, `${formatNum(totaux.tva)} DA`),
+      totalRow(`TVA (${totaux.tvaTaux}%)`, `${fmtDinars(totaux.tva)} DA`),
     );
   if (totaux.timbreEnabled && totaux.timbre > 0)
-    rows.push(totalRow("Droit de Timbre", `${formatNum(totaux.timbre)} DA`));
-  rows.push(totalRow("TOTAL TTC", `${formatNum(totaux.ttc)} DA`, true));
+    rows.push(totalRow("Droit de Timbre", `${fmtDinars(totaux.timbre)} DA`));
+  rows.push(totalRow("TOTAL TTC", `${fmtDinars(totaux.ttc)} DA`, true));
 
   return new Table({
     width: { size: cw, type: WidthType.DXA },
@@ -645,7 +653,7 @@ function buildFactureProforma(data, settings, primaryColor, dims) {
     emptyPara(isA5 ? 140 : 200),
   ];
 
-  const ttcWords = numberToWordsFR(totaux.ttc || 0);
+  const ttcWords = numberToWordsFR((totaux.ttc || 0) / 100);
   if (showArrete) {
     children.push(
       new Paragraph({
@@ -775,7 +783,7 @@ function buildBonLivraison(data, settings, primaryColor, dims) {
           }),
           cell(
             [
-              para(`${formatNum(total)} DA`, {
+              para(`${fmtDinars(total)} DA`, {
                 bold: true,
                 size: sz,
                 color: primaryColor,
@@ -846,7 +854,7 @@ function buildBonVersement(data, settings, primaryColor, dims) {
           }),
           cell(
             [
-              para(`${formatNum(total)} DA`, {
+              para(`${fmtDinars(total)} DA`, {
                 size: szSm,
                 align: AlignmentType.RIGHT,
               }),
@@ -884,7 +892,7 @@ function buildBonVersement(data, settings, primaryColor, dims) {
           ),
           cell(
             [
-              para(`${formatNum(montantVerse)} DA`, {
+              para(`${fmtDinars(montantVerse)} DA`, {
                 bold: true,
                 size: sz,
                 color: primaryColor,
