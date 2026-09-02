@@ -96,4 +96,22 @@ describe("Phase 1: export money display contract", () => {
     );
     expect(html).toContain("@page { size: A5");
   });
+
+  it("subtitle renders separator without literal &nbsp; text", () => {
+    const html = buildFacturePdf(
+      {
+        client: { nom: "Client Test" },
+        articles: [],
+        totaux: { ht: 0, ttc: 0 },
+        numero: "0006",
+        date: "2026-09-02",
+      },
+      settings,
+    );
+    // escapeHtml must not turn the separator into visible "&nbsp;|&nbsp;"
+    expect(html).not.toContain("&nbsp;");
+    expect(html).not.toContain("&amp;nbsp;");
+    expect(html).toContain("N\u00b0 0006");
+    expect(html).toContain("Date:");
+  });
 });

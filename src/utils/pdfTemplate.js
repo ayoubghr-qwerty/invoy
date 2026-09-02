@@ -1,4 +1,4 @@
-import { numberToWordsFR, numberToWordsAR } from "./numberToWords";
+﻿import { numberToWordsFR, numberToWordsAR } from "./numberToWords";
 import { translations } from "./i18n";
 import { fromCents, toCents, calcTva, calcTimbreCents } from "./money";
 
@@ -228,7 +228,7 @@ export function buildFacturePdf(data, settings) {
   const primary = settings.couleur || "#0f2044";
   const fontFamily = settings.fontDoc || "Arial";
   const lang = settings.langue || "fr";
-  const subtitle = `N\u00b0 ${numero || "____"}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
+  const subtitle = `N\u00b0 ${numero || "____"}\u2003|\u2003Date: ${fmtDate(date)}`;
   const ttcWords = (lang === "ar" ? numberToWordsAR : numberToWordsFR)(
     (totaux.ttc || 0) / 100,
   );
@@ -293,7 +293,7 @@ export function buildBonLivraisonPdf(data, settings) {
   const primary = settings.couleur || "#0f2044";
   const fontFamily = settings.fontDoc || "Arial";
   const lang = settings.langue || "fr";
-  const subtitle = `N\u00b0 ${numero || "____"}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
+  const subtitle = `N\u00b0 ${numero || "____"}\u2003|\u2003Date: ${fmtDate(date)}`;
 
   return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
@@ -322,7 +322,7 @@ export function buildBonVersementPdf(data, settings) {
   const primary = settings.couleur || "#0f2044";
   const fontFamily = settings.fontDoc || "Arial";
   const lang = settings.langue || "fr";
-  const subtitle = `N\u00b0 ${numero || "____"}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
+  const subtitle = `N\u00b0 ${numero || "____"}\u2003|\u2003Date: ${fmtDate(date)}`;
 
   return `<!DOCTYPE html><html lang="${escapeAttr(lang)}"><head><meta charset="UTF-8">${baseStyles(primary, fontFamily, pageSize)}</head><body>
     <div class="doc">
@@ -410,7 +410,7 @@ export function buildMarchandisePdf(data, settings) {
   const primary = settings.couleur || "#0f2044";
   const fontFamily = settings.fontDoc || "Arial";
   const lang = settings.langue || "fr";
-  const subtitle = `N\u00b0 ${numero || "____"}   &nbsp;|&nbsp;   Date: ${fmtDate(date)}`;
+  const subtitle = `N\u00b0 ${numero || "____"}\u2003|\u2003Date: ${fmtDate(date)}`;
 
   const rows = produits
     .map(
