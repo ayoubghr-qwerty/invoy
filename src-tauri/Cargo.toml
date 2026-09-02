@@ -1,6 +1,6 @@
 [package]
 name = "invoy"
-version = "2.0.0"
+version = "2.2.0"
 description = "Gestion commerciale - Factures, Bons de livraison, Bons de versement"
 authors = ["Invoy"]
 edition = "2021"
