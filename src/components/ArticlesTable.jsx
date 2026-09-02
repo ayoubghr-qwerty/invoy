@@ -82,7 +82,7 @@ export default function ArticlesTable({
                 salePrice: line.prixUnitaire || 0,
               }),
             )
-            .catch(() => {});
+            .catch((e) => console.error("Stock auto-create failed:", e));
         }
       });
     }

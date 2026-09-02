@@ -360,6 +360,22 @@ describe("unified catalog: ensureStockProductFromArticle", () => {
     const widgets = stock.filter((p) => p.name.toLowerCase() === "widget");
     expect(widgets).toHaveLength(1);
   });
+
+  it("concurrent ensures for the same name create exactly one item (TOCTOU)", async () => {
+    const [a, b, c] = await Promise.all([
+      ensureStockProductFromArticle({ name: "Race Condition Item" }),
+      ensureStockProductFromArticle({ name: "race condition item" }),
+      ensureStockProductFromArticle({ name: "RACE CONDITION ITEM" }),
+    ]);
+    expect(a).toBeTruthy();
+    expect(b).toBe(a);
+    expect(c).toBe(a);
+    const stock = await getStock();
+    const items = stock.filter(
+      (p) => p.name.toLowerCase() === "race condition item",
+    );
+    expect(items).toHaveLength(1);
+  });
 });
 
 describe("unified catalog: applySaleMovements (Bon de livraison)", () => {
@@ -394,7 +410,9 @@ describe("unified catalog: applySaleMovements (Bon de livraison)", () => {
     const movements = await getMovements({ type: "out" });
     const sale = movements.filter((m) => m.reason === "sale");
     expect(sale).toHaveLength(2);
-    expect(sale.map((m) => m.qty)).toEqual([-3, -2]); // signed negative
+    // getMovements sorts newest-first; same-ms timestamps can tie, so compare
+    // the SET of quantities rather than the order.
+    expect(sale.map((m) => m.qty).sort((a, b) => a - b)).toEqual([-3, -2]);
   });
 
   it("reverseSaleMovements restores stock after a livraison delete", async () => {
@@ -425,5 +443,40 @@ describe("unified catalog: applySaleMovements (Bon de livraison)", () => {
   it("reverseSaleMovements is a no-op for unknown references", async () => {
     const skipped = await reverseSaleMovements("BL-NOPE");
     expect(skipped).toEqual([]);
+  });
+
+  it("re-export of the same BL replaces its stock impact (no double decrement)", async () => {
+    await upsertStockProduct({
+      id: "p1",
+      name: "Widget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 10,
+    });
+    // Export #1: 4 units out
+    await applySaleMovements(
+      [{ designation: "Widget", quantite: 4 }],
+      "BL-0009",
+    );
+    // Re-export same numero with EDITED quantity: 3 units
+    await applySaleMovements(
+      [{ designation: "Widget", quantite: 3 }],
+      "BL-0009",
+    );
+    let stock = await getStock();
+    // Old -4 reversed (+4) then -3 applied: 10 - 4 + 4 - 3 = 7
+    expect(stock[0].currentQty).toBe(7);
+
+    // Exactly ONE ACTIVE (unreversed) sale movement remains for the reference
+    const outs = (await getMovements({ type: "out" })).filter(
+      (m) => m.reason === "sale" && m.reference === "BL-0009" && !m.reversedAt,
+    );
+    expect(outs).toHaveLength(1);
+    expect(outs[0].qty).toBe(-3);
+
+    // History delete afterwards still restores correctly: 7 + 3 = 10
+    await reverseSaleMovements("BL-0009");
+    stock = await getStock();
+    expect(stock[0].currentQty).toBe(10);
   });
 });

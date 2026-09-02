@@ -63,7 +63,13 @@ export async function getMovements(filters = {}) {
   if (filters.type) list = list.filter((m) => m.type === filters.type);
   if (filters.from) list = list.filter((m) => m.createdAt >= filters.from);
   if (filters.to) list = list.filter((m) => m.createdAt <= filters.to);
-  return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  // Newest-first. seq is a monotonic tiebreaker for movements created in the
+  // same millisecond (legacy records without seq keep insertion order after
+  // timestamped ones).
+  return list.sort(
+    (a, b) =>
+      b.createdAt.localeCompare(a.createdAt) || (b.seq || 0) - (a.seq || 0),
+  );
 }
 
 export async function addMovement(movement) {
@@ -72,6 +78,7 @@ export async function addMovement(movement) {
   list.push({
     ...movement,
     id: movement.id || uuid(),
+    seq: movement.seq || list.length + 1,
     createdAt: movement.createdAt || now(),
   });
   await window.api.storeSet("stock_movements", list);
@@ -95,6 +102,8 @@ export async function addMovement(movement) {
  * Reverse movements with a stock guard: an "in" movement reverses to "out".
  * If the product no longer has enough stock, the reversal is clamped to the
  * available quantity (tracked across the whole batch) and reported.
+ * Reversed movements are marked reversedAt=now so they can never be reversed
+ * twice (double-restore protection).
  * Returns [{ productId, skipped }] for units that could not be reversed.
  */
 export async function reverseMovementsGuarded(movements, reference) {
@@ -102,8 +111,21 @@ export async function reverseMovementsGuarded(movements, reference) {
   const available = {};
   for (const p of stock) available[p.id] = p.currentQty || 0;
 
+  // Mark target movements reversed FIRST (persisted even if reversal clamps)
+  const toReverse = (Array.isArray(movements) ? movements : []).filter(
+    (m) => !m.reversedAt,
+  );
+  if (toReverse.length > 0) {
+    const all = (await window.api.storeGet("stock_movements", [])) || [];
+    const byId = new Map(toReverse.map((m) => [m.id, m]));
+    const marked = all.map((m) =>
+      byId.has(m.id) ? { ...m, reversedAt: now() } : m,
+    );
+    await window.api.storeSet("stock_movements", marked);
+  }
+
   const skipped = [];
-  for (const m of Array.isArray(movements) ? movements : []) {
+  for (const m of toReverse) {
     // Normalize to absolute quantity
     let qty = Math.abs(m.qty || 0);
     if (m.type === "out" && (m.qty || 0) > 0) qty = m.qty; // legacy positive out
@@ -235,6 +257,10 @@ export async function syncProduitsNames() {
  * Marchandise sync) so repeated saves never duplicate.
  * Returns the stock item id (existing or newly created).
  */
+// In-flight dedup for ensureStockProductFromArticle: concurrent calls for the
+// same name+supplier share one promise (prevents TOCTOU duplicate creation).
+const pendingEnsures = new Map();
+
 export async function ensureStockProductFromArticle({
   name,
   supplier = "",
@@ -243,37 +269,53 @@ export async function ensureStockProductFromArticle({
 }) {
   const trimmed = (name || "").trim();
   if (!trimmed) return null;
-  const stock = await getStock();
-  const existing = stock.find(
-    (p) =>
-      p.name.toLowerCase() === trimmed.toLowerCase() &&
-      (p.supplier || "") === (supplier || ""),
-  );
-  if (existing) return existing.id;
+  const key = `${trimmed.toLowerCase()}|${(supplier || "").toLowerCase()}`;
+  const existing = pendingEnsures.get(key);
+  if (existing) return existing;
 
-  const id = uuid();
-  await upsertStockProduct({
-    id,
-    name: trimmed,
-    unit: unit || "pcs",
-    currentQty: 0,
-    minQty: 0,
-    maxQty: 0,
-    costPrice: 0,
-    salePrice: Math.round(Number(salePrice) || 0),
-    supplier: supplier || "",
-    notes: "",
-  });
-  return id;
+  const promise = (async () => {
+    try {
+      const stock = await getStock();
+      const found = stock.find(
+        (p) =>
+          p.name.toLowerCase() === trimmed.toLowerCase() &&
+          (p.supplier || "") === (supplier || ""),
+      );
+      if (found) return found.id;
+
+      const id = uuid();
+      await upsertStockProduct({
+        id,
+        name: trimmed,
+        unit: unit || "pcs",
+        currentQty: 0,
+        minQty: 0,
+        maxQty: 0,
+        costPrice: 0,
+        salePrice: Math.round(Number(salePrice) || 0),
+        supplier: supplier || "",
+        notes: "",
+      });
+      return id;
+    } finally {
+      pendingEnsures.delete(key);
+    }
+  })();
+
+  pendingEnsures.set(key, promise);
+  return promise;
 }
 
 /**
- * Apply "out" movements for a delivered document (Bon de livraison).
- * Clamped to available stock — never negative. Skips names with no stock
- * item. Returns [{ productId, skipped }] for quantities that couldn't be
- * fully decremented (caller can toast).
+ * Apply "out" movements for a delivered document (Bon de Livraison).
+ * IDEMPOTENT PER REFERENCE: first reverses any previous sale movements for
+ * the same reference (a re-export of the same bon replaces its stock impact
+ * instead of stacking another decrement). Then applies the current articles.
+ * Clamped to available stock — never negative. Returns [{ productId, skipped }].
  */
 export async function applySaleMovements(articles, reference) {
+  await reverseSaleMovements(reference);
+
   const stock = await getStock();
   const available = {};
   for (const p of stock) available[p.name.toLowerCase()] = p;
@@ -308,12 +350,12 @@ export async function applySaleMovements(articles, reference) {
 
 /**
  * Reverse "sale" movements for a document (delete/re-save of a delivery).
- * Returns skipped info like applySaleMovements.
+ * Already-reversed movements are skipped (idempotent). Returns skipped info.
  */
 export async function reverseSaleMovements(reference) {
   const movements = await getMovements({ type: "out" });
   const saleMovements = movements.filter(
-    (m) => m.reason === "sale" && m.reference === reference,
+    (m) => m.reason === "sale" && m.reference === reference && !m.reversedAt, // never double-restore
   );
   return reverseMovementsGuarded(saleMovements, `${reference}-REV`);
 }

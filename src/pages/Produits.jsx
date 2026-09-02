@@ -70,6 +70,9 @@ export default function Produits({ showToast }) {
     const current = await window.api.storeGet("produits", []);
     const list = Array.isArray(current) ? current : [];
     if (list.some((p) => p.toLowerCase() === val.toLowerCase())) {
+      // Name already in Produits — but its Stock item may still be missing
+      // (pre-unified-catalog era). Idempotent ensure closes that gap.
+      await ensureStockProductFromArticle({ name: val }).catch(() => {});
       showToast(T("produit_dup"), "error");
       return;
     }
