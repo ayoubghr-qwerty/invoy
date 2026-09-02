@@ -16,9 +16,11 @@ import {
   deleteStockProduct,
   addMovement,
   getLowStock,
+  getMovements,
   upsertPurchaseOrder,
   receivePO,
   syncProduitsNames,
+  reverseMovementsGuarded,
 } from "../utils/stockStore";
 
 beforeEach(() => {
@@ -221,5 +223,92 @@ describe("receivePO", () => {
     const pos = mockStore.purchase_orders;
     expect(pos[0].status).toBe("partial");
     expect(pos[0].lines[0].qtyReceived).toBe(7);
+  });
+
+  it("creates a movement for EACH receive (partial re-receive adds stock)", async () => {
+    await upsertStockProduct({
+      id: "p1",
+      name: "Widget",
+      unit: "pcs",
+      minQty: 5,
+      currentQty: 0,
+    });
+    await upsertPurchaseOrder({
+      id: "po1",
+      number: "PO-0002",
+      supplierName: "Acme",
+      date: "2026-09-02",
+      status: "sent",
+      lines: [
+        {
+          productId: "p1",
+          productName: "Widget",
+          qtyOrdered: 10,
+          qtyReceived: 0,
+          unit: "pcs",
+          unitCost: 100,
+        },
+      ],
+      totalCost: 1000,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    await receivePO("po1", [{ productId: "p1", qtyReceived: 5 }]);
+    await receivePO("po1", [{ productId: "p1", qtyReceived: 5 }]);
+    const stock = await getStock();
+    expect(stock[0].currentQty).toBe(10); // BOTH receives hit stock
+    const movements = await getMovements({ productId: "p1", type: "in" });
+    const poMovements = movements.filter((m) => m.reason === "purchase");
+    expect(poMovements).toHaveLength(2);
+    expect(poMovements.map((m) => m.qty)).toEqual([5, 5]);
+    const pos = mockStore.purchase_orders;
+    expect(pos[0].status).toBe("received");
+    expect(pos[0].lines[0].qtyReceived).toBe(10);
+  });
+});
+
+describe("reverseMovementsGuarded", () => {
+  it("reverses in-movements to out and clamps to available stock", async () => {
+    await upsertStockProduct({
+      id: "p1",
+      name: "Widget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 3, // only 3 available — movement wants to remove 5
+    });
+    const skipped = await reverseMovementsGuarded(
+      [
+        { productId: "p1", type: "in", qty: 5, reason: "purchase", unitCost: 10 },
+      ],
+      "REV-TEST",
+    );
+    expect(skipped).toEqual([{ productId: "p1", skipped: 2 }]);
+    const stock = await getStock();
+    expect(stock[0].currentQty).toBe(0); // clamped: 3 - 3 = 0, never negative
+    const movements = await getMovements({ productId: "p1" });
+    const rev = movements.find((m) => m.reference === "REV-TEST");
+    expect(rev.type).toBe("out");
+    expect(rev.qty).toBe(-3); // signed convention: out movements are negative
+  });
+
+  it("reverses out-movements to in without clamp", async () => {
+    await upsertStockProduct({
+      id: "p1",
+      name: "Widget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 2,
+    });
+    const skipped = await reverseMovementsGuarded(
+      [{ productId: "p1", type: "out", qty: -4, reason: "sale", unitCost: 10 }],
+      "REV-TEST2",
+    );
+    expect(skipped).toEqual([]);
+    const stock = await getStock();
+    expect(stock[0].currentQty).toBe(6); // 2 + 4
+    const movements = await getMovements({ productId: "p1" });
+    const rev = movements.find((m) => m.reference === "REV-TEST2");
+    expect(rev.type).toBe("in");
+    expect(rev.qty).toBe(4);
   });
 });

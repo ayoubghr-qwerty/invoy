@@ -8,6 +8,7 @@ import {
   getStock,
   upsertStockProduct,
   deleteStockProduct,
+  addMovement,
 } from "../utils/stockStore";
 import { getStockStatus } from "../utils/stockHelpers";
 
@@ -141,14 +142,32 @@ export default function Stock({ showToast }) {
       showToast(T("stock_duplicate"), "error");
       return;
     }
+    const id =
+      editingProduct?.id ||
+      Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+    const newQty = parseInt(form.currentQty) || 0;
+    const oldQty = editingProduct ? editingProduct.currentQty || 0 : 0;
+    const delta = newQty - oldQty;
+
     await upsertStockProduct({
-      id:
-        editingProduct?.id ||
-        Date.now().toString(36) + Math.random().toString(36).slice(2, 9),
+      id,
       ...form,
+      currentQty: oldQty, // movement below applies the delta to currentQty
       name: form.name.trim(),
       unit: form.unit.trim(),
     });
+    // Ledger: manual qty changes go through movements so currentQty always
+    // equals the sum of movements (including creation as "initial").
+    if (delta !== 0) {
+      await addMovement({
+        productId: id,
+        type: delta > 0 ? "in" : "out",
+        qty: delta, // signed — store convention
+        reason: "manual_adjust",
+        reference: editingProduct ? "stock-edit" : "stock-initial",
+        unitCost: parseInt(form.costPrice) || 0,
+      });
+    }
     closeForm();
     await load();
     showToast(editingProduct ? T("stock_updated") : T("stock_added"));

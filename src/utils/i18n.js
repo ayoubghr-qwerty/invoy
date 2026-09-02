@@ -396,6 +396,10 @@ export const translations = {
     stock_po_receive_ok: "Réception enregistrée — stock mis à jour",
     stock_po_qty_ordered: "Qté commandée",
     stock_po_qty_received: "Qté reçue",
+    stock_po_reverse_clamped:
+      "Stock insuffisant — certaines quantités n'ont pas été retirées",
+    stock_reverse_clamped:
+      "Stock insuffisant — certaines quantités n'ont pas été retirées",
 
     // Backup filter
     backup_json_filter: "Sauvegarde JSON",
@@ -932,6 +936,8 @@ export const translations = {
     stock_po_receive_ok: "تم تسجيل الاستلام — تحديث المخزون",
     stock_po_qty_ordered: "الكمية المطلوبة",
     stock_po_qty_received: "الكمية المستلمة",
+    stock_po_reverse_clamped: "مخزون غير كافٍ — لم يتم سحب بعض الكميات",
+    stock_reverse_clamped: "مخزون غير كافٍ — لم يتم سحب بعض الكميات",
 
     // Danger zone
     confirm_delete_all: "نعم، حذف الكل",

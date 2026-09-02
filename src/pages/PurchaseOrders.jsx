@@ -8,6 +8,8 @@ import {
   getPurchaseOrders,
   upsertPurchaseOrder,
   receivePO,
+  getMovements,
+  reverseMovementsGuarded,
 } from "../utils/stockStore";
 import { toCents, fromCents, mul } from "../utils/money";
 
@@ -143,6 +145,27 @@ export default function PurchaseOrders({ showToast }) {
 
   async function deletePO(id) {
     const all = await window.api.storeGet("purchase_orders", []);
+    const po = (Array.isArray(all) ? all : []).find((p) => p.id === id);
+    if (po && (po.status === "received" || po.status === "partial")) {
+      // Reverse stock received from this PO (clamped to available stock)
+      try {
+        const movements = await getMovements({
+          type: "in",
+        });
+        const poMovements = movements.filter(
+          (m) => m.reason === "purchase" && m.reference === po.number,
+        );
+        const skipped = await reverseMovementsGuarded(
+          poMovements,
+          `PO-${po.number}-REV`,
+        );
+        if (skipped.length > 0) {
+          showToast(T("stock_po_reverse_clamped"), "error");
+        }
+      } catch (e) {
+        console.error("PO stock reversal failed:", e);
+      }
+    }
     const filtered = (Array.isArray(all) ? all : []).filter((p) => p.id !== id);
     await window.api.storeSet("purchase_orders", filtered);
     await load();

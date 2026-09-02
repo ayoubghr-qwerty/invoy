@@ -105,6 +105,18 @@ export default function App() {
     }
   }, [page]);
 
+  // Live badge refresh on any stock mutation (receive, marchandise, adjust)
+  useEffect(() => {
+    const onStockChanged = () => {
+      getLowStock()
+        .then((low) => setLowStockCount(low.length))
+        .catch(() => {});
+    };
+    window.addEventListener("invoy:stock-changed", onStockChanged);
+    return () =>
+      window.removeEventListener("invoy:stock-changed", onStockChanged);
+  }, []);
+
   function applyDark(enabled) {
     document.documentElement.classList.toggle("dark", enabled);
   }

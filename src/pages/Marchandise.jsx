@@ -13,7 +13,12 @@ import { useLang } from "../App";
 import { t } from "../utils/i18n";
 import { todayIso } from "../utils/helpers";
 import { useKeyboardActions } from "../hooks/KeyboardActionsContext";
-import { getStock, upsertStockProduct, addMovement } from "../utils/stockStore";
+import {
+  getStock,
+  upsertStockProduct,
+  addMovement,
+  reverseMovementsGuarded,
+} from "../utils/stockStore";
 function fmtDate(d) {
   if (!d) return "";
   const dt = new Date(d);
@@ -155,13 +160,15 @@ export default function Marchandise({ settings, showToast }) {
         const name = p.designation.trim();
         if (!name) continue;
         const qty = parseInt(p.quantite) || 0;
-        const oldQty =
-          editId && oldRecord
-            ? parseInt(
-                oldRecord.produits.find((op) => op.designation === name)
-                  ?.quantite,
-              ) || 0
-            : 0;
+        // Match old record line by line id (stable across renames);
+        // fallback to name for legacy lines without ids.
+        const oldLine =
+          (editId && oldRecord
+            ? oldRecord.produits.find(
+                (op) => op.id === p.id || op.designation === name,
+              )
+            : null) || null;
+        const oldQty = oldLine ? parseInt(oldLine.quantite) || 0 : 0;
         const delta = qty - oldQty;
         if (delta === 0) continue;
 
@@ -205,7 +212,7 @@ export default function Marchandise({ settings, showToast }) {
           await addMovement({
             productId: stockProd.id,
             type: "out",
-            qty: -delta,
+            qty: delta, // negative — store convention: out movements carry signed qty
             reason: "return",
             reference: `MARCH-${newNum}`,
             unitCost: 0,
@@ -223,7 +230,7 @@ export default function Marchandise({ settings, showToast }) {
     const existing = await window.api.storeGet("marchandise", []);
     const recordToDelete = existing.find((r) => r.id === id);
     if (recordToDelete) {
-      // Reverse stock movements created from this Marchandise
+      // Reverse stock movements created from this Marchandise (clamped to stock)
       try {
         const movements = await window.api.storeGet("stock_movements", []);
         const movementsList = Array.isArray(movements) ? movements : [];
@@ -231,16 +238,12 @@ export default function Marchandise({ settings, showToast }) {
           (m) => m.source === "marchandise" && m.sourceId === id,
         );
         if (matchingMovements.length > 0) {
-          // Create reverse movements
-          for (const m of matchingMovements) {
-            await addMovement({
-              productId: m.productId,
-              type: m.type === "in" ? "out" : "in",
-              qty: m.qty,
-              reason: "marchandise_delete_reverse",
-              reference: `MARCH-${recordToDelete.numero}-REV`,
-              unitCost: m.unitCost,
-            });
+          const skipped = await reverseMovementsGuarded(
+            matchingMovements,
+            `MARCH-${recordToDelete.numero}-REV`,
+          );
+          if (skipped.length > 0) {
+            showToast(T("stock_reverse_clamped"), "error");
           }
         }
       } catch (e) {
