@@ -226,3 +226,94 @@ export async function syncProduitsNames() {
     list.sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" })),
   );
 }
+
+/**
+ * Ensure a stock product exists for an article name (idempotent).
+ * Used when a NEW article designation is typed on any document page —
+ * the name goes to Produits (autocomplete) AND Stock (unified catalog).
+ * Matches existing items case-insensitively by name+supplier (like the
+ * Marchandise sync) so repeated saves never duplicate.
+ * Returns the stock item id (existing or newly created).
+ */
+export async function ensureStockProductFromArticle({
+  name,
+  supplier = "",
+  unit = "pcs",
+  salePrice = 0,
+}) {
+  const trimmed = (name || "").trim();
+  if (!trimmed) return null;
+  const stock = await getStock();
+  const existing = stock.find(
+    (p) =>
+      p.name.toLowerCase() === trimmed.toLowerCase() &&
+      (p.supplier || "") === (supplier || ""),
+  );
+  if (existing) return existing.id;
+
+  const id = uuid();
+  await upsertStockProduct({
+    id,
+    name: trimmed,
+    unit: unit || "pcs",
+    currentQty: 0,
+    minQty: 0,
+    maxQty: 0,
+    costPrice: 0,
+    salePrice: Math.round(Number(salePrice) || 0),
+    supplier: supplier || "",
+    notes: "",
+  });
+  return id;
+}
+
+/**
+ * Apply "out" movements for a delivered document (Bon de livraison).
+ * Clamped to available stock — never negative. Skips names with no stock
+ * item. Returns [{ productId, skipped }] for quantities that couldn't be
+ * fully decremented (caller can toast).
+ */
+export async function applySaleMovements(articles, reference) {
+  const stock = await getStock();
+  const available = {};
+  for (const p of stock) available[p.name.toLowerCase()] = p;
+
+  const skipped = [];
+  for (const a of Array.isArray(articles) ? articles : []) {
+    const name = (a.designation || "").trim();
+    const qty = Number(a.quantite) || 0;
+    if (!name || qty <= 0) continue;
+    const item = available[name.toLowerCase()];
+    if (!item) continue; // not tracked in stock — skip silently
+
+    const avail = item.currentQty || 0;
+    const take = Math.min(qty, Math.max(avail, 0));
+    if (take <= 0) {
+      skipped.push({ productId: item.id, skipped: qty });
+      continue;
+    }
+    if (take < qty) skipped.push({ productId: item.id, skipped: qty - take });
+    await addMovement({
+      productId: item.id,
+      type: "out",
+      qty: -take, // signed negative — store convention
+      reason: "sale",
+      reference,
+      unitCost: 0,
+    });
+    item.currentQty = (item.currentQty || 0) - take; // track for next lines
+  }
+  return skipped;
+}
+
+/**
+ * Reverse "sale" movements for a document (delete/re-save of a delivery).
+ * Returns skipped info like applySaleMovements.
+ */
+export async function reverseSaleMovements(reference) {
+  const movements = await getMovements({ type: "out" });
+  const saleMovements = movements.filter(
+    (m) => m.reason === "sale" && m.reference === reference,
+  );
+  return reverseMovementsGuarded(saleMovements, `${reference}-REV`);
+}

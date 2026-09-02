@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Package, Check, X } from "lucide-react";
+import { Plus, Trash2, Package, Check, X, Download } from "lucide-react";
 import { useLang } from "../App";
 import { t } from "../utils/i18n";
 import EmptyState from "../components/EmptyState";
 import { useKeyboardActions } from "../hooks/KeyboardActionsContext";
+import { getStock, ensureStockProductFromArticle } from "../utils/stockStore";
 
 export default function Produits({ showToast }) {
   const { lang } = useLang();
@@ -14,6 +15,8 @@ export default function Produits({ showToast }) {
   const [search, setSearch] = useState("");
   const [editingIndex, setEditingIndex] = useState(null); // index in filtered list
   const [editValue, setEditValue] = useState("");
+  const [missingFromStock, setMissingFromStock] = useState([]);
+  const [importing, setImporting] = useState(false);
   const editInputRef = useRef(null);
 
   useEffect(() => {
@@ -47,6 +50,18 @@ export default function Produits({ showToast }) {
   async function load() {
     const list = await window.api.storeGet("produits", []);
     setProduits(Array.isArray(list) ? list : []);
+    // Historical bridge: names in Produits that have no Stock item
+    try {
+      const stock = await getStock();
+      const stockNames = new Set(stock.map((p) => p.name.toLowerCase()));
+      setMissingFromStock(
+        (Array.isArray(list) ? list : []).filter(
+          (p) => !stockNames.has(p.toLowerCase()),
+        ),
+      );
+    } catch {
+      setMissingFromStock([]);
+    }
   }
 
   async function add() {
@@ -64,7 +79,24 @@ export default function Produits({ showToast }) {
     await window.api.storeSet("produits", updated);
     setProduits(updated);
     setNewDesig("");
+    // Unified catalog: also create the Stock item (qty 0, idempotent)
+    await ensureStockProductFromArticle({ name: val }).catch(() => {});
     showToast(T("produit_added"));
+  }
+
+  /** Historical bridge: import all Produits names that lack a Stock item. */
+  async function importMissingToStock() {
+    if (importing) return;
+    setImporting(true);
+    try {
+      for (const name of missingFromStock) {
+        await ensureStockProductFromArticle({ name }).catch(() => {});
+      }
+      showToast(T("produits_imported_stock"));
+      await load();
+    } finally {
+      setImporting(false);
+    }
   }
 
   async function remove(designation) {
@@ -141,6 +173,33 @@ export default function Produits({ showToast }) {
           {produits.length} {T("produits_count")}
         </div>
       </div>
+
+      {/* Historical bridge: import names that predate Stock */}
+      {missingFromStock.length > 0 && (
+        <div
+          className="card mb-6 flex items-center justify-between gap-4"
+          style={{ borderLeft: "4px solid #f59e0b" }}
+        >
+          <div className="text-sm">
+            <span
+              className="font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {missingFromStock.length} {T("produits_missing_stock")}
+            </span>
+            <span className="ml-2" style={{ color: "var(--text-secondary)" }}>
+              {T("produits_missing_stock_sub")}
+            </span>
+          </div>
+          <button
+            onClick={importMissingToStock}
+            disabled={importing}
+            className="btn-secondary text-sm flex-shrink-0"
+          >
+            <Download size={14} /> {T("produits_import_stock")}
+          </button>
+        </div>
+      )}
 
       {/* Add new product */}
       <div className="card mb-6">

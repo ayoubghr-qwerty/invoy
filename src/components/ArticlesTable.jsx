@@ -72,6 +72,17 @@ export default function ArticlesTable({
           );
           window.api.storeSet("produits", updated);
           produitsRef.current = updated; // update ref only — no re-render
+          // Unified catalog: new name also gets a Stock item (qty 0, safe
+          // defaults, idempotent). prixUnitaire from this line seeds salePrice.
+          const line = articles[index] || {};
+          import("../utils/stockStore.js")
+            .then(({ ensureStockProductFromArticle }) =>
+              ensureStockProductFromArticle({
+                name: val,
+                salePrice: line.prixUnitaire || 0,
+              }),
+            )
+            .catch(() => {});
         }
       });
     }

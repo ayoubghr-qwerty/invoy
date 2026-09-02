@@ -10,6 +10,7 @@ import { t } from "../utils/i18n";
 import ExportButton from "../components/ExportButton";
 import EmptyState from "../components/EmptyState";
 import { saveToHistory } from "../utils/history";
+import { applySaleMovements } from "../utils/stockStore";
 import { todayIso, saveClientIfNew } from "../utils/helpers";
 import { validateDoc } from "../utils/validation";
 import { useKeyboardActions } from "../hooks/KeyboardActionsContext";
@@ -150,6 +151,16 @@ export default function BonLivraison({
           montant: total,
           pageSize,
         });
+        // Stock decrement: delivered quantities leave inventory
+        // (clamped to available — never negative; untracked names skipped)
+        try {
+          const skipped = await applySaleMovements(articles, `BL-${finalNum}`);
+          if (skipped.length > 0) {
+            showToast(T("stock_sale_clamped"), "error");
+          }
+        } catch (e) {
+          console.error("Stock decrement failed:", e);
+        }
         showToast(
           `${T("title_livraison")} — ${T("exported_ok")} ${format.toUpperCase()} ${T("exported_success")}`,
         );

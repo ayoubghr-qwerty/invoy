@@ -347,6 +347,13 @@ export const translations = {
     stock_po_no_stock:
       "Aucun produit en stock — créez d'abord un produit dans Stock",
     stock_po_line_product_required: "Chaque ligne doit avoir un produit",
+    produits_missing_stock: "produit(s) hors stock",
+    produits_missing_stock_sub:
+      "existaient avant le module Stock — importer pour suivre les quantités",
+    produits_import_stock: "Importer au stock",
+    produits_imported_stock: "Produits importés au stock (quantité 0)",
+    stock_sale_clamped:
+      "Stock insuffisant pour certains articles — décrément partiel appliqué",
     stock_move_in: "Entrée",
     stock_move_out: "Sortie",
     stock_move_adjust: "Ajustement",
@@ -907,6 +914,12 @@ export const translations = {
     show_more_movements: "عرض المزيد من الحركات",
     stock_po_no_stock: "لا توجد منتجات في المخزون — أنشئ منتجًا أولاً",
     stock_po_line_product_required: "يجب أن يحتوي كل سطر على منتج",
+    produits_missing_stock: "منتج(ات) خارج المخزون",
+    produits_missing_stock_sub:
+      "كانت موجودة قبل وحدة المخزون — استوردها لمتابعة الكميات",
+    produits_import_stock: "استيراد إلى المخزون",
+    produits_imported_stock: "تم استيراد المنتجات إلى المخزون (كمية 0)",
+    stock_sale_clamped: "مخزون غير كافٍ لبعض المواد — تم تطبيق خصم جزئي",
     stock_move_in: "دخول",
     stock_move_out: "خروج",
     stock_move_adjust: "تعديل",

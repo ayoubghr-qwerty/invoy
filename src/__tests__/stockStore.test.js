@@ -21,6 +21,8 @@ import {
   receivePO,
   syncProduitsNames,
   reverseMovementsGuarded,
+  ensureStockProductFromArticle,
+  applySaleMovements,
 } from "../utils/stockStore";
 
 beforeEach(() => {
@@ -331,5 +333,66 @@ describe("reverseMovementsGuarded", () => {
     const rev = movements.find((m) => m.reference === "REV-TEST2");
     expect(rev.type).toBe("in");
     expect(rev.qty).toBe(4);
+  });
+});
+
+describe("unified catalog: ensureStockProductFromArticle", () => {
+  it("creates a stock item with safe defaults and returns its id", async () => {
+    const id = await ensureStockProductFromArticle({
+      name: "Service Réparation",
+      salePrice: 1500,
+    });
+    expect(id).toBeTruthy();
+    const stock = await getStock();
+    const item = stock.find((p) => p.id === id);
+    expect(item.name).toBe("Service Réparation");
+    expect(item.currentQty).toBe(0);
+    expect(item.minQty).toBe(0);
+    expect(item.salePrice).toBe(1500);
+    expect(item.unit).toBe("pcs");
+  });
+
+  it("is idempotent — same name never duplicates (case-insensitive)", async () => {
+    await ensureStockProductFromArticle({ name: "Widget" });
+    await ensureStockProductFromArticle({ name: "widget" });
+    const stock = await getStock();
+    const widgets = stock.filter((p) => p.name.toLowerCase() === "widget");
+    expect(widgets).toHaveLength(1);
+  });
+});
+
+describe("unified catalog: applySaleMovements (Bon de livraison)", () => {
+  it("decrements stock for tracked articles, clamps to available, skips untracked", async () => {
+    await upsertStockProduct({
+      id: "p1",
+      name: "Widget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 5,
+    });
+    await upsertStockProduct({
+      id: "p2",
+      name: "Gadget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 2,
+    });
+    const skipped = await applySaleMovements(
+      [
+        { designation: "Widget", quantite: 3 },
+        { designation: "Gadget", quantite: 10 }, // only 2 available
+        { designation: "Untracked Thing", quantite: 4 }, // no stock item
+      ],
+      "BL-0001",
+    );
+    // Widget fully decremented, Gadget clamped (8 skipped), untracked ignored
+    expect(skipped).toEqual([{ productId: "p2", skipped: 8 }]);
+    const stock = await getStock();
+    expect(stock.find((p) => p.id === "p1").currentQty).toBe(2);
+    expect(stock.find((p) => p.id === "p2").currentQty).toBe(0);
+    const movements = await getMovements({ type: "out" });
+    const sale = movements.filter((m) => m.reason === "sale");
+    expect(sale).toHaveLength(2);
+    expect(sale.map((m) => m.qty)).toEqual([-3, -2]); // signed negative
   });
 });
