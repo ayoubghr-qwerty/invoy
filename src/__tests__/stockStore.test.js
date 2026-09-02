@@ -23,6 +23,7 @@ import {
   reverseMovementsGuarded,
   ensureStockProductFromArticle,
   applySaleMovements,
+  reverseSaleMovements,
 } from "../utils/stockStore";
 
 beforeEach(() => {
@@ -394,5 +395,35 @@ describe("unified catalog: applySaleMovements (Bon de livraison)", () => {
     const sale = movements.filter((m) => m.reason === "sale");
     expect(sale).toHaveLength(2);
     expect(sale.map((m) => m.qty)).toEqual([-3, -2]); // signed negative
+  });
+
+  it("reverseSaleMovements restores stock after a livraison delete", async () => {
+    await upsertStockProduct({
+      id: "p1",
+      name: "Widget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 10,
+    });
+    await applySaleMovements(
+      [{ designation: "Widget", quantite: 4 }],
+      "BL-0042",
+    );
+    let stock = await getStock();
+    expect(stock[0].currentQty).toBe(6);
+
+    const skipped = await reverseSaleMovements("BL-0042");
+    expect(skipped).toEqual([]);
+    stock = await getStock();
+    expect(stock[0].currentQty).toBe(10); // fully restored
+    const movements = await getMovements({ productId: "p1" });
+    const rev = movements.find((m) => m.reference === "BL-0042-REV");
+    expect(rev.type).toBe("in");
+    expect(rev.qty).toBe(4);
+  });
+
+  it("reverseSaleMovements is a no-op for unknown references", async () => {
+    const skipped = await reverseSaleMovements("BL-NOPE");
+    expect(skipped).toEqual([]);
   });
 });

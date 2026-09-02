@@ -354,6 +354,9 @@ export const translations = {
     produits_imported_stock: "Produits importés au stock (quantité 0)",
     stock_sale_clamped:
       "Stock insuffisant pour certains articles — décrément partiel appliqué",
+    history_delete_confirm:
+      "Supprimer cette entrée de l'historique ? Pour un bon de livraison, les quantités vendues seront remises en stock (dans la limite du stock disponible).",
+    history_deleted: "Entrée supprimée de l'historique",
     stock_move_in: "Entrée",
     stock_move_out: "Sortie",
     stock_move_adjust: "Ajustement",
@@ -920,6 +923,9 @@ export const translations = {
     produits_import_stock: "استيراد إلى المخزون",
     produits_imported_stock: "تم استيراد المنتجات إلى المخزون (كمية 0)",
     stock_sale_clamped: "مخزون غير كافٍ لبعض المواد — تم تطبيق خصم جزئي",
+    history_delete_confirm:
+      "حذف هذا الإدخال من السجل؟ في حالة سند التسليم، ستُعاد الكميات المباعة إلى المخزون (في حدود المخزون المتوفر).",
+    history_deleted: "تم حذف الإدخال من السجل",
     stock_move_in: "دخول",
     stock_move_out: "خروج",
     stock_move_adjust: "تعديل",

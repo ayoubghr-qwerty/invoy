@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useLang } from "../App";
 import { t } from "../utils/i18n";
-import { getClientHistory } from "../utils/history";
+import { getClientHistory, deleteHistoryEntry } from "../utils/history";
 import { fromCents, sumCents } from "../utils/money";
 import EmptyState from "../components/EmptyState";
 import { useKeyboardActions } from "../hooks/KeyboardActionsContext";
@@ -121,6 +121,19 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
     setView("detail");
     const hist = await getClientHistory(clients[idx].nom);
     setClientHistory(hist);
+  }
+
+  async function deleteHistoryEntryFromDetail() {
+    if (!histDetail) return;
+    if (!confirm(T("history_delete_confirm"))) return;
+    const ok = await deleteHistoryEntry(histDetail.id);
+    if (ok) {
+      setHistDetail(null);
+      // refresh the client's history list
+      const hist = await getClientHistory(form.nom);
+      setClientHistory(hist);
+      showToast(T("history_deleted"));
+    }
   }
 
   function openNew() {
@@ -1081,6 +1094,14 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                         )}
                       </p>
                       <div className="flex gap-2">
+                        <button
+                          onClick={deleteHistoryEntryFromDetail}
+                          className="btn-secondary"
+                          style={{ color: "#dc2626" }}
+                          aria-label={T("btn_delete")}
+                        >
+                          <Trash2 size={14} /> {T("btn_delete")}
+                        </button>
                         <button
                           onClick={() => setHistDetail(null)}
                           className="btn-secondary"
