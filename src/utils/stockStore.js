@@ -13,6 +13,8 @@ function notifyStockChanged() {
   } catch {
     /* non-browser (tests) */
   }
+  // Keep the Produits autocomplete list in sync with stock item names
+  syncProduitsNames().catch(() => {});
 }
 
 // ─── Stock CRUD ───────────────────────────────────────

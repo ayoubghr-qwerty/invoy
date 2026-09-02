@@ -321,7 +321,7 @@ export const translations = {
     nav_stock: "Stock",
     nav_movements: "Mouvements",
     nav_alerts: "Alertes Stock",
-    nav_purchase_orders: "Bons de Commande",
+    nav_purchase_orders: "Bon de Commande",
     stock_search: "Rechercher un produit...",
     stock_no_items: "Aucun produit en stock",
     stock_no_items_sub:

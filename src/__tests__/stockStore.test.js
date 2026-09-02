@@ -186,6 +186,21 @@ describe("syncProduitsNames", () => {
     expect(mockStore.produits).toContain("Widget");
     expect(mockStore.produits).toContain("Existing");
   });
+
+  it("fires automatically on stock mutation (autocomplete stays in sync)", async () => {
+    mockStore.produits = [];
+    await upsertStockProduct({
+      id: "p1",
+      name: "Autocomplete Widget",
+      unit: "pcs",
+      minQty: 0,
+      currentQty: 0,
+    });
+    // notifyStockChanged inside upsertStockProduct calls syncProduitsNames
+    // (async fire-and-forget) — flush microtasks/timers before asserting
+    await new Promise((r) => setTimeout(r, 20));
+    expect(mockStore.produits).toContain("Autocomplete Widget");
+  });
 });
 
 describe("receivePO", () => {

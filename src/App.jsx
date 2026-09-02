@@ -182,6 +182,7 @@ export default function App() {
     { id: "programme", icon: Truck, key: "nav_programme" },
     { id: "livraison", icon: Package, key: "nav_livraison" },
     { id: "versement", icon: CreditCard, key: "nav_versement" },
+    { id: "purchase-orders", icon: FileOutput, key: "nav_purchase_orders" },
     { id: "marchandise", icon: ShoppingCart, key: "nav_marchandise" },
     { id: "produits", icon: LayoutList, key: "nav_produits" },
     { id: "stock", icon: Warehouse, key: "nav_stock" },
@@ -192,7 +193,6 @@ export default function App() {
       key: "nav_alerts",
       badge: lowStockCount,
     },
-    { id: "purchase-orders", icon: FileOutput, key: "nav_purchase_orders" },
     { id: "parametres", icon: Settings, key: "nav_parametres" },
   ];
 
