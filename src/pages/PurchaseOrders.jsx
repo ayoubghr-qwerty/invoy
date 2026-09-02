@@ -62,6 +62,10 @@ export default function PurchaseOrders({ showToast }) {
   }
 
   function addLine() {
+    if (stock.length === 0) {
+      showToast(T("stock_po_no_stock"), "error");
+      return;
+    }
     setForm((f) => ({
       ...f,
       lines: [
@@ -104,6 +108,11 @@ export default function PurchaseOrders({ showToast }) {
   async function save() {
     if (!form.supplierName.trim()) {
       showToast(T("stock_po_supplier_required"), "error");
+      return;
+    }
+    const validLines = form.lines.filter((l) => l.productId);
+    if (validLines.length !== form.lines.length) {
+      showToast(T("stock_po_line_product_required"), "error");
       return;
     }
     const total = form.lines.reduce(
@@ -344,6 +353,23 @@ export default function PurchaseOrders({ showToast }) {
               </p>
             ) : (
               <div className="space-y-2">
+                {/* Column titles — aligned with the input widths below */}
+                <div
+                  className="flex items-center gap-2 px-2 text-xs font-semibold"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <span className="flex-1">{T("stock_move_product")}</span>
+                  <span className="w-20 text-center">
+                    {T("stock_po_ph_qty")}
+                  </span>
+                  <span className="w-16 text-center">
+                    {T("stock_po_ph_unit")}
+                  </span>
+                  <span className="w-24 text-right">
+                    {T("stock_po_ph_price")}
+                  </span>
+                  <span className="w-8" aria-hidden="true" />
+                </div>
                 {form.lines.map((l, i) => (
                   <div
                     key={i}
@@ -351,12 +377,20 @@ export default function PurchaseOrders({ showToast }) {
                     style={{ background: "var(--bg-alt)" }}
                   >
                     <select
-                      className="form-input py-1 flex-1"
+                      className="form-input py-1.5 flex-1"
+                      style={{
+                        backgroundColor: "var(--bg-input)",
+                        color: "var(--text-primary)",
+                      }}
                       value={l.productId}
+                      aria-label={T("stock_move_product")}
                       onChange={(e) =>
                         updateLine(i, "productId", e.target.value)
                       }
                     >
+                      {stock.length === 0 && (
+                        <option value="">— {T("stock_no_items")} —</option>
+                      )}
                       {stock.map((p) => (
                         <option key={p.id} value={p.id}>
                           {p.name}
@@ -365,8 +399,9 @@ export default function PurchaseOrders({ showToast }) {
                     </select>
                     <input
                       type="number"
-                      className="form-input py-1 w-20"
+                      className="form-input py-1.5 w-20"
                       value={l.qtyOrdered}
+                      aria-label={T("stock_po_ph_qty")}
                       onChange={(e) =>
                         updateLine(i, "qtyOrdered", Number(e.target.value))
                       }
@@ -374,15 +409,17 @@ export default function PurchaseOrders({ showToast }) {
                       placeholder={T("stock_po_ph_qty")}
                     />
                     <input
-                      className="form-input py-1 w-16"
+                      className="form-input py-1.5 w-16"
                       value={l.unit}
+                      aria-label={T("stock_po_ph_unit")}
                       onChange={(e) => updateLine(i, "unit", e.target.value)}
                       placeholder={T("stock_po_ph_unit")}
                     />
                     <input
                       type="number"
-                      className="form-input py-1 w-24"
+                      className="form-input py-1.5 w-24"
                       value={l.unitCost}
+                      aria-label={T("stock_po_ph_price")}
                       onChange={(e) =>
                         updateLine(i, "unitCost", Number(e.target.value))
                       }
@@ -391,6 +428,7 @@ export default function PurchaseOrders({ showToast }) {
                     />
                     <button
                       onClick={() => removeLine(i)}
+                      aria-label={T("btn_delete")}
                       className="text-red-400 hover:text-red-600 p-1"
                     >
                       <Trash2 size={14} />
