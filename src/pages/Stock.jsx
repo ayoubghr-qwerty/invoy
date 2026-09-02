@@ -47,6 +47,7 @@ export default function Stock({ showToast }) {
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [removingId, setRemovingId] = useState(null);
   const [form, setForm] = useState({
     name: "",
     unit: "pcs",
@@ -174,9 +175,15 @@ export default function Stock({ showToast }) {
   }
 
   async function remove(id) {
-    await deleteStockProduct(id);
-    await load();
-    showToast(T("stock_deleted"));
+    if (removingId) return;
+    setRemovingId(id);
+    try {
+      await deleteStockProduct(id);
+      await load();
+      showToast(T("stock_deleted"));
+    } finally {
+      setRemovingId(null);
+    }
   }
 
   const filtered = search.trim()
@@ -264,7 +271,7 @@ export default function Stock({ showToast }) {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, unit: e.target.value }))
                 }
-                placeholder="pcs, kg, L..."
+                placeholder={T("stock_ph_unit")}
                 maxLength={20}
               />
             </div>

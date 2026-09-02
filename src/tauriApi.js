@@ -29,6 +29,10 @@ const ALLOWED_STORE_KEYS = new Set([
   "purchase_orders",
   "companies",
   "darkMode",
+  // Legacy keys (kept for forward-compat with any old data layer)
+  "products",
+  "history",
+  "programmeClients",
 ]);
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;

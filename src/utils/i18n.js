@@ -193,6 +193,7 @@ export const translations = {
     clear_all_confirm:
       "ATTENTION : cette action est irréversible. Toutes vos données seront supprimées (clients, compteurs, produits, marchandises, paramètres). Confirmer ?",
     clear_all_ok: "Toutes les données ont été supprimées",
+    internal_error: "Erreur interne — opération interrompue",
     // Error boundary
     error_title: "Une erreur est survenue",
     error_subtitle: "L'application a rencontré un problème inattendu.",
@@ -400,6 +401,11 @@ export const translations = {
       "Stock insuffisant — certaines quantités n'ont pas été retirées",
     stock_reverse_clamped:
       "Stock insuffisant — certaines quantités n'ont pas été retirées",
+    stock_po_ph_qty: "Qté",
+    stock_po_ph_unit: "Unité",
+    stock_po_ph_price: "Prix",
+    stock_po_ph_received: "Qté reçue",
+    stock_ph_unit: "pcs, kg, L...",
 
     // Backup filter
     backup_json_filter: "Sauvegarde JSON",
@@ -738,6 +744,7 @@ export const translations = {
     clear_all_confirm:
       "تحذير: هذا الإجراء لا يمكن التراجع عنه. ستُحذف جميع بياناتك. تأكيد؟",
     clear_all_ok: "تم حذف جميع البيانات",
+    internal_error: "خطأ داخلي — تمت مقاطعة العملية",
     // Error boundary
     error_title: "حدث خطأ",
     error_subtitle: "واجه التطبيق مشكلة غير متوقعة.",
@@ -938,6 +945,11 @@ export const translations = {
     stock_po_qty_received: "الكمية المستلمة",
     stock_po_reverse_clamped: "مخزون غير كافٍ — لم يتم سحب بعض الكميات",
     stock_reverse_clamped: "مخزون غير كافٍ — لم يتم سحب بعض الكميات",
+    stock_po_ph_qty: "الكمية",
+    stock_po_ph_unit: "الوحدة",
+    stock_po_ph_price: "السعر",
+    stock_po_ph_received: "الكمية المستلمة",
+    stock_ph_unit: "قطعة، كغ، لتر...",
 
     // Danger zone
     confirm_delete_all: "نعم، حذف الكل",

@@ -103,10 +103,7 @@ export default function PurchaseOrders({ showToast }) {
 
   async function save() {
     if (!form.supplierName.trim()) {
-      showToast(
-        T("stock_po_supplier_required") || "Supplier required",
-        "error",
-      );
+      showToast(T("stock_po_supplier_required"), "error");
       return;
     }
     const total = form.lines.reduce(
@@ -244,7 +241,7 @@ export default function PurchaseOrders({ showToast }) {
                   value={l.qtyReceived}
                   onChange={(e) => updateReceiveQty(i, e.target.value)}
                   min="0"
-                  placeholder="Qté reçue"
+                  placeholder={T("stock_po_ph_received")}
                 />
               </div>
             ))}
@@ -373,13 +370,13 @@ export default function PurchaseOrders({ showToast }) {
                         updateLine(i, "qtyOrdered", Number(e.target.value))
                       }
                       min="1"
-                      placeholder="Qté"
+                      placeholder={T("stock_po_ph_qty")}
                     />
                     <input
                       className="form-input py-1 w-16"
                       value={l.unit}
                       onChange={(e) => updateLine(i, "unit", e.target.value)}
-                      placeholder="Unit"
+                      placeholder={T("stock_po_ph_unit")}
                     />
                     <input
                       type="number"
@@ -389,7 +386,7 @@ export default function PurchaseOrders({ showToast }) {
                         updateLine(i, "unitCost", Number(e.target.value))
                       }
                       min="0"
-                      placeholder="Prix"
+                      placeholder={T("stock_po_ph_price")}
                     />
                     <button
                       onClick={() => removeLine(i)}

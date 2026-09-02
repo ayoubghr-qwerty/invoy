@@ -119,16 +119,6 @@ export default function FactureProforma({
     setNum(auto);
   }
 
-  function calcTimbreCents(baseCents) {
-    if (baseCents < 30000) return 0;
-    const tranches = Math.ceil(baseCents / 10000);
-    let t;
-    if (baseCents < 3000000) t = tranches * 100;
-    else if (baseCents < 10000000) t = tranches * 150;
-    else t = tranches * 200;
-    return Math.max(500, t);
-  }
-
   const ht = sumCents(articles.map((a) => a.montant));
   const tva = tvaEnabled ? calcTva(ht, tvaTaux) : 0;
   const htTva = ht + tva;

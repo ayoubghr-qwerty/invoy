@@ -1,4 +1,4 @@
-import {
+﻿import {
   useState,
   useEffect,
   useCallback,
@@ -28,9 +28,6 @@ import {
 import { t } from "./utils/i18n";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { KeyboardActionsProvider } from "./hooks/KeyboardActionsContext";
-import { initDb } from "./utils/db";
-import { migrateFromStore } from "./utils/migrate";
-import { CompanyProvider } from "./context/CompanyContext";
 import { getLowStock } from "./utils/stockStore";
 
 import FactureProforma from "./pages/FactureProforma";
@@ -91,9 +88,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    initDb()
-      .then(() => migrateFromStore())
-      .then(() => loadSettings());
+    loadSettings();
   }, [loadSettings]);
 
   // Refresh low stock count when navigating to stock pages
@@ -116,6 +111,17 @@ export default function App() {
     return () =>
       window.removeEventListener("invoy:stock-changed", onStockChanged);
   }, []);
+
+  // Global async-failure safety net: silent rejections surface as a toast
+  useEffect(() => {
+    const onUnhandled = (e) => {
+      console.error("Unhandled rejection:", e?.reason);
+      showToast?.(t(lang, "internal_error"), "error");
+      e.preventDefault?.();
+    };
+    window.addEventListener("unhandledrejection", onUnhandled);
+    return () => window.removeEventListener("unhandledrejection", onUnhandled);
+  }, [lang, showToast]);
 
   function applyDark(enabled) {
     document.documentElement.classList.toggle("dark", enabled);
@@ -143,7 +149,7 @@ export default function App() {
     clearTimeout(toastTimerRef.current);
     const el = toastElRef.current;
     if (!el) return;
-    el.textContent = (type === "success" ? "✓ " : "✗ ") + msg;
+    el.textContent = (type === "success" ? "âœ“ " : "âœ— ") + msg;
     el.className = `toast toast-${type}`;
     el.style.left = isRTL ? "1.5rem" : "auto";
     el.style.right = isRTL ? "auto" : "1.5rem";
@@ -191,12 +197,11 @@ export default function App() {
   ];
 
   return (
-    <CompanyProvider>
-      <LangContext.Provider value={{ lang, setLang }}>
-        <KeyboardActionsProvider>
-          <div
-            className={`flex h-screen overflow-hidden${isRTL ? " rtl" : ""}`}
-            dir={isRTL ? "rtl" : "ltr"}
+    <LangContext.Provider value={{ lang, setLang }}>
+      <KeyboardActionsProvider>
+        <div
+          className={`flex h-screen overflow-hidden${isRTL ? " rtl" : ""}`}
+          dir={isRTL ? "rtl" : "ltr"}
           >
             {/* Sidebar */}
             <aside
@@ -384,7 +389,7 @@ export default function App() {
                             lang === l ? "white" : "rgba(255,255,255,0.45)",
                         }}
                       >
-                        {l === "fr" ? "FR" : "عربي"}
+                        {l === "fr" ? "FR" : "Ø¹Ø±Ø¨ÙŠ"}
                       </button>
                     ))}
                   </div>
@@ -482,8 +487,7 @@ export default function App() {
               style={{ display: "none" }}
             />
           </div>
-        </KeyboardActionsProvider>
-      </LangContext.Provider>
-    </CompanyProvider>
+      </KeyboardActionsProvider>
+    </LangContext.Provider>
   );
 }
