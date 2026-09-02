@@ -49,6 +49,7 @@ export default function StockMovements({ showToast }) {
   const [stock, setStock] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [filterType, setFilterType] = useState("");
+  const [visibleCount, setVisibleCount] = useState(200);
   const [form, setForm] = useState({
     productId: "",
     type: "in",
@@ -109,9 +110,15 @@ export default function StockMovements({ showToast }) {
     showToast(T("stock_movement_added"));
   }
 
+  function setFilter(f) {
+    setFilterType(f);
+    setVisibleCount(200); // reset pagination on filter change
+  }
+
   const filtered = filterType
     ? movements.filter((m) => m.type === filterType)
     : movements;
+  const visible = filtered.slice(0, visibleCount);
 
   const productMap = Object.fromEntries(stock.map((p) => [p.id, p.name]));
 
@@ -148,7 +155,7 @@ export default function StockMovements({ showToast }) {
             ].map((f) => (
               <button
                 key={f.value}
-                onClick={() => setFilterType(f.value)}
+                onClick={() => setFilter(f.value)}
                 aria-pressed={filterType === f.value}
                 className="px-3 py-1.5 text-xs font-medium transition-colors"
                 style={{
@@ -343,14 +350,18 @@ export default function StockMovements({ showToast }) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((m, i) => {
+              {visible.map((m, i) => {
                 const Icon = TYPE_ICONS[m.type] || RefreshCw;
                 const color = TYPE_COLORS[m.type] || "";
                 return (
                   <tr
                     key={m.id}
                     className={i % 2 === 1 ? "table-row-alt" : ""}
-                    style={{ borderBottom: "1px solid var(--border-color)" }}
+                    style={{
+                      borderBottom: "1px solid var(--border-color)",
+                      contentVisibility: "auto",
+                      containIntrinsicSize: "auto 40px",
+                    }}
                   >
                     <td className="px-4 py-2 text-slate-500">
                       {m.createdAt
@@ -380,13 +391,25 @@ export default function StockMovements({ showToast }) {
                       {m.reference || "—"}
                     </td>
                     <td className="px-4 py-2 font-mono">
-                      {m.unitCost ? `${m.unitCost.toLocaleString()} DA` : "—"}
+                      {m.unitCost
+                        ? `${m.unitCost.toLocaleString("fr-DZ", { minimumFractionDigits: 2 })} DA`
+                        : "—"}
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          {visibleCount < filtered.length && (
+            <div className="text-center py-3">
+              <button
+                onClick={() => setVisibleCount((c) => c + 200)}
+                className="btn-secondary text-sm"
+              >
+                {T("show_more_movements")} ({filtered.length - visibleCount})
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

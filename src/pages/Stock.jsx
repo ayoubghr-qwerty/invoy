@@ -1,5 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Package, X, Check, AlertTriangle } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Package,
+  X,
+  Check,
+  AlertTriangle,
+  Pencil,
+} from "lucide-react";
 import { useLang } from "../App";
 import { t } from "../utils/i18n";
 import EmptyState from "../components/EmptyState";
@@ -510,20 +518,23 @@ export default function Stock({ showToast }) {
                         </span>
                       </td>
                       <td className="px-3 text-center">
-                        <button
-                          onClick={() => openEdit(p)}
-                          className="text-blue-500 hover:text-blue-700 p-1 transition-colors text-xs"
-                        >
-                          {T("btn_edit")}
-                        </button>
-                        <button
-                          onClick={() => remove(p.id)}
-                          disabled={removingId === p.id}
-                          aria-label={T("btn_delete")}
-                          className="text-red-400 hover:text-red-600 transition-colors p-1 rounded ml-1"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            onClick={() => openEdit(p)}
+                            aria-label={T("btn_edit")}
+                            className="text-blue-500 hover:text-blue-700 p-1.5 rounded transition-colors"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => remove(p.id)}
+                            disabled={removingId === p.id}
+                            aria-label={T("btn_delete")}
+                            className="text-red-400 hover:text-red-600 transition-colors p-1.5 rounded"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

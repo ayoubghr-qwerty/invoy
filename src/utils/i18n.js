@@ -343,6 +343,7 @@ export const translations = {
       "Supprimer ce bon de commande ? Le stock reçu sera retiré.",
     marchandise_delete_confirm:
       "Supprimer cette marchandise ? Les mouvements de stock seront annulés.",
+    show_more_movements: "Afficher plus de mouvements",
     stock_move_in: "Entrée",
     stock_move_out: "Sortie",
     stock_move_adjust: "Ajustement",
@@ -900,6 +901,7 @@ export const translations = {
     stock_delete_confirm: "حذف هذا المنتج من المخزون؟",
     stock_po_delete_confirm: "حذف أمر الشراء؟ سيتم سحب المخزون المستلم.",
     marchandise_delete_confirm: "حذف هذه البضاعة؟ سيتم إلغاء حركات المخزون.",
+    show_more_movements: "عرض المزيد من الحركات",
     stock_move_in: "دخول",
     stock_move_out: "خروج",
     stock_move_adjust: "تعديل",
