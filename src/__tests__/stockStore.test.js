@@ -278,7 +278,13 @@ describe("reverseMovementsGuarded", () => {
     });
     const skipped = await reverseMovementsGuarded(
       [
-        { productId: "p1", type: "in", qty: 5, reason: "purchase", unitCost: 10 },
+        {
+          productId: "p1",
+          type: "in",
+          qty: 5,
+          reason: "purchase",
+          unitCost: 10,
+        },
       ],
       "REV-TEST",
     );

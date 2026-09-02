@@ -202,291 +202,280 @@ export default function App() {
         <div
           className={`flex h-screen overflow-hidden${isRTL ? " rtl" : ""}`}
           dir={isRTL ? "rtl" : "ltr"}
+        >
+          {/* Sidebar */}
+          <aside
+            className={`flex flex-col h-full flex-shrink-0 transition-[width] duration-300 ease-in-out overflow-hidden ${sidebarCollapsed ? "w-16 min-w-16" : "w-60 min-w-60"}`}
+            style={{ background: appColor, overflowX: "hidden" }}
           >
-            {/* Sidebar */}
-            <aside
-              className={`flex flex-col h-full flex-shrink-0 transition-[width] duration-300 ease-in-out overflow-hidden ${sidebarCollapsed ? "w-16 min-w-16" : "w-60 min-w-60"}`}
-              style={{ background: appColor, overflowX: "hidden" }}
+            {/* Logo / Expand button */}
+            <div
+              className="flex-shrink-0 flex items-center justify-center border-b"
+              style={{
+                borderColor: "rgba(255,255,255,0.1)",
+                height: sidebarCollapsed ? "80px" : "auto",
+                padding: sidebarCollapsed ? "12px 0" : "16px 16px",
+              }}
             >
-              {/* Logo / Expand button */}
-              <div
-                className="flex-shrink-0 flex items-center justify-center border-b"
-                style={{
-                  borderColor: "rgba(255,255,255,0.1)",
-                  height: sidebarCollapsed ? "80px" : "auto",
-                  padding: sidebarCollapsed ? "12px 0" : "16px 16px",
-                }}
-              >
-                {sidebarCollapsed ? (
-                  <button
-                    onClick={() => setSidebarCollapsed(false)}
-                    className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors"
-                    style={{ color: "rgba(255,255,255,0.7)" }}
+              {sidebarCollapsed ? (
+                <button
+                  onClick={() => setSidebarCollapsed(false)}
+                  className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-white/10 transition-colors"
+                  style={{ color: "rgba(255,255,255,0.7)" }}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              ) : (
+                <div className="relative w-full flex flex-col items-center">
+                  {settings?.logo ? (
+                    <img
+                      src={settings.logo}
+                      alt="logo"
+                      className="w-14 h-14 object-contain rounded-lg"
+                    />
+                  ) : (
+                    <img
+                      src="/logo.png"
+                      alt="Invoy"
+                      className="w-14 h-14 object-contain rounded-lg"
+                    />
+                  )}
+                  <span className="text-white font-bold text-sm leading-tight mt-2 text-center">
+                    {settings?.organisation || "Invoy"}
+                  </span>
+                  <span
+                    className="text-[10px] text-center"
+                    style={{ color: "rgba(255,255,255,0.5)" }}
                   >
-                    <ChevronRight size={20} />
+                    {settings?.proprietaire || ""}
+                  </span>
+                  <button
+                    onClick={() => setSidebarCollapsed(true)}
+                    className="absolute top-0 right-0 flex items-center justify-center w-7 h-7 rounded-lg hover:bg-white/10 transition-colors"
+                    style={{ color: "rgba(255,255,255,0.5)" }}
+                  >
+                    <ChevronLeft size={14} />
                   </button>
-                ) : (
-                  <div className="relative w-full flex flex-col items-center">
-                    {settings?.logo ? (
-                      <img
-                        src={settings.logo}
-                        alt="logo"
-                        className="w-14 h-14 object-contain rounded-lg"
-                      />
-                    ) : (
-                      <img
-                        src="/logo.png"
-                        alt="Invoy"
-                        className="w-14 h-14 object-contain rounded-lg"
-                      />
-                    )}
-                    <span className="text-white font-bold text-sm leading-tight mt-2 text-center">
-                      {settings?.organisation || "Invoy"}
-                    </span>
-                    <span
-                      className="text-[10px] text-center"
-                      style={{ color: "rgba(255,255,255,0.5)" }}
-                    >
-                      {settings?.proprietaire || ""}
-                    </span>
+                </div>
+              )}
+            </div>
+
+            {/* Nav */}
+            <nav
+              className="flex-1 overflow-y-auto py-4 sidebar-scroll"
+              style={{ overflowX: "hidden" }}
+            >
+              {PAGES.map(({ id, icon: Icon, key, badge }) => {
+                const isActive = page === id;
+                return (
+                  <div
+                    key={id}
+                    className={`flex ${sidebarCollapsed ? "justify-center px-0" : "px-3"}`}
+                  >
                     <button
-                      onClick={() => setSidebarCollapsed(true)}
-                      className="absolute top-0 right-0 flex items-center justify-center w-7 h-7 rounded-lg hover:bg-white/10 transition-colors"
-                      style={{ color: "rgba(255,255,255,0.5)" }}
+                      onClick={() => setPage(id)}
+                      className={`flex items-center rounded-xl text-sm font-medium transition-all duration-150 relative ${sidebarCollapsed ? "justify-center w-10 h-10" : "w-full px-3 py-2.5 gap-3"}`}
+                      style={{
+                        background: isActive
+                          ? "rgba(255,255,255,0.18)"
+                          : "transparent",
+                        color: isActive ? "white" : "rgba(255,255,255,0.6)",
+                        boxShadow: isActive
+                          ? "inset 0 1px 0 rgba(255,255,255,0.15)"
+                          : "none",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive)
+                          e.currentTarget.style.background =
+                            "rgba(255,255,255,0.08)";
+                        e.currentTarget.style.color = "rgba(255,255,255,0.9)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+                        }
+                      }}
                     >
-                      <ChevronLeft size={14} />
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white opacity-80" />
+                      )}
+                      <Icon size={17} className="flex-shrink-0" />
+                      {!sidebarCollapsed && (
+                        <span
+                          className={`whitespace-nowrap ${isRTL ? "font-arabic" : ""}`}
+                        >
+                          {t(lang, key)}
+                        </span>
+                      )}
+                      {badge > 0 && (
+                        <span
+                          className={`absolute ${sidebarCollapsed ? "top-0 right-0" : "top-1 right-2"} min-w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold bg-red-500 text-white px-1`}
+                        >
+                          {badge > 99 ? "99+" : badge}
+                        </span>
+                      )}
                     </button>
                   </div>
-                )}
-              </div>
+                );
+              })}
+            </nav>
 
-              {/* Nav */}
-              <nav
-                className="flex-1 overflow-y-auto py-4 sidebar-scroll"
-                style={{ overflowX: "hidden" }}
-              >
-                {PAGES.map(({ id, icon: Icon, key, badge }) => {
-                  const isActive = page === id;
-                  return (
-                    <div
-                      key={id}
-                      className={`flex ${sidebarCollapsed ? "justify-center px-0" : "px-3"}`}
-                    >
-                      <button
-                        onClick={() => setPage(id)}
-                        className={`flex items-center rounded-xl text-sm font-medium transition-all duration-150 relative ${sidebarCollapsed ? "justify-center w-10 h-10" : "w-full px-3 py-2.5 gap-3"}`}
-                        style={{
-                          background: isActive
-                            ? "rgba(255,255,255,0.18)"
-                            : "transparent",
-                          color: isActive ? "white" : "rgba(255,255,255,0.6)",
-                          boxShadow: isActive
-                            ? "inset 0 1px 0 rgba(255,255,255,0.15)"
-                            : "none",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isActive)
-                            e.currentTarget.style.background =
-                              "rgba(255,255,255,0.08)";
-                          e.currentTarget.style.color = "rgba(255,255,255,0.9)";
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isActive) {
-                            e.currentTarget.style.background = "transparent";
-                            e.currentTarget.style.color =
-                              "rgba(255,255,255,0.6)";
-                          }
-                        }}
-                      >
-                        {isActive && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-white opacity-80" />
-                        )}
-                        <Icon size={17} className="flex-shrink-0" />
-                        {!sidebarCollapsed && (
-                          <span
-                            className={`whitespace-nowrap ${isRTL ? "font-arabic" : ""}`}
-                          >
-                            {t(lang, key)}
-                          </span>
-                        )}
-                        {badge > 0 && (
-                          <span
-                            className={`absolute ${sidebarCollapsed ? "top-0 right-0" : "top-1 right-2"} min-w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold bg-red-500 text-white px-1`}
-                          >
-                            {badge > 99 ? "99+" : badge}
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  );
-                })}
-              </nav>
-
-              {/* Bottom controls */}
-              <div
-                className={`pb-2 space-y-2 ${sidebarCollapsed ? "px-2" : "px-3"}`}
-              >
-                {/* Dark mode toggle */}
-                <div className={sidebarCollapsed ? "flex justify-center" : ""}>
-                  <button
-                    onClick={toggleDark}
-                    className={`flex items-center gap-2 rounded-lg transition-all ${sidebarCollapsed ? "w-10 h-10 justify-center" : "w-full px-3 py-2"}`}
-                    style={{
-                      background: "rgba(255,255,255,0.08)",
-                      color: "rgba(255,255,255,0.75)",
-                    }}
-                  >
-                    {darkMode ? (
-                      <Sun size={14} className="flex-shrink-0" />
-                    ) : (
-                      <Moon size={14} className="flex-shrink-0" />
-                    )}
-                    {!sidebarCollapsed && (
-                      <span style={{ fontSize: "12px" }}>
-                        {darkMode ? T("dark_mode_on") : T("dark_mode_off")}
-                      </span>
-                    )}
-                  </button>
-                </div>
-
-                {/* Language switcher */}
-                {sidebarCollapsed ? (
-                  <div className="flex flex-col items-center gap-1">
-                    {["fr", "ar"].map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => setLang(l)}
-                        className="w-10 h-5 text-[10px] font-bold rounded transition-all flex items-center justify-center"
-                        style={{
-                          background:
-                            lang === l
-                              ? "rgba(255,255,255,0.2)"
-                              : "transparent",
-                          color:
-                            lang === l ? "white" : "rgba(255,255,255,0.45)",
-                        }}
-                      >
-                        {l === "fr" ? "FR" : "AR"}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className="flex rounded-lg overflow-hidden border"
-                    style={{ borderColor: "rgba(255,255,255,0.15)" }}
-                  >
-                    {["fr", "ar"].map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => setLang(l)}
-                        className="flex-1 py-1.5 text-xs font-bold transition-all"
-                        style={{
-                          background:
-                            lang === l
-                              ? "rgba(255,255,255,0.2)"
-                              : "transparent",
-                          color:
-                            lang === l ? "white" : "rgba(255,255,255,0.45)",
-                        }}
-                      >
-                        {l === "fr" ? "FR" : "Ø¹Ø±Ø¨ÙŠ"}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </aside>
-
-            {/* Main content */}
-            <main
-              className="flex-1 h-full overflow-y-auto px-8 py-6"
-              style={{ background: "var(--bg-app)" }}
+            {/* Bottom controls */}
+            <div
+              className={`pb-2 space-y-2 ${sidebarCollapsed ? "px-2" : "px-3"}`}
             >
-              {settings === null ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="animate-pulse text-slate-400 text-sm">
-                    {T("loading")}
-                  </div>
+              {/* Dark mode toggle */}
+              <div className={sidebarCollapsed ? "flex justify-center" : ""}>
+                <button
+                  onClick={toggleDark}
+                  className={`flex items-center gap-2 rounded-lg transition-all ${sidebarCollapsed ? "w-10 h-10 justify-center" : "w-full px-3 py-2"}`}
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.75)",
+                  }}
+                >
+                  {darkMode ? (
+                    <Sun size={14} className="flex-shrink-0" />
+                  ) : (
+                    <Moon size={14} className="flex-shrink-0" />
+                  )}
+                  {!sidebarCollapsed && (
+                    <span style={{ fontSize: "12px" }}>
+                      {darkMode ? T("dark_mode_on") : T("dark_mode_off")}
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {/* Language switcher */}
+              {sidebarCollapsed ? (
+                <div className="flex flex-col items-center gap-1">
+                  {["fr", "ar"].map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => setLang(l)}
+                      className="w-10 h-5 text-[10px] font-bold rounded transition-all flex items-center justify-center"
+                      style={{
+                        background:
+                          lang === l ? "rgba(255,255,255,0.2)" : "transparent",
+                        color: lang === l ? "white" : "rgba(255,255,255,0.45)",
+                      }}
+                    >
+                      {l === "fr" ? "FR" : "AR"}
+                    </button>
+                  ))}
                 </div>
               ) : (
-                <ErrorBoundaryWrapper>
-                  <div key={page} className="page-enter">
-                    {page === "facture" && (
-                      <FactureProforma
-                        settings={settings}
-                        showToast={showToast}
-                        pendingLoad={
-                          pendingLoad?.type === "facture" ? pendingLoad : null
-                        }
-                        onLoadConsumed={() => setPendingLoad(null)}
-                      />
-                    )}
-                    {page === "clients" && (
-                      <Clients
-                        settings={settings}
-                        showToast={showToast}
-                        onLoadFromHistory={loadFromHistory}
-                      />
-                    )}
-                    {page === "programme" && (
-                      <ProgrammeLivraison
-                        settings={settings}
-                        showToast={showToast}
-                      />
-                    )}
-                    {page === "livraison" && (
-                      <BonLivraison
-                        settings={settings}
-                        showToast={showToast}
-                        pendingLoad={
-                          pendingLoad?.type === "livraison" ? pendingLoad : null
-                        }
-                        onLoadConsumed={() => setPendingLoad(null)}
-                      />
-                    )}
-                    {page === "versement" && (
-                      <BonVersement
-                        settings={settings}
-                        showToast={showToast}
-                        pendingLoad={
-                          pendingLoad?.type === "versement" ? pendingLoad : null
-                        }
-                        onLoadConsumed={() => setPendingLoad(null)}
-                      />
-                    )}
-                    {page === "marchandise" && (
-                      <Marchandise settings={settings} showToast={showToast} />
-                    )}
-                    {page === "produits" && <Produits showToast={showToast} />}
-                    {page === "stock" && <Stock showToast={showToast} />}
-                    {page === "stock-movements" && (
-                      <StockMovements showToast={showToast} />
-                    )}
-                    {page === "stock-alerts" && (
-                      <StockAlerts showToast={showToast} />
-                    )}
-                    {page === "purchase-orders" && (
-                      <PurchaseOrders showToast={showToast} />
-                    )}
-                    {page === "parametres" && (
-                      <Parametres
-                        settings={settings}
-                        onSave={loadSettings}
-                        showToast={showToast}
-                      />
-                    )}
-                  </div>
-                </ErrorBoundaryWrapper>
+                <div
+                  className="flex rounded-lg overflow-hidden border"
+                  style={{ borderColor: "rgba(255,255,255,0.15)" }}
+                >
+                  {["fr", "ar"].map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => setLang(l)}
+                      className="flex-1 py-1.5 text-xs font-bold transition-all"
+                      style={{
+                        background:
+                          lang === l ? "rgba(255,255,255,0.2)" : "transparent",
+                        color: lang === l ? "white" : "rgba(255,255,255,0.45)",
+                      }}
+                    >
+                      {l === "fr" ? "FR" : "Ø¹Ø±Ø¨ÙŠ"}
+                    </button>
+                  ))}
+                </div>
               )}
-            </main>
+            </div>
+          </aside>
 
-            {/* Toast - persistent element, updated imperatively */}
-            <div
-              ref={toastElRef}
-              className="toast"
-              style={{ display: "none" }}
-            />
-          </div>
+          {/* Main content */}
+          <main
+            className="flex-1 h-full overflow-y-auto px-8 py-6"
+            style={{ background: "var(--bg-app)" }}
+          >
+            {settings === null ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-pulse text-slate-400 text-sm">
+                  {T("loading")}
+                </div>
+              </div>
+            ) : (
+              <ErrorBoundaryWrapper>
+                <div key={page} className="page-enter">
+                  {page === "facture" && (
+                    <FactureProforma
+                      settings={settings}
+                      showToast={showToast}
+                      pendingLoad={
+                        pendingLoad?.type === "facture" ? pendingLoad : null
+                      }
+                      onLoadConsumed={() => setPendingLoad(null)}
+                    />
+                  )}
+                  {page === "clients" && (
+                    <Clients
+                      settings={settings}
+                      showToast={showToast}
+                      onLoadFromHistory={loadFromHistory}
+                    />
+                  )}
+                  {page === "programme" && (
+                    <ProgrammeLivraison
+                      settings={settings}
+                      showToast={showToast}
+                    />
+                  )}
+                  {page === "livraison" && (
+                    <BonLivraison
+                      settings={settings}
+                      showToast={showToast}
+                      pendingLoad={
+                        pendingLoad?.type === "livraison" ? pendingLoad : null
+                      }
+                      onLoadConsumed={() => setPendingLoad(null)}
+                    />
+                  )}
+                  {page === "versement" && (
+                    <BonVersement
+                      settings={settings}
+                      showToast={showToast}
+                      pendingLoad={
+                        pendingLoad?.type === "versement" ? pendingLoad : null
+                      }
+                      onLoadConsumed={() => setPendingLoad(null)}
+                    />
+                  )}
+                  {page === "marchandise" && (
+                    <Marchandise settings={settings} showToast={showToast} />
+                  )}
+                  {page === "produits" && <Produits showToast={showToast} />}
+                  {page === "stock" && <Stock showToast={showToast} />}
+                  {page === "stock-movements" && (
+                    <StockMovements showToast={showToast} />
+                  )}
+                  {page === "stock-alerts" && (
+                    <StockAlerts showToast={showToast} />
+                  )}
+                  {page === "purchase-orders" && (
+                    <PurchaseOrders showToast={showToast} />
+                  )}
+                  {page === "parametres" && (
+                    <Parametres
+                      settings={settings}
+                      onSave={loadSettings}
+                      showToast={showToast}
+                    />
+                  )}
+                </div>
+              </ErrorBoundaryWrapper>
+            )}
+          </main>
+
+          {/* Toast - persistent element, updated imperatively */}
+          <div ref={toastElRef} className="toast" style={{ display: "none" }} />
+        </div>
       </KeyboardActionsProvider>
     </LangContext.Provider>
   );

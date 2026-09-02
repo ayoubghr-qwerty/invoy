@@ -935,10 +935,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                                 className="font-semibold"
                                 style={{ color: "#b45309" }}
                               >
-                                {fromCents(
-                                  histDetail.totaux?.tva || 0,
-                                )}{" "}
-                                DA
+                                {fromCents(histDetail.totaux?.tva || 0)} DA
                               </span>
                             </div>
                           )}
@@ -957,10 +954,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                                 className="font-medium"
                                 style={{ color: "var(--text-primary)" }}
                               >
-                                {fromCents(
-                                  histDetail.totaux?.timbre || 0,
-                                )}{" "}
-                                DA
+                                {fromCents(histDetail.totaux?.timbre || 0)} DA
                               </span>
                             </div>
                           )}
@@ -996,7 +990,7 @@ export default function Clients({ settings, showToast, onLoadFromHistory }) {
                                 className="font-semibold"
                                 style={{ color: "var(--text-primary)" }}
                               >
-                              {fromCents(histDetail.montantVerse || 0)} DA
+                                {fromCents(histDetail.montantVerse || 0)} DA
                               </span>
                             </div>
                           )}

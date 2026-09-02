@@ -73,7 +73,9 @@ pub async fn export_pdf(
     .decorations(false)
     .skip_taskbar(true)
     .inner_size(794.0, 1123.0) // A4 at 96 DPI
-    .additional_browser_args("--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll")
+    .additional_browser_args(
+        "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll",
+    )
     .build()
     .map_err(|e| format!("failed to create WebView2 window: {e}"))?;
     eprintln!(
@@ -189,9 +191,7 @@ fn setup_and_print(
                 }
 
                 // Guard: print only once even if navigation events repeat
-                if printed_clone
-                    .swap(true, std::sync::atomic::Ordering::SeqCst)
-                {
+                if printed_clone.swap(true, std::sync::atomic::Ordering::SeqCst) {
                     eprintln!("[pdf-export] stage 4b: already printed, ignoring repeat navigation");
                     return Ok(());
                 }
@@ -277,9 +277,9 @@ fn setup_and_print(
                                                     std::fs::write(&file_for_cdp_inner, &pdf_bytes)
                                                 {
                                                     eprintln!("[pdf-export] stage 4h: FAILED to write file: {e}");
-                                                    let _ =
-                                                        done_tx_for_cdp_inner
-                                                            .send(Err(format!("failed to write PDF file: {e}")));
+                                                    let _ = done_tx_for_cdp_inner.send(Err(
+                                                        format!("failed to write PDF file: {e}"),
+                                                    ));
                                                 } else {
                                                     let _ = done_tx_for_cdp_inner
                                                         .send(Ok(file_for_cdp_inner));
@@ -351,7 +351,10 @@ fn setup_and_print(
             .collect();
         let data_url = format!("data:text/html;charset=utf-8,{}", encoded);
         let data_url_wide: Vec<u16> = data_url.encode_utf16().chain(std::iter::once(0)).collect();
-        eprintln!("[pdf-export] stage 4a2: navigating to data: URL (len={})", data_url.len());
+        eprintln!(
+            "[pdf-export] stage 4a2: navigating to data: URL (len={})",
+            data_url.len()
+        );
         unsafe {
             core.Navigate(PCWSTR(data_url_wide.as_ptr()))?;
         }

@@ -17,8 +17,23 @@ describe("Phase 1: export money display contract", () => {
     const html = buildFacturePdf(
       {
         client: { nom: "Client Test" },
-        articles: [{ designation: "Article A", quantite: 2, prixUnitaire: "1500.50", montant: "3001.00" }],
-        totaux: { ht: 300100, tva: 57019, tvaEnabled: true, tvaTaux: 19, timbre: 0, timbreEnabled: true, ttc: 357119 },
+        articles: [
+          {
+            designation: "Article A",
+            quantite: 2,
+            prixUnitaire: "1500.50",
+            montant: "3001.00",
+          },
+        ],
+        totaux: {
+          ht: 300100,
+          tva: 57019,
+          tvaEnabled: true,
+          tvaTaux: 19,
+          timbre: 0,
+          timbreEnabled: true,
+          ttc: 357119,
+        },
         numero: "0001",
         date: "2026-09-02",
         modeReglement: "espece",
@@ -36,9 +51,24 @@ describe("Phase 1: export money display contract", () => {
     const html = buildFacturePdf(
       {
         client: { nom: "Client Test" },
-        articles: [{ designation: "Article A", quantite: 1, prixUnitaire: "1500.50", montant: "1500.50" }],
+        articles: [
+          {
+            designation: "Article A",
+            quantite: 1,
+            prixUnitaire: "1500.50",
+            montant: "1500.50",
+          },
+        ],
         // ttc = 150 050 cents = 1 500,50 DA
-        totaux: { ht: 150050, tva: 0, tvaEnabled: false, tvaTaux: 19, timbre: 0, timbreEnabled: false, ttc: 150050 },
+        totaux: {
+          ht: 150050,
+          tva: 0,
+          tvaEnabled: false,
+          tvaTaux: 19,
+          timbre: 0,
+          timbreEnabled: false,
+          ttc: 150050,
+        },
         numero: "0002",
         date: "2026-09-02",
         showArrete: true,
