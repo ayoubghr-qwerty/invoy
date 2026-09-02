@@ -25,7 +25,20 @@ pub async fn export_pdf(
 ) -> Result<bool, String> {
     use std::sync::mpsc;
     use std::time::{Duration, SystemTime, UNIX_EPOCH};
-    use tauri::Manager;
+
+    // Input validation
+    if page_size.trim().to_uppercase() != "A4" && page_size.trim().to_uppercase() != "A5" {
+        return Err(format!("unsupported page size: {page_size}"));
+    }
+    if !file_path.to_lowercase().ends_with(".pdf") {
+        return Err("file path must end with .pdf".to_string());
+    }
+    if html_content.len() > 2_000_000 {
+        return Err(format!(
+            "document trop volumineux pour l'export PDF ({} caractères, max 2 000 000)",
+            html_content.len()
+        ));
+    }
 
     let (paper_w, paper_h) = page_size_inches(&page_size);
     eprintln!(
@@ -75,19 +88,21 @@ pub async fn export_pdf(
     let window_clone = window.clone();
 
     // with_webview will wait for the WebView2 controller to be ready
-    window
-        .with_webview(move |pw| {
-            eprintln!("[pdf-export] stage 3: with_webview callback fired");
-            setup_and_print(
-                pw,
-                &html_for_setup,
-                &file_path_for_setup,
-                paper_w,
-                paper_h,
-                done_tx,
-            );
-        })
-        .map_err(|e| format!("failed to access the WebView2 controller: {e}"))?;
+    if let Err(e) = window.with_webview(move |pw| {
+        eprintln!("[pdf-export] stage 3: with_webview callback fired");
+        setup_and_print(
+            pw,
+            &html_for_setup,
+            &file_path_for_setup,
+            paper_w,
+            paper_h,
+            done_tx,
+        );
+    }) {
+        // Never leak the window on error
+        let _ = window.close();
+        return Err(format!("failed to access the WebView2 controller: {e}"));
+    }
     eprintln!("[pdf-export] stage 4: with_webview registered, entering wait (60s timeout)");
 
     let result = tauri::async_runtime::spawn_blocking(move || {
@@ -153,6 +168,8 @@ fn setup_and_print(
         let core_for_nav = core.clone();
         let file_for_cdp = file_path_owned.clone();
         let done_tx_for_cdp = done_tx.clone();
+        let printed = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let printed_clone = printed.clone();
 
         let nav_handler = NavigationCompletedEventHandler::create(Box::new(
             move |_sender: Option<ICoreWebView2>,
@@ -171,8 +188,19 @@ fn setup_and_print(
                     return Ok(());
                 }
 
-                // Wait for render to complete
-                std::thread::sleep(std::time::Duration::from_secs(2));
+                // Guard: print only once even if navigation events repeat
+                if printed_clone
+                    .swap(true, std::sync::atomic::Ordering::SeqCst)
+                {
+                    eprintln!("[pdf-export] stage 4b: already printed, ignoring repeat navigation");
+                    return Ok(());
+                }
+
+                // Wait for render. Fixed sleep: a CDP Runtime.evaluate poll was
+                // tried but the callback needs the UI-thread message pump, which
+                // a blocking recv stalls (wait_with_pump conflicts with the
+                // NavigationCompleted handler). 3s covers large invoices.
+                std::thread::sleep(std::time::Duration::from_secs(3));
                 eprintln!("[pdf-export] stage 4c: render wait done, calling Page.enable");
 
                 // Enable the Page domain
@@ -245,14 +273,13 @@ fn setup_and_print(
                                         ) {
                                             Ok(pdf_bytes) => {
                                                 eprintln!("[pdf-export] stage 4h: decoded {} pdf bytes, writing file", pdf_bytes.len());
-                                                if let Err(_e) =
+                                                if let Err(e) =
                                                     std::fs::write(&file_for_cdp_inner, &pdf_bytes)
                                                 {
-                                                    eprintln!("[pdf-export] stage 4h: FAILED to write file");
+                                                    eprintln!("[pdf-export] stage 4h: FAILED to write file: {e}");
                                                     let _ =
                                                         done_tx_for_cdp_inner
-                                                            .send(Err("failed to write PDF file"
-                                                                .to_string()));
+                                                            .send(Err(format!("failed to write PDF file: {e}")));
                                                 } else {
                                                     let _ = done_tx_for_cdp_inner
                                                         .send(Ok(file_for_cdp_inner));

@@ -29,7 +29,9 @@ function escapeAttr(s) {
 
 function escapeCss(s) {
   if (s == null) return "";
-  return String(s).replace(/[^a-zA-Z0-9#\-_.%]/g, "");
+  // Allow spaces (multi-word font names); strip CSS injection chars (quotes,
+  // backslash, braces, semicolons, parens).
+  return String(s).replace(/[^a-zA-Z0-9#\-_.%\s]/g, "");
 }
 
 function fmtCents(cents, d = 2) {
@@ -61,7 +63,7 @@ function baseStyles(
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       @page { size: ${escapeCss(pageSize)}; margin: ${pageMargin}; }
-      body { font-family: ${safeFont}, Arial, sans-serif; font-size: ${bodyFontSize}; color: #111; background: #fff; }
+      body { font-family: "${safeFont}", Arial, sans-serif; font-size: ${bodyFontSize}; color: #111; background: #fff; }
       .doc { max-width: 100%; }
       .header-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
       .header-logo { width: ${isA5 ? "80px" : "100px"}; vertical-align: top; }

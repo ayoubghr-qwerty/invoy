@@ -1,6 +1,26 @@
 export function toCents(value) {
   if (value == null || value === "") return 0;
-  const n = Number(value);
+  let n;
+  if (typeof value === "string") {
+    // Accept French/Algerian formats: "1 500,50", "2,5", "1.234,56" → dot decimal
+    let s = value.trim().replace(/\s/g, "");
+    if (s.includes(",") && !s.includes(".")) {
+      s = s.replace(",", ".");
+    } else if (
+      s.includes(",") &&
+      s.includes(".") &&
+      s.lastIndexOf(",") > s.lastIndexOf(".")
+    ) {
+      // "1.234,56" → "1234.56"
+      s = s.replace(/\./g, "").replace(",", ".");
+    } else if (s.includes(",") && s.includes(".")) {
+      // "1,234.56" → remove thousand commas
+      s = s.replace(/,/g, "");
+    }
+    n = Number(s);
+  } else {
+    n = Number(value);
+  }
   if (!isFinite(n)) return 0;
   return Math.round(n * 100);
 }
