@@ -15,7 +15,8 @@
 [![المنصة](https://img.shields.io/badge/platform-Windows-0078d4)](#-البدء)
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-f59e0b)](https://tauri.app)
 [![React](https://img.shields.io/badge/React-18-61dafb)](https://react.dev)
-[![الاختبارات](https://img.shields.io/badge/tests-61%20passing-8b5cf6)](#-البدء)
+[![الاختبارات](https://img.shields.io/badge/tests-86%20passing-8b5cf6)](#-البدء)
+[![CI](https://github.com/ayoubghr-qwerty/invoy/actions/workflows/ci.yml/badge.svg)](https://github.com/ayoubghr-qwerty/invoy/actions/workflows/ci.yml)
 
 <img src="docs/screenshots/arabic.png" alt="Invoy — واجهة عربية من اليمين إلى اليسار مع حساب تلقائي للرسم على القيمة المضافة وحق الطابع" width="880"/>
 
@@ -80,7 +81,7 @@
 | الواجهة | React 18 · Vite 5 · Tailwind CSS 3 · Radix UI · lucide-react |
 | المستندات | PDF عبر WebView2 `PrintToPdf` (Rust) · DOCX عبر `docx` · استيراد Excel عبر `xlsx` |
 | البيانات | مخزن JSON محلي (`@tauri-apps/plugin-store`) — دون أي خادم |
-| الاختبارات | Vitest — 61 اختبارًا (تحليل المبالغ، سجل المخزون، اللغات، التحقق…) |
+| الاختبارات | Vitest — 86 اختبارًا (تحليل المبالغ، سجل المخزون، اللغات، التحقق…) |
 
 ## 🚀 البدء
 

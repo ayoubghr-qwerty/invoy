@@ -15,7 +15,8 @@ Proforma invoices · Delivery notes · Payment receipts · Purchase orders · In
 [![Platform](https://img.shields.io/badge/platform-Windows-0078d4)](#-getting-started)
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-f59e0b)](https://tauri.app)
 [![React](https://img.shields.io/badge/React-18-61dafb)](https://react.dev)
-[![Tests](https://img.shields.io/badge/tests-61%20passing-8b5cf6)](#-getting-started)
+[![Tests](https://img.shields.io/badge/tests-86%20passing-8b5cf6)](#-getting-started)
+[![CI](https://github.com/ayoubghr-qwerty/invoy/actions/workflows/ci.yml/badge.svg)](https://github.com/ayoubghr-qwerty/invoy/actions/workflows/ci.yml)
 
 <img src="docs/screenshots/facture-light.png" alt="Invoy — Proforma invoice with automatic TVA and Droit de Timbre calculation" width="880"/>
 
@@ -78,7 +79,7 @@ Most small businesses in Algeria still draft invoices in Word. Invoy replaces th
 | Frontend | React 18 · Vite 5 · Tailwind CSS 3 · Radix UI · lucide-react |
 | Documents | PDF via WebView2 `PrintToPdf` (Rust) · DOCX via `docx` · Excel import via `xlsx` |
 | Data | Local JSON store (`@tauri-apps/plugin-store`) — no server |
-| Tests | Vitest — 61 unit tests (money parsing, stock ledger, i18n, validation…) |
+| Tests | Vitest — 86 unit tests (money parsing, stock ledger, i18n, validation…) |
 
 ## 🚀 Getting started
 

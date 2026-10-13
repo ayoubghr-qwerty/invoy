@@ -15,7 +15,8 @@ Factures proforma · Bons de livraison · Bons de versement · Bons de commande 
 [![Plateforme](https://img.shields.io/badge/plateforme-Windows-0078d4)](#-démarrer)
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-f59e0b)](https://tauri.app)
 [![React](https://img.shields.io/badge/React-18-61dafb)](https://react.dev)
-[![Tests](https://img.shields.io/badge/tests-61%20réussis-8b5cf6)](#-démarrer)
+[![Tests](https://img.shields.io/badge/tests-86%20réussis-8b5cf6)](#-démarrer)
+[![CI](https://github.com/ayoubghr-qwerty/invoy/actions/workflows/ci.yml/badge.svg)](https://github.com/ayoubghr-qwerty/invoy/actions/workflows/ci.yml)
 
 <img src="docs/screenshots/facture-light.png" alt="Invoy — Facture proforma avec calcul automatique de la TVA et du droit de timbre" width="880"/>
 
@@ -78,7 +79,7 @@ Beaucoup de petites entreprises en Algérie rédigent encore leurs factures sous
 | Frontend | React 18 · Vite 5 · Tailwind CSS 3 · Radix UI · lucide-react |
 | Documents | PDF via WebView2 `PrintToPdf` (Rust) · DOCX via `docx` · Import Excel via `xlsx` |
 | Données | Store JSON local (`@tauri-apps/plugin-store`) — aucun serveur |
-| Tests | Vitest — 61 tests unitaires (parsing monétaire, registre de stock, i18n, validation…) |
+| Tests | Vitest — 86 tests unitaires (parsing monétaire, registre de stock, i18n, validation…) |
 
 ## 🚀 Démarrer
 
