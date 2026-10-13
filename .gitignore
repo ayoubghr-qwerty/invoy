@@ -32,3 +32,9 @@ self-test-*.txt
 # Planning artifacts  
 .superpowers/  
 docs/superpowers/  
+
+# Agent session data
+.opencode/
+
+# Internal audit docs (kept local, not for the public repo)
+audit/
