@@ -86,7 +86,7 @@
 ## 🚀 البدء
 
 **المتطلبات المسبقة**
-- Node.js 18 أو أحدث
+- Node.js 22 أو أحدث
 - Rust بالسلسلة `stable-x86_64-pc-windows-msvc` (تتطلب أدوات البناء MSVC على Windows)
 - WebView2 Runtime (مثبّت مسبقًا على Windows 10/11 مع Edge)
 

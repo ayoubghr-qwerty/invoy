@@ -84,7 +84,7 @@ Most small businesses in Algeria still draft invoices in Word. Invoy replaces th
 ## 🚀 Getting started
 
 **Prerequisites**
-- Node.js 18+
+- Node.js 22+
 - Rust toolchain `stable-x86_64-pc-windows-msvc` (needs MSVC Build Tools on Windows)
 - WebView2 Runtime (pre-installed on Windows 10/11 with Edge)
 

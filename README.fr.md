@@ -84,7 +84,7 @@ Beaucoup de petites entreprises en Algérie rédigent encore leurs factures sous
 ## 🚀 Démarrer
 
 **Prérequis**
-- Node.js 18+
+- Node.js 22+
 - Toolchain Rust `stable-x86_64-pc-windows-msvc` (nécessite les Build Tools MSVC sur Windows)
 - WebView2 Runtime (pré-installé sur Windows 10/11 avec Edge)
 
